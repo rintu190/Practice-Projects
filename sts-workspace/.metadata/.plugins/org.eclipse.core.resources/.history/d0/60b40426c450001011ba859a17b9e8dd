@@ -1,0 +1,12 @@
+package geeksForGeeks;
+
+public class ArrayRainWaterTrapping {
+
+	public static void main(String[] args) {
+		int[] arr = {2,1,5,3,1,0,4};
+		int result = maxWaterleftRightMax(arr);
+		System.out.println(result);
+		
+	}
+
+}

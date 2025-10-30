@@ -1,0 +1,24 @@
+package geeksForGeeks;
+
+public class ArrayMinimumSortedRotated {
+    public static void main(String[] args) {
+        int[] arr = {5,6,1,2,3,4};
+//        int result = findMinimumLinearSearch(arr);
+        int result = findMinimumBinarySearch(arr);
+        System.out.println(result);
+        
+    }
+
+	private static int findMinimumBinarySearch(int[] arr) {
+		
+		return 0;
+	}
+
+	private static int findMinimumLinearSearch(int[] arr) {
+		int result = arr[0];
+		for(int i = 0;i < arr.length;i++) {
+			result = Math.min(result, arr[i]);
+		}
+		return result;
+	}
+}

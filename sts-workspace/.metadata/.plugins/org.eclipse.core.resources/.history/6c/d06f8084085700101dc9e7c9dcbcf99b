@@ -1,0 +1,61 @@
+package coreJava;
+
+import java.util.concurrent.Phaser;
+
+public class ConcurrencyPhaser {
+
+	public static void main(String[] args) {
+		Phaser phaser = new Phaser(1);
+		int currentPhase;
+		System.out.println("Starting...");
+		new PhaserThread(phaser, "A");
+		new PhaserThread(phaser, "B");
+		new PhaserThread(phaser, "C");
+		
+		currentPhase = phaser.getPhase();
+		phaser.arriveAndAwaitAdvance();
+		System.out.println("phase"+currentPhase+"completed");
+		
+		currentPhase = phaser.getPhase();
+		phaser.arriveAndAwaitAdvance();
+		System.out.println("phase"+currentPhase+"completed");
+		
+		currentPhase = phaser.getPhase();
+		phaser.arriveAndAwaitAdvance();
+		System.out.println("phase"+currentPhase+"completed");
+	}
+
+}
+class PhaserThread{
+	Phaser phaser;
+	String name;
+	
+	PhaserThread(Phaser p,String n){
+		phaser = p;
+		name = n;
+		phaser.register();
+		new Thread(r).start();	
+	}
+	Runnable r =()-> {
+		System.out.println("Thread"+name+" beginning phase one");
+		phaser.arriveAndAwaitAdvance();
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Thread"+name+"beginning phase two");
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Thread"+name+"beginning phase three");
+		phaser.arriveAndDeregister();
+		
+	};
+	
+	
+}

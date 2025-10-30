@@ -1,0 +1,36 @@
+package coreJava;
+
+import java.util.concurrent.Exchanger;
+
+public class ConcurrencyExchanger {
+
+	public static final Exchanger<String> exchanger = new Exchanger<>();
+	public static void main(String[] args) {
+		Thread t1 = new Thread(()->{
+			exchangeData("Thread 1: Sending Data", " Data from Thread 1");
+		});
+		Thread t2 = new Thread(()->{
+			exchangeData("Thread 2: sending Data", " Data from Thread 2");
+		});
+
+		try {
+			t1.start();
+			t2.start();
+			t1.join();
+			t2.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	private static void exchangeData(String message,String data) {
+		try {
+			System.out.println(message +" : "+ data);
+			String receivedData = exchanger.exchange(data);
+			System.out.println(message +" Received -"+ receivedData);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+}

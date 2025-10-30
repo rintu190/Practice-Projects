@@ -1,0 +1,22 @@
+package geeksForGeeks;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ArrayFindTripletZeroSum {
+
+	public static void main(String[] args) {
+	int[] arr = {0,-1,2,-3,1};
+	ArrayList<ArrayList<Integer>> result = findTripletsNaive(arr);
+	for(List<Integer> triplet : result) {
+		System.out.println(triplet.get(0) +" "+ triplet.get(1) +" "+ triplet.get(2));
+		}
+
+	}
+
+	private static ArrayList<ArrayList<Integer>> findTripletsNaive(int[] arr) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

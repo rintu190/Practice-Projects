@@ -1,0 +1,31 @@
+package coreJava;
+
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
+
+public class ConcurrencyCyclicBarrier {
+
+	public static void main(String[] args) {
+		
+	}
+
+}
+class MyThread{
+	CyclicBarrier cbar;
+	String name;
+	
+	MyThread(CyclicBarrier c,String n){
+		cbar = c;
+		name = n;
+		new Thread().start();
+	}
+	Runnable r = ()-> {
+		System.out.println(name);
+		try {
+			cbar.await();
+		} catch (InterruptedException | BrokenBarrierException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	};
+}

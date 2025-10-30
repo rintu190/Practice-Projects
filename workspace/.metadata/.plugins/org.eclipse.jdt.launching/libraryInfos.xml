@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<libraryInfos>
+    <libraryInfo home="C:\Program Files\OpenLogic\jdk-8.0.432.06-hotspot" version="1.8.0_432-432">
+        <bootpath>
+            <entry path="C:\Program Files\OpenLogic\jdk-8.0.432.06-hotspot\jre\lib\resources.jar"/>
+            <entry path="C:\Program Files\OpenLogic\jdk-8.0.432.06-hotspot\jre\lib\rt.jar"/>
+            <entry path="C:\Program Files\OpenLogic\jdk-8.0.432.06-hotspot\jre\lib\sunrsasign.jar"/>
+            <entry path="C:\Program Files\OpenLogic\jdk-8.0.432.06-hotspot\jre\lib\jsse.jar"/>
+            <entry path="C:\Program Files\OpenLogic\jdk-8.0.432.06-hotspot\jre\lib\jce.jar"/>
+            <entry path="C:\Program Files\OpenLogic\jdk-8.0.432.06-hotspot\jre\lib\charsets.jar"/>
+            <entry path="C:\Program Files\OpenLogic\jdk-8.0.432.06-hotspot\jre\lib\jfr.jar"/>
+            <entry path="C:\Program Files\OpenLogic\jdk-8.0.432.06-hotspot\jre\classes"/>
+        </bootpath>
+        <extensionDirs>
+            <entry path="C:\Program Files\OpenLogic\jdk-8.0.432.06-hotspot\jre\lib\ext"/>
+            <entry path="C:\WINDOWS\Sun\Java\lib\ext"/>
+        </extensionDirs>
+        <endorsedDirs>
+            <entry path="C:\Program Files\OpenLogic\jdk-8.0.432.06-hotspot\jre\lib\endorsed"/>
+        </endorsedDirs>
+    </libraryInfo>
+    <libraryInfo home="/opt/spring-tools/sts-4.32.0.RELEASE/plugins/org.eclipse.justj.openjdk.hotspot.jre.full.linux.x86_64_21.0.8.v20250724-1412/jre" version="21.0.8"/>
+    <libraryInfo home="/home/rintu/Downloads/spring-tools-for-eclipse-4.32.0.RELEASE-e4.37.0-linux.gtk.x86_64/sts-4.32.0.RELEASE/plugins/org.eclipse.justj.openjdk.hotspot.jre.full.linux.x86_64_21.0.8.v20250724-1412" version="21.0.8">
+        <bootpath>
+            <entry path="null"/>
+        </bootpath>
+        <extensionDirs>
+            <entry path="null"/>
+        </extensionDirs>
+        <endorsedDirs>
+            <entry path="null"/>
+        </endorsedDirs>
+    </libraryInfo>
+    <libraryInfo home="C:\Program Files\OpenLogic\jdk-21.0.5.11-hotspot" version="21.0.5"/>
+    <libraryInfo home="/usr/lib/jvm/java-21-openjdk-amd64" version="21.0.8"/>
+    <libraryInfo home="/opt/spring-tools/sts-4.32.0.RELEASE/plugins/org.eclipse.justj.openjdk.hotspot.jre.full.linux.x86_64_21.0.8.v20250724-1412" version="21.0.8">
+        <bootpath>
+            <entry path="null"/>
+        </bootpath>
+        <extensionDirs>
+            <entry path="null"/>
+        </extensionDirs>
+        <endorsedDirs>
+            <entry path="null"/>
+        </endorsedDirs>
+    </libraryInfo>
+    <libraryInfo home="/home/rintu/Downloads/spring-tools-for-eclipse-4.32.0.RELEASE-e4.37.0-linux.gtk.x86_64/sts-4.32.0.RELEASE/plugins/org.eclipse.justj.openjdk.hotspot.jre.full.linux.x86_64_21.0.8.v20250724-1412/jre" version="21.0.8"/>
+    <libraryInfo home="C:\Program Files\OpenLogic\jdk-25" version="25"/>
+</libraryInfos>

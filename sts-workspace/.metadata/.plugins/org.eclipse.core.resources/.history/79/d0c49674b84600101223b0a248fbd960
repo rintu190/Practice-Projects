@@ -1,0 +1,27 @@
+package geeksForGeeks;
+
+public class ArraySearchSortedRotated {
+
+	public static void main(String[] args) {
+		int[] arr = {5,6,7,8,9,10,1,2,3};
+		int key = 3;
+		int result = doubleBinarySearch(arr,key);
+		System.out.println();
+	}
+
+	private static int doubleBinarySearch(int[] arr, int key) {
+		int n = arr.length;
+		int pivot = findPivot(arr,0,n - 1);
+		
+		if(arr[pivot] == key)
+			return pivot;
+		if(arr[pivot] == 0)
+			return binarySearch(arr,0,n - 1,key);
+		if(arr[0] <= key)
+			return binarySearch(arr,0,pivot - 1,key);
+		return binarySearch(arr,pivot + 1,n - 1,key);
+		
+		return 0;
+	}
+
+}

@@ -1,0 +1,23 @@
+package coreJava;
+
+import java.util.concurrent.Exchanger;
+
+public class ConcurrencyExchanger {
+
+	public static final Exchanger<String> exchanger = new Exchanger<>();
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+	private static void exchangeData(String message,String data) {
+		try {
+			System.out.println(message +" : "+ data);
+			String receivedData = exchanger.exchange(data);
+			System.out.println(message +"Received -"+ receivedData);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+}
