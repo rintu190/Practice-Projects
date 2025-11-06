@@ -38,4 +38,4 @@ If the answer is not in the context, say "Not found in provided documents."
 """
 
     answer = ask_llama(prompt)
-    print("\n💡 Answer:", answer)
+    print("\n💡 Answer is:", answer)
