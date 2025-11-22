@@ -8,6 +8,9 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final user = authState.user;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
@@ -28,11 +31,11 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'John Doe',
+              user?.name ?? 'Guest User',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             Text(
-              'john.doe@example.com',
+              user?.email ?? 'Sign in to view profile',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
             ),
             const SizedBox(height: 32),

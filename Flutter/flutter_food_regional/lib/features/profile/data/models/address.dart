@@ -1,4 +1,5 @@
 class Address {
+  final String? id;
   final String houseNumber;
   final String street;
   final String locality; // e.g., neighborhood or area
@@ -10,6 +11,7 @@ class Address {
   final double? longitude;
 
   Address({
+    this.id,
     required this.houseNumber,
     required this.street,
     required this.locality,
@@ -21,10 +23,40 @@ class Address {
     this.longitude,
   });
 
+  factory Address.fromJson(Map<String, dynamic> json) {
+    return Address(
+      id: json['id']?.toString(),
+      houseNumber: json['house_number'] ?? '',
+      street: json['street'] ?? '',
+      locality: json['locality'] ?? '',
+      city: json['city'] ?? '',
+      state: json['state'] ?? '',
+      pincode: json['pincode'] ?? '',
+      landmark: json['landmark'],
+      latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
+      longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      if (id != null) 'id': id,
+      'houseNumber': houseNumber,
+      'street': street,
+      'locality': locality,
+      'city': city,
+      'state': state,
+      'pincode': pincode,
+      if (landmark != null) 'landmark': landmark,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+    };
+  }
+
   @override
   String toString() {
     final parts = [
-      '\${houseNumber}, \${street}',
+      '$houseNumber, $street',
       locality,
       city,
       state,

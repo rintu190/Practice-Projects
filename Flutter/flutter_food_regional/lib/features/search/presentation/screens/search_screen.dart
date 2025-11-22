@@ -15,12 +15,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final allRestaurants = ref.watch(restaurantListProvider);
-    final filteredRestaurants = allRestaurants.where((restaurant) {
-      final nameMatches = restaurant.name.toLowerCase().contains(_query.toLowerCase());
-      final cuisineMatches = restaurant.cuisine.toLowerCase().contains(_query.toLowerCase());
-      return nameMatches || cuisineMatches;
-    }).toList();
+    final restaurantsAsync = ref.watch(restaurantListProvider(null)); // Get all restaurants
 
     return Scaffold(
       appBar: AppBar(
@@ -48,34 +43,80 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: _query.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.search, size: 64, color: Colors.grey[300]),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Find your favorite food',
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey),
+              child: restaurantsAsync.when(
+                data: (allRestaurants) {
+                  final filteredRestaurants = allRestaurants.where((restaurant) {
+                    final nameMatches = restaurant.name.toLowerCase().contains(_query.toLowerCase());
+                    final cuisineMatches = restaurant.cuisine.toLowerCase().contains(_query.toLowerCase());
+                    return nameMatches || cuisineMatches;
+                  }).toList();
+
+                  return _query.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.search, size: 64, color: Colors.grey[300]),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Find your favorite food',
+                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey),
+                              ),
+                            ],
                           ),
-                        ],
+                        )
+                      : filteredRestaurants.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.restaurant_menu, size: 64, color: Colors.grey[300]),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'No restaurants found',
+                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: filteredRestaurants.length,
+                              itemBuilder: (context, index) {
+                                final restaurant = filteredRestaurants[index];
+                                return ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundImage: NetworkImage(restaurant.imageUrl),
+                                  ),
+                                  title: Text(restaurant.name),
+                                  subtitle: Text('${restaurant.cuisine} • ${restaurant.rating} ⭐'),
+                                  onTap: () => context.push('/restaurant/${restaurant.id}'),
+                                );
+                              },
+                            );
+                },
+                loading: () => const Center(
+                  child: CircularProgressIndicator(color: Color(0xFF6C63FF)),
+                ),
+                error: (error, stack) => Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Error loading restaurants',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                    )
-                  : ListView.builder(
-                      itemCount: filteredRestaurants.length,
-                      itemBuilder: (context, index) {
-                        final restaurant = filteredRestaurants[index];
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: NetworkImage(restaurant.imageUrl),
-                          ),
-                          title: Text(restaurant.name),
-                          subtitle: Text('${restaurant.cuisine} • ${restaurant.rating} ⭐'),
-                          onTap: () => context.push('/restaurant/${restaurant.id}'),
-                        );
-                      },
-                    ),
+                      const SizedBox(height: 8),
+                      Text(
+                        error.toString(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ],
         ),

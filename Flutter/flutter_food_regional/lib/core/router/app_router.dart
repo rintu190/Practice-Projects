@@ -9,6 +9,7 @@ import '../../features/cart/presentation/screens/checkout_screen.dart';
 import '../../features/search/presentation/screens/search_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/orders/presentation/screens/orders_screen.dart';
+import '../../features/orders/presentation/screens/order_status_screen.dart';
 import '../../features/profile/presentation/screens/address_screen.dart';
 import '../../features/profile/presentation/screens/payment_methods_screen.dart';
 
@@ -23,10 +24,10 @@ final appRouter = GoRouter(
       path: '/login',
       builder: (context, state) => const LoginScreen(),
     ),
-      GoRoute(
-        path: '/signup',
-        builder: (context, state) => const SignupScreen(),
-      ),
+    GoRoute(
+      path: '/signup',
+      builder: (context, state) => const SignupScreen(),
+    ),
     GoRoute(
       path: '/home',
       builder: (context, state) => const HomeScreen(),
@@ -43,20 +44,24 @@ final appRouter = GoRouter(
       builder: (context, state) => const CartScreen(),
     ),
     GoRoute(
-      path: '/search',
-      builder: (context, state) => const SearchScreen(),
-    ),
-    GoRoute(
-      path: '/profile',
-      builder: (context, state) => const ProfileScreen(),
+      path: '/checkout',
+      builder: (context, state) => const CheckoutScreen(),
     ),
     GoRoute(
       path: '/orders',
       builder: (context, state) => const OrdersScreen(),
     ),
     GoRoute(
-      path: '/checkout',
-      builder: (context, state) => const CheckoutScreen(),
+      path: '/order-status',
+      builder: (context, state) => const OrderStatusScreen(),
+    ),
+    GoRoute(
+      path: '/search',
+      builder: (context, state) => const SearchScreen(),
+    ),
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => const ProfileScreen(),
     ),
     GoRoute(
       path: '/address',

@@ -78,6 +78,17 @@ CREATE TABLE IF NOT EXISTS order_items (
     menu_item_id VARCHAR(36) NOT NULL,
     quantity INT NOT NULL,
     price DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     FOREIGN KEY (menu_item_id) REFERENCES menu_items(id) ON DELETE CASCADE
+);
+
+-- Payment methods table
+CREATE TABLE IF NOT EXISTS payment_methods (
+    id VARCHAR(36) PRIMARY KEY,
+    user_id VARCHAR(36) NOT NULL,
+    type VARCHAR(20) NOT NULL, -- 'Card' or 'UPI'
+    title VARCHAR(255) NOT NULL, -- e.g. 'Visa ending in 4242' or 'user@upi'
+    subtitle VARCHAR(255) NOT NULL, -- e.g. 'Expires 12/25' or 'Paytm'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

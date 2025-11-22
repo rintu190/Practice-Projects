@@ -1,16 +1,27 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/data/mock_data.dart';
 import '../../domain/models/restaurant.dart';
+import '../services/restaurant_service.dart';
+import '../../../../core/exceptions/api_exception.dart';
 
-final restaurantListProvider = Provider<List<Restaurant>>((ref) {
-  return MockData.restaurants;
+// Restaurant service provider
+final restaurantServiceProvider = Provider((ref) => RestaurantService());
+
+// Restaurant list provider with cuisine filter
+final restaurantListProvider = FutureProvider.family<List<Restaurant>, String?>((ref, cuisine) async {
+  final service = ref.watch(restaurantServiceProvider);
+  try {
+    return await service.getRestaurants(cuisine: cuisine);
+  } on ApiException catch (e) {
+    throw Exception(e.message);
+  }
 });
 
-final restaurantProvider = Provider.family<Restaurant?, String>((ref, id) {
-  final restaurants = ref.watch(restaurantListProvider);
+// Single restaurant details provider
+final restaurantProvider = FutureProvider.family<Restaurant, String>((ref, id) async {
+  final service = ref.watch(restaurantServiceProvider);
   try {
-    return restaurants.firstWhere((r) => r.id == id);
-  } catch (e) {
-    return null;
+    return await service.getRestaurantDetails(id);
+  } on ApiException catch (e) {
+    throw Exception(e.message);
   }
 });
