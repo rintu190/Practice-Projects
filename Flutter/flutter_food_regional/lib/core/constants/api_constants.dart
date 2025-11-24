@@ -1,11 +1,21 @@
-class ApiConstants {
-  // Base URL - change based on your environment
-  // For iOS Simulator use: http://127.0.0.1:8000/api
-  // For Android Emulator use: http://10.0.2.2:8000/api
-  static const String baseUrl = 'http://10.0.2.2:8000/api';
+import 'dart:io';
 
-  // For Physical Device use your computer's local IP
-  // Example: http://192.168.1.100:8000/api
+class ApiConstants {
+  // Base URL - dynamic based on platform
+  static String get baseUrl {
+    if (Platform.isAndroid) {
+      return 'http://10.0.2.2:8000/api';
+    }
+    // iOS Simulator or other
+    return 'http://127.0.0.1:8000/api';
+  }
+
+  static String get serverUrl {
+    if (Platform.isAndroid) {
+      return 'http://10.0.2.2:8000';
+    }
+    return 'http://127.0.0.1:8000';
+  }
 
   // Endpoints
   static const String auth = '/auth';

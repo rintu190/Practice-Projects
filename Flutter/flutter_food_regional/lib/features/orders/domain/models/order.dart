@@ -10,6 +10,22 @@ class Order {
   final DateTime? createdAt;
   final String? restaurantName;
   final String? restaurantImage;
+  final String? restaurantAddress;
+  final String? restaurantPhone;
+  final double? restaurantLatitude;
+  final double? restaurantLongitude;
+  final String? userName;
+  final String? userPhone;
+  final String? riderId;
+  final String? riderName;
+  final String? houseNumber;
+  final String? street;
+  final String? locality;
+  final String? city;
+  final String? state;
+  final String? pincode;
+  final double? latitude;
+  final double? longitude;
   final List<OrderItem>? items;
 
   Order({
@@ -22,6 +38,22 @@ class Order {
     this.createdAt,
     this.restaurantName,
     this.restaurantImage,
+    this.restaurantAddress,
+    this.restaurantPhone,
+    this.restaurantLatitude,
+    this.restaurantLongitude,
+    this.userName,
+    this.userPhone,
+    this.riderId,
+    this.riderName,
+    this.houseNumber,
+    this.street,
+    this.locality,
+    this.city,
+    this.state,
+    this.pincode,
+    this.latitude,
+    this.longitude,
     this.items,
   });
 
@@ -36,6 +68,22 @@ class Order {
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
       restaurantName: json['restaurant_name'],
       restaurantImage: json['restaurant_image'],
+      restaurantAddress: json['restaurant_address'],
+      restaurantPhone: json['restaurant_phone'] as String?,
+      restaurantLatitude: json['restaurant_latitude'] != null ? double.tryParse(json['restaurant_latitude'].toString()) : null,
+      restaurantLongitude: json['restaurant_longitude'] != null ? double.tryParse(json['restaurant_longitude'].toString()) : null,
+      userName: json['user_name'] as String?,
+      userPhone: json['user_phone'],
+      riderId: json['rider_id'],
+      riderName: json['rider_name'],
+      houseNumber: json['house_number'],
+      street: json['street'],
+      locality: json['locality'],
+      city: json['city'],
+      state: json['state'],
+      pincode: json['pincode'],
+      latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
+      longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
       items: json['items'] != null
           ? (json['items'] as List).map((i) => OrderItem.fromJson(i)).toList()
           : null,
@@ -50,6 +98,8 @@ class Order {
       'addressId': addressId,
       'totalAmount': totalAmount,
       'status': status,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
       if (items != null) 'items': items!.map((i) => i.toJson()).toList(),
     };
   }

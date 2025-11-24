@@ -23,9 +23,11 @@ class ApiClient {
           .timeout(ApiConstants.timeout);
 
       return _handleResponse(response);
-    } on SocketException {
+    } on SocketException catch (e) {
+      print('DEBUG: SocketException: $e');
       throw NetworkException();
-    } on http.ClientException {
+    } on http.ClientException catch (e) {
+      print('DEBUG: ClientException: $e');
       throw NetworkException();
     }
   }
@@ -51,9 +53,11 @@ class ApiClient {
           .timeout(ApiConstants.timeout);
 
       return _handleResponse(response);
-    } on SocketException {
+    } on SocketException catch (e) {
+      print('DEBUG: SocketException: $e');
       throw NetworkException();
-    } on http.ClientException {
+    } on http.ClientException catch (e) {
+      print('DEBUG: ClientException: $e');
       throw NetworkException();
     }
   }
@@ -74,9 +78,11 @@ class ApiClient {
           .timeout(ApiConstants.timeout);
 
       return _handleResponse(response);
-    } on SocketException {
+    } on SocketException catch (e) {
+      print('DEBUG: SocketException: $e');
       throw NetworkException();
-    } on http.ClientException {
+    } on http.ClientException catch (e) {
+      print('DEBUG: ClientException: $e');
       throw NetworkException();
     }
   }
@@ -102,9 +108,46 @@ class ApiClient {
           .timeout(ApiConstants.timeout);
 
       return _handleResponse(response);
-    } on SocketException {
+    } on SocketException catch (e) {
+      print('DEBUG: SocketException: $e');
       throw NetworkException();
-    } on http.ClientException {
+    } on http.ClientException catch (e) {
+      print('DEBUG: ClientException: $e');
+      throw NetworkException();
+    }
+  }
+
+  // Upload file
+  Future<dynamic> uploadFile(
+    String endpoint,
+    File file, {
+    String fieldName = 'image',
+    bool requiresAuth = true,
+  }) async {
+    await _checkConnectivity();
+
+    final url = Uri.parse('${ApiConstants.baseUrl}$endpoint');
+    final request = http.MultipartRequest('POST', url);
+
+    // Add headers
+    final headers = await _getHeaders(requiresAuth);
+    request.headers.addAll(headers);
+
+    // Add file
+    request.files.add(await http.MultipartFile.fromPath(
+      fieldName,
+      file.path,
+    ));
+
+    try {
+      final streamedResponse = await request.send().timeout(ApiConstants.timeout);
+      final response = await http.Response.fromStream(streamedResponse);
+      return _handleResponse(response);
+    } on SocketException catch (e) {
+      print('DEBUG: SocketException: $e');
+      throw NetworkException();
+    } on http.ClientException catch (e) {
+      print('DEBUG: ClientException: $e');
       throw NetworkException();
     }
   }

@@ -9,6 +9,7 @@ class StorageService {
   static const String _userNameKey = 'user_name';
   static const String _userEmailKey = 'user_email';
   static const String _userPhoneKey = 'user_phone';
+  static const String _userRoleKey = 'user_role';
 
   // Token operations
   static Future<void> saveToken(String token) async {
@@ -29,11 +30,13 @@ class StorageService {
     required String name,
     required String email,
     String? phone,
+    required String role,
   }) async {
     await Future.wait([
       _storage.write(key: _userIdKey, value: id),
       _storage.write(key: _userNameKey, value: name),
       _storage.write(key: _userEmailKey, value: email),
+      _storage.write(key: _userRoleKey, value: role),
       if (phone != null) _storage.write(key: _userPhoneKey, value: phone),
     ]);
   }
@@ -44,6 +47,7 @@ class StorageService {
       _storage.read(key: _userNameKey),
       _storage.read(key: _userEmailKey),
       _storage.read(key: _userPhoneKey),
+      _storage.read(key: _userRoleKey),
     ]);
 
     return {
@@ -51,6 +55,7 @@ class StorageService {
       'name': results[1],
       'email': results[2],
       'phone': results[3],
+      'role': results[4],
     };
   }
 

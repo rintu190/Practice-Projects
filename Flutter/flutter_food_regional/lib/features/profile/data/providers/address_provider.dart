@@ -34,4 +34,30 @@ class AddressNotifier extends AsyncNotifier<List<Address>> {
       return _addressService.getAddresses();
     });
   }
+
+  Future<void> updateAddress(String id, Address address) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await _addressService.updateAddress(id, address);
+      return _addressService.getAddresses();
+    });
+  }
+
+  Future<void> setDefaultAddress(String id) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await _addressService.setDefaultAddress(id);
+      return _addressService.getAddresses();
+    });
+  }
+
+  Address? get defaultAddress {
+    if (state.value == null || state.value!.isEmpty) return null;
+    
+    try {
+      return state.value!.firstWhere((address) => address.isDefault);
+    } catch (e) {
+      return state.value!.first;
+    }
+  }
 }

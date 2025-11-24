@@ -5,6 +5,15 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json; charset=UTF-8");
 
+// Handle PHP built-in server
+if (php_sapi_name() == 'cli-server') {
+    $url = parse_url($_SERVER['REQUEST_URI']);
+    $file = __DIR__ . $url['path'];
+    if (is_file($file)) {
+        return false;
+    }
+}
+
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
@@ -34,6 +43,10 @@ $basePath = '/api';
 if (strpos($uri, $basePath) === 0) {
     $uri = substr($uri, strlen($basePath));
 }
+
+error_log("DEBUG: Request URI: " . $_SERVER['REQUEST_URI']);
+error_log("DEBUG: Parsed URI: " . $uri);
+error_log("DEBUG: Method: " . $method);
 
 // Route handling
 try {
@@ -76,11 +89,46 @@ try {
         exit();
     }
 
+    // Users routes
+    error_log("DEBUG: Checking users route. URI: $uri, strpos result: " . strpos($uri, '/users'));
+    if (strpos($uri, '/users') === 0) {
+        error_log("DEBUG: Matched users route!");
+        require_once __DIR__ . '/routes/users.php';
+        $path = substr($uri, 6); // Remove '/users'
+        error_log("DEBUG: Users path: $path");
+        handleUserRoutes($method, $path);
+        exit();
+    }
+
 // Order routes
     if (strpos($uri, '/orders') === 0) {
         require_once __DIR__ . '/routes/orders.php';
         $path = substr($uri, 7); // Remove '/orders'
         handleOrderRoutes($method, $path);
+        exit();
+    }
+
+    // Commissions routes
+    if (strpos($uri, '/commissions') === 0) {
+        require_once __DIR__ . '/routes/commissions.php';
+        $path = substr($uri, 12); // Remove '/commissions'
+        handleCommissionRoutes($method, $path);
+        exit();
+    }
+
+    // Menu items routes
+    if (strpos($uri, '/menu-items') === 0) {
+        require_once __DIR__ . '/routes/menu_items.php';
+        $path = substr($uri, 11); // Remove '/menu-items'
+        handleMenuItemRoutes($method, $path);
+        exit();
+    }
+
+    // Upload routes
+    if (strpos($uri, '/upload') === 0) {
+        require_once __DIR__ . '/routes/upload.php';
+        $path = substr($uri, 7); // Remove '/upload'
+        handleUploadRoutes($method);
         exit();
     }
 

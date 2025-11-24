@@ -1,3 +1,4 @@
+import 'dart:io';
 import '../../../../core/services/api_client.dart';
 import '../../../../core/services/storage_service.dart';
 import '../../../../core/constants/api_constants.dart';
@@ -33,6 +34,7 @@ class AuthService {
       name: userData['name'],
       email: userData['email'],
       phone: userData['phone'],
+      role: userData['role'] ?? 'customer',
     );
 
     return response;
@@ -61,6 +63,7 @@ class AuthService {
       name: userData['name'],
       email: userData['email'],
       phone: userData['phone'],
+      role: userData['role'] ?? 'customer',
     );
 
     return response;
@@ -76,6 +79,58 @@ class AuthService {
 
       return User.fromJson(response);
     } catch (e) {
+      return null;
+    }
+  }
+
+  // Update user profile
+  Future<User> updateProfile({
+    required String name,
+    required String phone,
+    double? latitude,
+    double? longitude,
+  }) async {
+    final Map<String, dynamic> body = {
+      'name': name,
+      'phone': phone,
+    };
+
+    if (latitude != null) body['latitude'] = latitude;
+    if (longitude != null) body['longitude'] = longitude;
+
+    final response = await _apiClient.put(
+      '${ApiConstants.auth}/me',
+      body: body,
+      requiresAuth: true,
+    );
+
+    final user = User.fromJson(response);
+    
+    // Update stored user data
+    await StorageService.saveUserData(
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+    );
+
+    return user;
+  }
+
+  // Upload profile picture
+  Future<User?> uploadProfilePicture(File file) async {
+    try {
+      final response = await _apiClient.uploadFile(
+        '${ApiConstants.auth}/upload-profile-picture',
+        file,
+        requiresAuth: true,
+      );
+
+      // Fetch updated user data to get the new profile picture URL
+      return await getCurrentUser();
+    } catch (e) {
+      print('Error uploading profile picture: $e');
       return null;
     }
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../auth/data/providers/auth_provider.dart';
+import '../../../../core/constants/api_constants.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -17,7 +18,7 @@ class ProfileScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () {},
+            onPressed: () => context.push('/edit-profile'),
           ),
         ],
       ),
@@ -25,9 +26,11 @@ class ProfileScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: 50,
-              backgroundImage: NetworkImage('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop'),
+              backgroundImage: user?.profilePicture != null
+                  ? NetworkImage('${ApiConstants.serverUrl}${user!.profilePicture}')
+                  : const NetworkImage('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop') as ImageProvider,
             ),
             const SizedBox(height: 16),
             Text(

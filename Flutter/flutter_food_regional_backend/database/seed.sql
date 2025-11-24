@@ -6,12 +6,12 @@ INSERT INTO restaurants (id, name, cuisine, rating, delivery_time, image_url) VA
 ('1', 'Punjabi Dhaba', 'North', 4.7, '30-40 min', 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=2070&auto=format&fit=crop'),
 ('2', 'Delhi Darbar', 'North', 4.5, '25-35 min', 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=2070&auto=format&fit=crop'),
 ('3', 'Amritsari Kitchen', 'North', 4.8, '35-45 min', 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=2070&auto=format&fit=crop'),
-('4', 'Chennai Express', 'South', 4.6, '20-30 min', 'https://images.unsplash.com/photo-1567337710282-00d7985c3c6e?q=80&w=2070&auto=format&fit=crop'),
-('5', 'Kerala Kitchen', 'South', 4.7, '30-40 min', 'https://images.unsplash.com/photo-1567337710282-00d7985c3c6e?q=80&w=2070&auto=format&fit=crop'),
+('4', 'Chennai Express', 'South', 4.6, '20-30 min', 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?q=80&w=2070&auto=format&fit=crop'),
+('5', 'Kerala Kitchen', 'South', 4.7, '30-40 min', 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?q=80&w=2070&auto=format&fit=crop'),
 ('6', 'Hyderabadi Biryani House', 'South', 4.9, '40-50 min', 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=2070&auto=format&fit=crop'),
-('7', 'Jagannath Bhog', 'Odisha', 4.5, '30-40 min', 'https://images.unsplash.com/photo-1596797882870-8c33deebc48d?q=80&w=2070&auto=format&fit=crop'),
-('8', 'Odisha Rasoi', 'Odisha', 4.6, '25-35 min', 'https://images.unsplash.com/photo-1596797882870-8c33deebc48d?q=80&w=2070&auto=format&fit=crop'),
-('9', 'Cuttack Flavors', 'Odisha', 4.4, '35-45 min', 'https://images.unsplash.com/photo-1596797882870-8c33deebc48d?q=80&w=2070&auto=format&fit=crop'),
+('7', 'Jagannath Bhog', 'Odisha', 4.5, '30-40 min', 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?q=80&w=2070&auto=format&fit=crop'),
+('8', 'Odisha Rasoi', 'Odisha', 4.6, '25-35 min', 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?q=80&w=2070&auto=format&fit=crop'),
+('9', 'Cuttack Flavors', 'Odisha', 4.4, '35-45 min', 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?q=80&w=2070&auto=format&fit=crop'),
 ('10', 'Quick Bites', 'Fast Food', 4.3, '15-25 min', 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=2070&auto=format&fit=crop'),
 ('11', 'Pizza Palace', 'Fast Food', 4.5, '20-30 min', 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=2070&auto=format&fit=crop'),
 ('12', 'Wrap and Roll', 'Fast Food', 4.4, '15-20 min', 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?q=80&w=2070&auto=format&fit=crop');
@@ -43,7 +43,7 @@ INSERT INTO menu_items (id, restaurant_id, name, description, price, image_url) 
 ('603', '6', 'Raita', 'Yogurt with cucumber and spices', 50.00, 'https://images.unsplash.com/photo-1601050690597-df0568f70950?q=80&w=2070&auto=format&fit=crop'),
 -- Jagannath Bhog menu
 ('701', '7', 'Dalma', 'Traditional Odia lentil curry with vegetables', 150.00, 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?q=80&w=2070&auto=format&fit=crop'),
-('702', '7', 'Pakhala Bhata', 'Fermented rice with water', 80.00, 'https://images.unsplash.com/photo-1596797882870-8c33deebc48d?q=80&w=2070&auto=format&fit=crop'),
+('702', '7', 'Pakhala Bhata', 'Fermented rice with water', 80.00, 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?q=80&w=2070&auto=format&fit=crop'),
 ('703', '7', 'Chenna Poda', 'Roasted cottage cheese dessert', 100.00, 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?q=80&w=2070&auto=format&fit=crop'),
 -- Odisha Rasoi menu
 ('801', '8', 'Machha Besara', 'Fish curry with mustard paste', 320.00, 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?q=80&w=2070&auto=format&fit=crop'),

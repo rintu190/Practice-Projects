@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:io';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../domain/models/user.dart';
 import '../services/auth_service.dart';
@@ -109,6 +110,67 @@ class AuthNotifier extends Notifier<AuthState> {
         error: e.message,
       );
       return false;
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'An unexpected error occurred',
+      );
+      return false;
+    }
+  }
+
+  Future<bool> updateProfile(String name, String phone, {double? latitude, double? longitude}) async {
+    state = state.copyWith(isLoading: true, error: null);
+    
+    try {
+      final user = await _authService.updateProfile(
+        name: name,
+        phone: phone,
+        latitude: latitude,
+        longitude: longitude,
+      );
+      
+      state = state.copyWith(
+        isAuthenticated: true,
+        user: user,
+        isLoading: false,
+      );
+      return true;
+    } on ApiException catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.message,
+      );
+      return false;
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'An unexpected error occurred',
+      );
+      return false;
+    }
+  }
+
+  Future<bool> uploadProfilePicture(File file) async {
+    state = state.copyWith(isLoading: true, error: null);
+    
+    try {
+      final user = await _authService.uploadProfilePicture(file);
+      
+      if (user != null) {
+        state = state.copyWith(
+          isAuthenticated: true,
+          user: user,
+          isLoading: false,
+        );
+        return true;
+      } else {
+        state = state.copyWith(
+          isLoading: false,
+          error: 'Failed to upload profile picture',
+        );
+        return false;
+      }
     } catch (e) {
       state = state.copyWith(
         isLoading: false,

@@ -9,6 +9,7 @@ class Address {
   final String? landmark;
   final double? latitude;
   final double? longitude;
+  final bool isDefault;
 
   Address({
     this.id,
@@ -21,7 +22,10 @@ class Address {
     this.landmark,
     this.latitude,
     this.longitude,
+    this.isDefault = false,
   });
+
+  String get label => locality.isNotEmpty ? locality : street;
 
   factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
@@ -35,6 +39,7 @@ class Address {
       landmark: json['landmark'],
       latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
       longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
+      isDefault: (json['is_default'] == 1 || json['is_default'] == true || json['is_default'] == '1') ? true : false,
     );
   }
 
@@ -50,6 +55,7 @@ class Address {
       if (landmark != null) 'landmark': landmark,
       if (latitude != null) 'latitude': latitude,
       if (longitude != null) 'longitude': longitude,
+      'isDefault': isDefault,
     };
   }
 

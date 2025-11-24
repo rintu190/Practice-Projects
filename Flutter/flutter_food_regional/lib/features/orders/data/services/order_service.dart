@@ -64,4 +64,57 @@ class OrderService {
       rethrow;
     }
   }
+
+  Future<void> updateOrderStatus(String orderId, String status) async {
+    print('DEBUG: Updating order status: $orderId -> $status');
+    try {
+      await _apiClient.put(
+        '${ApiConstants.orders}/$orderId/status',
+        body: {'status': status},
+        requiresAuth: true,
+      );
+    } catch (e) {
+      print('DEBUG: Error updating order status: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getRiders() async {
+    print('DEBUG: Fetching riders...');
+    try {
+      // ApiClient expects a relative path, not a full URL
+      final response = await _apiClient.get(
+        '/users/riders',
+        requiresAuth: true,
+      );
+      
+      print('DEBUG: Response type: ${response.runtimeType}');
+      print('DEBUG: Response: $response');
+      
+      if (response == null || response is! List) {
+        print('DEBUG: Response is not a list');
+        return [];
+      }
+
+      print('DEBUG: Found ${response.length} riders');
+      return List<Map<String, dynamic>>.from(response);
+    } catch (e) {
+      print('DEBUG: Error fetching riders: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> assignRider(String orderId, String riderId) async {
+    print('DEBUG: Assigning rider $riderId to order $orderId');
+    try {
+      await _apiClient.put(
+        '${ApiConstants.orders}/$orderId/assign-rider',
+        body: {'riderId': riderId},
+        requiresAuth: true,
+      );
+    } catch (e) {
+      print('DEBUG: Error assigning rider: $e');
+      rethrow;
+    }
+  }
 }

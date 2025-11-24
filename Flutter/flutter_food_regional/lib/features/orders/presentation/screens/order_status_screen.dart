@@ -14,6 +14,12 @@ class OrderStatusScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Order Status'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => ref.refresh(orderProvider),
+          ),
+        ],
       ),
       body: ordersAsync.when(
         data: (orders) {

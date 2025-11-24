@@ -7,6 +7,11 @@ class AppTheme {
   static const backgroundColor = Color(0xFFF5F7FA);
   static const surfaceColor = Colors.white;
   static const errorColor = Color(0xFFFF6B6B);
+  static const primaryOrange = Color(0xFFFF6B00);
+  
+  // New Gradient Colors
+  static const primaryGradientTop = Color(0xFF4A00E0);
+  static const primaryGradientBottom = Color(0xFF8E2DE2);
 
   static final lightTheme = ThemeData(
     useMaterial3: true,

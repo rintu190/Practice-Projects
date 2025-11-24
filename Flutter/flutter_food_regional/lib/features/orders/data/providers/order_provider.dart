@@ -36,4 +36,21 @@ class OrderNotifier extends AsyncNotifier<List<Order>> {
       return _orderService.getOrders();
     });
   }
+
+  Future<void> updateStatus(String orderId, String status) async {
+    // Optimistic update could be done here, but for now we'll just reload
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await _orderService.updateOrderStatus(orderId, status);
+      return _orderService.getOrders();
+    });
+  }
+
+  Future<void> assignRider(String orderId, String riderId) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await _orderService.assignRider(orderId, riderId);
+      return _orderService.getOrders();
+    });
+  }
 }

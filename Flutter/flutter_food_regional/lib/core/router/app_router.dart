@@ -3,6 +3,7 @@ import '../../features/auth/presentation/screens/onboarding_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/home/presentation/screens/main_screen.dart';
 import '../../features/home/presentation/screens/restaurant_detail_screen.dart';
 import '../../features/cart/presentation/screens/cart_screen.dart';
 import '../../features/cart/presentation/screens/checkout_screen.dart';
@@ -12,6 +13,7 @@ import '../../features/orders/presentation/screens/orders_screen.dart';
 import '../../features/orders/presentation/screens/order_status_screen.dart';
 import '../../features/profile/presentation/screens/address_screen.dart';
 import '../../features/profile/presentation/screens/payment_methods_screen.dart';
+import '../../features/profile/presentation/screens/edit_profile_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -30,7 +32,7 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/home',
-      builder: (context, state) => const HomeScreen(),
+      builder: (context, state) => const MainScreen(),
     ),
     GoRoute(
       path: '/restaurant/:id',
@@ -70,6 +72,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/payment-methods',
       builder: (context, state) => const PaymentMethodsScreen(),
+    ),
+    GoRoute(
+      path: '/edit-profile',
+      builder: (context, state) => const EditProfileScreen(),
     ),
   ],
 );

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../cart/data/providers/cart_provider.dart';
 import '../../../profile/data/providers/address_provider.dart';
+import '../../../profile/data/providers/selected_address_provider.dart';
 import '../../../profile/data/providers/payment_provider.dart';
 import '../../../orders/data/providers/order_provider.dart';
 import '../../../profile/data/models/address.dart';
@@ -17,7 +18,6 @@ class CheckoutScreen extends ConsumerStatefulWidget {
 
 class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   bool _isProcessing = false;
-  Address? _selectedAddress;
   PaymentMethod? _selectedPaymentMethod;
 
   @override
@@ -30,11 +30,13 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final paymentMethodsAsync = ref.watch(paymentProvider);
     final cartItems = ref.watch(cartProvider);
 
-    // Auto-select first address and payment method if not selected
+    final selectedAddress = ref.watch(selectedAddressProvider);
+
+    // Auto-select first address if not selected
     addressesAsync.whenData((addresses) {
-      if (_selectedAddress == null && addresses.isNotEmpty) {
+      if (selectedAddress == null && addresses.isNotEmpty) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) setState(() => _selectedAddress = addresses.first);
+          ref.read(selectedAddressProvider.notifier).selectAddress(addresses.first);
         });
       }
     });
@@ -76,7 +78,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                           );
                         }
                         
-                        final displayAddress = _selectedAddress ?? addresses.first;
+                        final displayAddress = selectedAddress ?? addresses.first;
                         return ListTile(
                           leading: const Icon(Icons.location_on, color: Colors.orange),
                           title: Text(displayAddress.locality),
@@ -183,12 +185,12 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton(
-                      onPressed: (_selectedAddress == null) || 
+                      onPressed: (selectedAddress == null) || 
                                  (_selectedPaymentMethod == null) ||
                                  cartItems.isEmpty
                           ? null
                           : () async {
-                              if (_selectedAddress == null || _selectedPaymentMethod == null) {
+                              if (selectedAddress == null || _selectedPaymentMethod == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(content: Text('Please select address and payment method')),
                                 );
@@ -208,7 +210,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
                                 await ref.read(orderProvider.notifier).createOrder(
                                   restaurantId: restaurantId,
-                                  addressId: _selectedAddress!.id!,
+                                  addressId: selectedAddress.id!,
                                   totalAmount: finalTotal,
                                   items: items,
                                 );

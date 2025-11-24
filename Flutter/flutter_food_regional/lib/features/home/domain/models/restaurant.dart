@@ -7,6 +7,8 @@ class Restaurant {
   final double rating;
   final String deliveryTime;
   final String imageUrl;
+  final double? latitude;
+  final double? longitude;
   final List<MenuItem> menuItems;
 
   Restaurant({
@@ -16,6 +18,8 @@ class Restaurant {
     required this.rating,
     required this.deliveryTime,
     required this.imageUrl,
+    this.latitude,
+    this.longitude,
     this.menuItems = const [],
   });
 
@@ -27,6 +31,8 @@ class Restaurant {
       rating: double.tryParse(json['rating'].toString()) ?? 0.0,
       deliveryTime: json['delivery_time'] as String? ?? json['deliveryTime'] as String? ?? '30-40 min',
       imageUrl: json['image_url'] as String? ?? json['imageUrl'] as String? ?? '',
+      latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
+      longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
       menuItems: (json['menuItems'] as List?)
               ?.map((item) => MenuItem.fromJson(item as Map<String, dynamic>))
               .toList() ??
@@ -42,6 +48,8 @@ class Restaurant {
       'rating': rating,
       'delivery_time': deliveryTime,
       'image_url': imageUrl,
+      'latitude': latitude,
+      'longitude': longitude,
       'menuItems': menuItems.map((item) => item.toJson()).toList(),
     };
   }
