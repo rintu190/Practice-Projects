@@ -47,7 +47,11 @@ function handleCommissionRoutes($method, $path) {
         // Calculate total earnings
         $total = 0;
         foreach ($commissions as $commission) {
-            $total += $commission['amount'];
+            // For riders and restaurant owners, only count approved commissions
+            // For admins, count all commissions
+            if ($role === 'admin' || $commission['status'] === 'approved') {
+                $total += $commission['amount'];
+            }
         }
 
         echo json_encode([
@@ -77,6 +81,29 @@ function handleCommissionRoutes($method, $path) {
         }
 
         echo json_encode(['message' => 'Commission approved successfully']);
+        return;
+    }
+
+    // Reject commission (Admin only)
+    if ($method === 'PUT' && preg_match('/^\/([a-f0-9-]+)\/reject$/', $path, $matches)) {
+        $commissionId = $matches[1];
+
+        if ($role !== 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Unauthorized']);
+            return;
+        }
+
+        $stmt = $db->prepare('UPDATE commissions SET status = ? WHERE id = ?');
+        $stmt->execute(['rejected', $commissionId]);
+
+        if ($stmt->rowCount() === 0) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Commission not found']);
+            return;
+        }
+
+        echo json_encode(['message' => 'Commission rejected successfully']);
         return;
     }
 

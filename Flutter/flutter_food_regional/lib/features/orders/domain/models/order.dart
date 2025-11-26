@@ -18,6 +18,7 @@ class Order {
   final String? userPhone;
   final String? riderId;
   final String? riderName;
+  final String? riderPhone;
   final String? houseNumber;
   final String? street;
   final String? locality;
@@ -46,6 +47,7 @@ class Order {
     this.userPhone,
     this.riderId,
     this.riderName,
+    this.riderPhone,
     this.houseNumber,
     this.street,
     this.locality,
@@ -76,6 +78,7 @@ class Order {
       userPhone: json['user_phone'],
       riderId: json['rider_id'],
       riderName: json['rider_name'],
+      riderPhone: json['rider_phone'],
       houseNumber: json['house_number'],
       street: json['street'],
       locality: json['locality'],

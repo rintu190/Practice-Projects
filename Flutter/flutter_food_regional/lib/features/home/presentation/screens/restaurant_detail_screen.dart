@@ -5,14 +5,23 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../data/providers/restaurant_provider.dart';
 import '../../../cart/data/providers/cart_provider.dart';
 
-class RestaurantDetailScreen extends ConsumerWidget {
+class RestaurantDetailScreen extends ConsumerStatefulWidget {
   final String restaurantId;
 
   const RestaurantDetailScreen({super.key, required this.restaurantId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final restaurantAsync = ref.watch(restaurantProvider(restaurantId));
+  ConsumerState<RestaurantDetailScreen> createState() => _RestaurantDetailScreenState();
+}
+
+enum FoodFilter { all, veg, nonVeg }
+
+class _RestaurantDetailScreenState extends ConsumerState<RestaurantDetailScreen> {
+  FoodFilter _foodFilter = FoodFilter.veg; // Default to veg
+
+  @override
+  Widget build(BuildContext context) {
+    final restaurantAsync = ref.watch(restaurantProvider(widget.restaurantId));
 
     return restaurantAsync.when(
       data: (restaurant) => Scaffold(
@@ -119,23 +128,129 @@ class RestaurantDetailScreen extends ConsumerWidget {
                             style: TextStyle(color: Colors.grey[600], fontSize: 16),
                           ),
                           const SizedBox(height: 24),
-                          const Text(
-                            'Menu',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Menu',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              // Veg/Non-Veg Toggle Switch
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(25),
+                                  border: Border.all(color: Colors.grey.shade300, width: 2),
+                                ),
+                                child: Row(
+                                  children: [
+                                    // All Button
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _foodFilter = FoodFilter.all;
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                        decoration: BoxDecoration(
+                                          color: _foodFilter == FoodFilter.all ? const Color(0xFF6C63FF) : Colors.transparent,
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(23),
+                                            bottomLeft: Radius.circular(23),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          'All',
+                                          style: TextStyle(
+                                            color: _foodFilter == FoodFilter.all ? Colors.white : Colors.grey.shade700,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    // Veg Button (Green Dot Only)
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _foodFilter = FoodFilter.veg;
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: _foodFilter == FoodFilter.veg ? Colors.green : Colors.transparent,
+                                        ),
+                                        child: Icon(
+                                          Icons.circle,
+                                          size: 16,
+                                          color: _foodFilter == FoodFilter.veg ? Colors.white : Colors.green,
+                                        ),
+                                      ),
+                                    ),
+                                    // Non-Veg Button (Red Dot Only)
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _foodFilter = FoodFilter.nonVeg;
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: _foodFilter == FoodFilter.nonVeg ? Colors.red : Colors.transparent,
+                                          borderRadius: const BorderRadius.only(
+                                            topRight: Radius.circular(23),
+                                            bottomRight: Radius.circular(23),
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          Icons.circle,
+                                          size: 16,
+                                          color: _foodFilter == FoodFilter.nonVeg ? Colors.white : Colors.red,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
-                    ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: restaurant.menuItems.length,
-                      itemBuilder: (context, index) {
-                        final item = restaurant.menuItems[index];
+                    Builder(
+                      builder: (context) {
+                        // Filter menu items based on toggle
+                        final filteredItems = restaurant.menuItems.where((item) {
+                          if (_foodFilter == FoodFilter.all) return true;
+                          if (_foodFilter == FoodFilter.veg) return item.isVeg;
+                          if (_foodFilter == FoodFilter.nonVeg) return !item.isVeg;
+                          return true;
+                        }).toList();
+
+                        if (filteredItems.isEmpty) {
+                          return Padding(
+                            padding: const EdgeInsets.all(40),
+                            child: Center(
+                              child: Text(
+                                'No ${_foodFilter == FoodFilter.veg ? 'vegetarian' : 'non-vegetarian'} items available',
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
+                            ),
+                          );
+                        }
+
+                        return ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: filteredItems.length,
+                          itemBuilder: (context, index) {
+                            final item = filteredItems[index];
                         return Container(
                           margin: const EdgeInsets.only(bottom: 16),
                           decoration: BoxDecoration(
@@ -198,16 +313,55 @@ class RestaurantDetailScreen extends ConsumerWidget {
                                           ),
                                           InkWell(
                                             onTap: () {
-                                              ref.read(cartProvider.notifier).addToCart(item);
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(
-                                                  content: Text('${item.name} added to cart'),
-                                                  behavior: SnackBarBehavior.floating,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(10),
+                                              final cartNotifier = ref.read(cartProvider.notifier);
+                                              if (cartNotifier.hasRestaurantConflict(item.restaurantId)) {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) => AlertDialog(
+                                                    title: const Text('Start a new basket?'),
+                                                    content: const Text(
+                                                      'Adding items from a new restaurant will clear your current basket.',
+                                                    ),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () => Navigator.pop(context),
+                                                        child: const Text('Cancel'),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          cartNotifier.clearCart();
+                                                          cartNotifier.addToCart(item);
+                                                          Navigator.pop(context);
+                                                          ScaffoldMessenger.of(context).showSnackBar(
+                                                            SnackBar(
+                                                              content: Text('${item.name} added to cart'),
+                                                              behavior: SnackBarBehavior.floating,
+                                                              shape: RoundedRectangleBorder(
+                                                                borderRadius: BorderRadius.circular(10),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
+                                                        child: const Text(
+                                                          'New Basket',
+                                                          style: TextStyle(color: Color(0xFF6C63FF)),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                ),
-                                              );
+                                                );
+                                              } else {
+                                                cartNotifier.addToCart(item);
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text('${item.name} added to cart'),
+                                                    behavior: SnackBarBehavior.floating,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(10),
+                                                    ),
+                                                  ),
+                                                );
+                                              }
                                             },
                                             child: Container(
                                               padding: const EdgeInsets.all(8),
@@ -232,7 +386,9 @@ class RestaurantDetailScreen extends ConsumerWidget {
                           ),
                         ).animate().fadeIn(delay: (index * 100).ms).slideX();
                       },
-                    ),
+                    );
+                    },
+                  ),
                     const SizedBox(height: 100), // Bottom padding for FAB
                   ],
                 ),

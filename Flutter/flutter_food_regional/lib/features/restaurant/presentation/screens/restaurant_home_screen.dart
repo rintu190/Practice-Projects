@@ -31,6 +31,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
   bool _restaurantLoaded = false;
   List<Map<String, dynamic>> _menuItems = [];
   bool _menuItemsLoaded = false;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -87,51 +88,150 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
   Widget build(BuildContext context) {
     final ordersAsync = ref.watch(orderProvider);
 
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        backgroundColor: backgroundColor,
-        appBar: AppBar(
-          backgroundColor: primaryBlue,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          title: const Text('Restaurant Dashboard', style: TextStyle(fontWeight: FontWeight.bold)),
-          bottom: const TabBar(
-            indicatorColor: Colors.white,
-            indicatorWeight: 3,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
-            tabs: [
-              Tab(icon: Icon(Icons.shopping_bag), text: 'Orders'),
-              Tab(icon: Icon(Icons.account_balance_wallet), text: 'Earnings'),
-              Tab(icon: Icon(Icons.restaurant_menu), text: 'My Restaurant'),
-            ],
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      body: Stack(
+        children: [
+          // Background header with cloud divider
+          _buildHeader(),
+          
+          // Content with IndexedStack
+          SafeArea(
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: [
+                _buildOrdersTab(ordersAsync),
+                _buildEarningsTab(),
+                _buildRestaurantDetailsTab(),
+              ],
+            ),
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.refresh, color: Colors.white),
-              onPressed: () {
-                ref.refresh(orderProvider);
-                _loadCommissions();
-                _loadRestaurantData();
-              },
+          
+          // Top AppBar with interactive elements
+          _buildAppBar(),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        backgroundColor: Colors.white,
+        selectedItemColor: primaryBlue,
+        unselectedItemColor: textSecondary,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_bag),
+            label: 'Orders',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_balance_wallet),
+            label: 'Earnings',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.restaurant_menu),
+            label: 'My Restaurant',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return SizedBox(
+      height: 340,
+      child: Stack(
+        children: [
+          // Blue background with cloud shape
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _CloudHeaderPainter(color: primaryBlue),
             ),
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () async {
-                await AuthService().logout();
-                if (context.mounted) {
-                  context.go('/login');
-                }
-              },
+          ),
+          // Illustration area
+          SafeArea(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 40), // Space for AppBar
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.restaurant,
+                      size: 64,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Restaurant Dashboard',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-        body: TabBarView(
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppBar() {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildOrdersTab(ordersAsync),
-            _buildEarningsTab(),
-            _buildRestaurantDetailsTab(),
+            const Expanded(
+              child: Text(
+                'Restaurant Dashboard',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.refresh, color: Colors.white),
+                  onPressed: () {
+                    ref.refresh(orderProvider);
+                    _loadCommissions();
+                    _loadRestaurantData();
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.settings, color: Colors.white),
+                  onPressed: () {
+                    context.push('/edit-profile');
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.logout, color: Colors.white),
+                  onPressed: () async {
+                    await AuthService().logout();
+                    if (context.mounted) {
+                      context.go('/login');
+                    }
+                  },
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -146,6 +246,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
         }
         return ListView.builder(
           itemCount: orders.length,
+          padding: const EdgeInsets.only(top: 320, bottom: 20),
           itemBuilder: (context, index) {
             final order = orders[index];
             return Card(
@@ -209,7 +310,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
                             items: const [
                               DropdownMenuItem(value: 'pending', child: Text('Order Accepted')),
                               DropdownMenuItem(value: 'preparing', child: Text('Preparation')),
-                              DropdownMenuItem(value: 'rider_assigned', child: Text('HandOver')),
+                              DropdownMenuItem(value: 'handover', child: Text('Hand Over')),
                               DropdownMenuItem(value: 'cancelled', child: Text('Cancelled')),
                             ],
                             onChanged: (newStatus) {
@@ -238,97 +339,119 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(24),
-          margin: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.orange.shade400, Colors.orange.shade600],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    return ListView.builder(
+      padding: const EdgeInsets.only(top: 320, bottom: 20),
+      itemCount: _commissions.length + 1,
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          // Summary Card
+          return Container(
+            padding: const EdgeInsets.all(24),
+            margin: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.orange.shade400, Colors.orange.shade600],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
             ),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            children: [
-              const Text(
-                'Total Earnings',
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '₹${_totalEarnings.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
+            child: Column(
+              children: [
+                const Text(
+                  'Total Earnings',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: _commissions.isEmpty
-              ? const Center(child: Text('No commissions yet'))
-              : ListView.builder(
-                  itemCount: _commissions.length,
-                  itemBuilder: (context, index) {
-                    final commission = _commissions[index];
-                    final isPending = commission['status'] == 'pending';
-                    return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.orange,
-                          child: Text('${commission['percentage']}%'),
-                        ),
-                        title: Row(
-                          children: [
-                            Expanded(child: Text('Order #${commission['order_id'].toString().substring(0, 8)}')),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: isPending ? Colors.orange : Colors.green,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                isPending ? 'PENDING' : 'APPROVED',
-                                style: const TextStyle(color: Colors.white, fontSize: 10),
-                              ),
-                            ),
-                          ],
-                        ),
-                        subtitle: Text(
-                          DateFormat('MMM d, yyyy').format(
-                            DateTime.parse(commission['created_at']),
-                          ),
-                        ),
-                        trailing: Text(
-                          '₹${double.parse(commission['amount'].toString()).toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.orange,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
+                const SizedBox(height: 8),
+                Text(
+                  '₹${_totalEarnings.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-        ),
-      ],
+              ],
+            ),
+          );
+        }
+
+        if (_commissions.isEmpty) {
+          return const Center(child: Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Text('No commissions yet'),
+          ));
+        }
+
+        final commission = _commissions[index - 1];
+        final status = commission['status'];
+        final isRejected = status == 'rejected';
+        final isPending = status == 'pending';
+        final isApproved = status == 'approved';
+        
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: Colors.orange,
+              child: Text('${commission['percentage']}%'),
+            ),
+            title: Row(
+              children: [
+                Expanded(child: Text('Order #${commission['order_id'].toString().substring(0, 8)}')),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: isRejected ? Colors.red : (isPending ? Colors.orange : Colors.green),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    isRejected ? 'REJECTED' : (isPending ? 'PENDING' : 'APPROVED'),
+                    style: const TextStyle(color: Colors.white, fontSize: 10),
+                  ),
+                ),
+              ],
+            ),
+            subtitle: Text(
+              DateFormat('MMM d, yyyy').format(
+                DateTime.parse(commission['created_at']),
+              ),
+            ),
+            trailing: Text(
+              '₹${double.parse(commission['amount'].toString()).toStringAsFixed(2)}',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Colors.orange,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
   String _mapToRestaurantStatus(String status) {
     // Map backend status to restaurant-friendly status
     // This ensures the dropdown shows the correct value
+    
+    // Valid statuses in the dropdown
+    const validStatuses = ['pending', 'preparing', 'handover', 'cancelled'];
+    
     if (status == 'delivered') {
-      return 'rider_assigned'; // Show as HandOver if already delivered
+      return 'handover'; // Show as Hand Over if already delivered
     }
-    return status;
+    
+    if (status == 'rider_assigned') {
+      return 'pending'; // Show as Order Accepted even if rider is assigned
+    }
+    
+    if (validStatuses.contains(status)) {
+      return status;
+    }
+    
+    // Default to 'pending' (Order Accepted) for any other status
+    return 'pending';
   }
 
   Widget _buildRestaurantDetailsTab() {
@@ -343,7 +466,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
     }
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(top: 340, left: 16, right: 16, bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -672,46 +795,98 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
     final descriptionController = TextEditingController();
     final priceController = TextEditingController();
     String? uploadedImageUrl;
+    bool isVeg = true; // Default to veg
 
     final result = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add Menu Item', style: TextStyle(color: primaryBlue, fontWeight: FontWeight.bold)),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Name *', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
-                maxLines: 2,
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: priceController,
-                decoration: const InputDecoration(labelText: 'Price *', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 12),
-              ImagePickerWidget(
-                initialImageUrl: uploadedImageUrl,
-                onImageUploaded: (url) {
-                  uploadedImageUrl = url;
-                },
-                label: 'Menu Item Image',
-              ),
-            ],
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Add Menu Item', style: TextStyle(color: primaryBlue, fontWeight: FontWeight.bold)),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Name *', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: priceController,
+                  decoration: const InputDecoration(labelText: 'Price *', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 12),
+                // Veg/Non-Veg Toggle
+                Row(
+                  children: [
+                    const Text('Food Type:', style: TextStyle(fontWeight: FontWeight.w500)),
+                    const SizedBox(width: 16),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isVeg = true;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: isVeg ? Colors.green : Colors.transparent,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.green, width: 2),
+                        ),
+                        child: Icon(
+                          Icons.circle,
+                          size: 16,
+                          color: isVeg ? Colors.white : Colors.green,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isVeg = false;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: !isVeg ? Colors.red : Colors.transparent,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.red, width: 2),
+                        ),
+                        child: Icon(
+                          Icons.circle,
+                          size: 16,
+                          color: !isVeg ? Colors.white : Colors.red,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                ImagePickerWidget(
+                  initialImageUrl: uploadedImageUrl,
+                  onImageUploaded: (url) {
+                    uploadedImageUrl = url;
+                  },
+                  label: 'Menu Item Image',
+                ),
+              ],
+            ),
           ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel'), style: TextButton.styleFrom(foregroundColor: primaryBlue)),
+            ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Add'), style: ElevatedButton.styleFrom(backgroundColor: primaryBlue, foregroundColor: Colors.white)),
+          ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel'), style: TextButton.styleFrom(foregroundColor: primaryBlue)),
-          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Add'), style: ElevatedButton.styleFrom(backgroundColor: primaryBlue, foregroundColor: Colors.white)),
-        ],
       ),
     );
 
@@ -733,6 +908,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
             'description': descriptionController.text,
             'price': double.parse(priceController.text),
             'image_url': uploadedImageUrl ?? '',
+            'is_veg': isVeg ? 1 : 0,
           },
           requiresAuth: true,
         );
@@ -762,46 +938,98 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
     final descriptionController = TextEditingController(text: item['description']);
     final priceController = TextEditingController(text: item['price'].toString());
     String? uploadedImageUrl = item['image_url'];
+    bool isVeg = item['is_veg'] == 1 || item['is_veg'] == true; // Get existing value
 
     final result = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Menu Item', style: TextStyle(color: primaryBlue, fontWeight: FontWeight.bold)),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
-                maxLines: 2,
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: priceController,
-                decoration: const InputDecoration(labelText: 'Price', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 12),
-              ImagePickerWidget(
-                initialImageUrl: uploadedImageUrl,
-                onImageUploaded: (url) {
-                  uploadedImageUrl = url;
-                },
-                label: 'Menu Item Image',
-              ),
-            ],
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Edit Menu Item', style: TextStyle(color: primaryBlue, fontWeight: FontWeight.bold)),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: priceController,
+                  decoration: const InputDecoration(labelText: 'Price', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 12),
+                // Veg/Non-Veg Toggle
+                Row(
+                  children: [
+                    const Text('Food Type:', style: TextStyle(fontWeight: FontWeight.w500)),
+                    const SizedBox(width: 16),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isVeg = true;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: isVeg ? Colors.green : Colors.transparent,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.green, width: 2),
+                        ),
+                        child: Icon(
+                          Icons.circle,
+                          size: 16,
+                          color: isVeg ? Colors.white : Colors.green,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isVeg = false;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: !isVeg ? Colors.red : Colors.transparent,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.red, width: 2),
+                        ),
+                        child: Icon(
+                          Icons.circle,
+                          size: 16,
+                          color: !isVeg ? Colors.white : Colors.red,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                ImagePickerWidget(
+                  initialImageUrl: uploadedImageUrl,
+                  onImageUploaded: (url) {
+                    uploadedImageUrl = url;
+                  },
+                  label: 'Menu Item Image',
+                ),
+              ],
+            ),
           ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel'), style: TextButton.styleFrom(foregroundColor: primaryBlue)),
+            ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Save'), style: ElevatedButton.styleFrom(backgroundColor: primaryBlue, foregroundColor: Colors.white)),
+          ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel'), style: TextButton.styleFrom(foregroundColor: primaryBlue)),
-          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Save'), style: ElevatedButton.styleFrom(backgroundColor: primaryBlue, foregroundColor: Colors.white)),
-        ],
       ),
     );
 
@@ -815,6 +1043,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
             'description': descriptionController.text,
             'price': double.parse(priceController.text),
             'image_url': uploadedImageUrl ?? item['image_url'],
+            'is_veg': isVeg ? 1 : 0,
           },
           requiresAuth: true,
         );
@@ -877,3 +1106,36 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
   }
 }
 
+
+class _CloudHeaderPainter extends CustomPainter {
+  final Color color;
+
+  _CloudHeaderPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+    
+    // Start from top left
+    path.moveTo(0, 0);
+    path.lineTo(size.width, 0);
+    path.lineTo(size.width, size.height * 0.9); // Right side lower
+
+    // S-curve from right to left
+    path.cubicTo(
+      size.width * 0.75, size.height * 1.0, // Dip down
+      size.width * 0.25, size.height * 0.8, // Arch up (lowered from 0.6)
+      0, size.height * 0.85, // Left side higher
+    );
+
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}

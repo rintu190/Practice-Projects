@@ -55,7 +55,10 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/order-status',
-      builder: (context, state) => const OrderStatusScreen(),
+      builder: (context, state) {
+        final orderId = state.extra as String?;
+        return OrderStatusScreen(orderId: orderId);
+      },
     ),
     GoRoute(
       path: '/search',

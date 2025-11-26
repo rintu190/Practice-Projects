@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../domain/models/order.dart';
 import '../../data/providers/order_provider.dart';
@@ -13,6 +14,16 @@ class OrdersScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/profile');
+            }
+          },
+        ),
         title: const Text('My Orders'),
       ),
       body: ordersAsync.when(
@@ -43,66 +54,74 @@ class OrdersScreen extends ConsumerWidget {
               final isLatestPending = hasPending && order.id == pendingOrders.first.id;
               return Card(
                 margin: const EdgeInsets.only(bottom: 16),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Order #${order.id?.substring(0, 8) ?? ''}',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            order.status.toUpperCase(),
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: order.status == 'delivered' ? Colors.green : Colors.orange,
-                              fontWeight: FontWeight.bold,
+                child: InkWell(
+                    onTap: () {
+                      if (order.id != null) {
+                        context.go('/order-status', extra: order.id);
+                      }
+                    },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Order #${order.id?.substring(0, 8) ?? ''}',
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        order.restaurantName ?? 'Unknown Restaurant',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${order.items?.length ?? 0} items • ₹${order.totalAmount.toStringAsFixed(2)}',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
-                      ),
-                      const Divider(height: 24),
-                      // Show progress stepper only for the latest pending order
-                      if (isLatestPending) ...[
-                        const Text('Order Progress', style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(
+                              order.status.toUpperCase(),
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: order.status == 'delivered' ? Colors.green : Colors.orange,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 8),
-                        _buildProgressStepper(order.status),
-                        const SizedBox(height: 12),
-                      ],
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            order.createdAt != null
-                                ? DateFormat('MMM d, yyyy').format(order.createdAt!)
-                                : '',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
-                          ),
-                          OutlinedButton(
-                            onPressed: () {
-                              // Reorder logic placeholder
-                            },
-                            style: OutlinedButton.styleFrom(
-                              visualDensity: VisualDensity.compact,
-                            ),
-                            child: const Text('Reorder'),
-                          ),
+                        Text(
+                          order.restaurantName ?? 'Unknown Restaurant',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${order.items?.length ?? 0} items • ₹${order.totalAmount.toStringAsFixed(2)}',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                        ),
+                        const Divider(height: 24),
+                        // Show progress stepper for all active orders (not delivered or cancelled)
+                        if (order.status != 'delivered' && order.status != 'cancelled') ...[
+                          const Text('Order Progress', style: TextStyle(fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 8),
+                          _buildProgressStepper(order.status),
+                          const SizedBox(height: 12),
                         ],
-                      ),
-                    ],
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              order.createdAt != null
+                                  ? DateFormat('MMM d, yyyy').format(order.createdAt!)
+                                  : '',
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                            ),
+                            OutlinedButton(
+                              onPressed: () {
+                                // Reorder logic placeholder
+                              },
+                              style: OutlinedButton.styleFrom(
+                                visualDensity: VisualDensity.compact,
+                              ),
+                              child: const Text('Reorder'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -131,11 +150,12 @@ class OrdersScreen extends ConsumerWidget {
 
   // Simple horizontal stepper showing order stages
   Widget _buildProgressStepper(String status) {
-    const stages = ['pending', 'preparing', 'rider_assigned', 'delivered'];
+    const stages = ['pending', 'rider_assigned', 'preparing', 'handover', 'delivered'];
     const labels = {
-      'pending': 'Order Received',
-      'preparing': 'Prep Started',
+      'pending': 'Ordered',
       'rider_assigned': 'Rider Assigned',
+      'preparing': 'Preparation',
+      'handover': 'On Way',
       'delivered': 'Delivered',
     };
     final currentIndex = stages.indexOf(status);

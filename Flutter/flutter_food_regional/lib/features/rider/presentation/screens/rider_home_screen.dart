@@ -60,104 +60,159 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Modern Header
-            _buildHeader(user?.name ?? 'Rider'),
-            
-            // Tab Selector
-            _buildTabSelector(),
-            
-            // Content
-            Expanded(
-              child: ordersAsync.when(
-                data: (orders) {
-                  final activeOrders = orders.where((o) => 
-                    o.status != 'delivered' && o.status != 'cancelled'
-                  ).toList();
-                  final historyOrders = orders.where((o) => 
-                    o.status == 'delivered' || o.status == 'cancelled'
-                  ).toList();
+      body: Stack(
+        children: [
+          // Background header with cloud divider
+          _buildHeader(user?.name ?? "Rider"),
+          
+          // Content with IndexedStack
+          SafeArea(
+            child: ordersAsync.when(
+              data: (orders) {
+                final activeOrders = orders.where((o) => 
+                  o.status != 'delivered' && o.status != 'cancelled'
+                ).toList();
+                final historyOrders = orders.where((o) => 
+                  o.status == 'delivered' || o.status == 'cancelled'
+                ).toList();
 
-                  if (_selectedIndex == 0) {
-                    return _buildOrderList(activeOrders, ref, true);
-                  } else if (_selectedIndex == 1) {
-                    return _buildOrderList(historyOrders, ref, false);
-                  } else {
-                    return _buildEarningsTab();
-                  }
-                },
-                loading: () => const Center(child: CircularProgressIndicator(color: primaryBlue)),
-                error: (error, stack) => Center(child: Text('Error: $error')),
-              ),
+                return IndexedStack(
+                  index: _selectedIndex,
+                  children: [
+                    _buildOrderList(activeOrders, ref, true),
+                    _buildOrderList(historyOrders, ref, false),
+                    _buildEarningsTab(),
+                  ],
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator(color: primaryBlue)),
+              error: (error, stack) => Center(child: Text('Error: $error')),
             ),
-          ],
-        ),
+          ),
+          
+          // Top AppBar with interactive elements
+          _buildAppBar(user?.name ?? "Rider"),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        backgroundColor: Colors.white,
+        selectedItemColor: primaryBlue,
+        unselectedItemColor: textSecondary,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.delivery_dining),
+            label: 'Active Orders',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history),
+            label: 'History',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_balance_wallet),
+            label: 'Earnings',
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildHeader(String riderName) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-        color: cardBackground,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return SizedBox(
+      height: 340,
+      child: Stack(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          // Blue background with cloud shape
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _CloudHeaderPainter(color: primaryBlue),
+            ),
+          ),
+          // Illustration area
+          SafeArea(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    'Hi, $riderName',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: textPrimary,
+                  const SizedBox(height: 40), // Space for AppBar
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.delivery_dining,
+                      size: 64,
+                      color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 16),
                   const Text(
-                    'Ready for deliveries',
+                    'Rider Dashboard',
                     style: TextStyle(
-                      fontSize: 14,
-                      color: textSecondary,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.refresh, color: primaryBlue),
-                    onPressed: () {
-                      ref.refresh(orderProvider);
-                      _loadCommissions();
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.logout, color: primaryBlue),
-                    onPressed: () async {
-                      await AuthService().logout();
-                      if (context.mounted) {
-                        context.go('/login');
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAppBar(String riderName) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Hi, $riderName',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.refresh, color: Colors.white),
+                  onPressed: () {
+                    ref.refresh(orderProvider);
+                    _loadCommissions();
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.settings, color: Colors.white),
+                  onPressed: () {
+                    context.push('/edit-profile');
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.logout, color: Colors.white),
+                  onPressed: () async {
+                    await AuthService().logout();
+                    if (context.mounted) {
+                      context.go('/login');
+                    }
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -237,7 +292,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(top: 320, left: 16, right: 16, bottom: 20),
       itemCount: orders.length,
       itemBuilder: (context, index) {
         final order = orders[index];
@@ -552,7 +607,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
     }
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(top: 340, left: 20, right: 20, bottom: 20),
       children: [
         // Total Earnings Card
         Container(
@@ -625,7 +680,11 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
           )
         else
           ..._commissions.map((commission) {
-            final isPending = commission['status'] == 'pending';
+            final status = commission['status'];
+            final isRejected = status == 'rejected';
+            final isPending = status == 'pending';
+            final isApproved = status == 'approved';
+            
             return Container(
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.all(16),
@@ -645,13 +704,15 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: isPending ? Colors.orange.withOpacity(0.1) : Colors.green.withOpacity(0.1),
+                      color: isRejected 
+                          ? Colors.red.withOpacity(0.1) 
+                          : (isPending ? Colors.orange.withOpacity(0.1) : Colors.green.withOpacity(0.1)),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
                       '${commission['percentage']}%',
                       style: TextStyle(
-                        color: isPending ? Colors.orange : Colors.green,
+                        color: isRejected ? Colors.red : (isPending ? Colors.orange : Colors.green),
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
@@ -677,11 +738,11 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: isPending ? Colors.orange : Colors.green,
+                                color: isRejected ? Colors.red : (isPending ? Colors.orange : Colors.green),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
-                                isPending ? 'PENDING' : 'APPROVED',
+                                isRejected ? 'REJECTED' : (isPending ? 'PENDING' : 'APPROVED'),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 10,
@@ -710,7 +771,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
-                      color: isPending ? Colors.orange : Colors.green,
+                      color: isRejected ? Colors.red : (isPending ? Colors.orange : Colors.green),
                     ),
                   ),
                 ],
@@ -750,4 +811,38 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
       }
     }
   }
+}
+
+// Cloud Header Painter for the divider
+class _CloudHeaderPainter extends CustomPainter {
+  final Color color;
+
+  _CloudHeaderPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+    
+    // Start from top left
+    path.moveTo(0, 0);
+    path.lineTo(size.width, 0);
+    path.lineTo(size.width, size.height * 0.9); // Right side lower
+
+    // S-curve from right to left
+    path.cubicTo(
+      size.width * 0.75, size.height * 1.0, // Dip down
+      size.width * 0.25, size.height * 0.8, // Arch up (lowered from 0.6)
+      0, size.height * 0.85, // Left side higher
+    );
+
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

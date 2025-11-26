@@ -51,9 +51,12 @@ function handleOrderRoutes($method, $path) {
         } else {
             // Customers see only their orders
             $stmt = $db->prepare('
-                SELECT o.*, r.name as restaurant_name, r.image_url as restaurant_image
+                SELECT o.*, r.name as restaurant_name, r.image_url as restaurant_image,
+                       r.address as restaurant_address, r.phone as restaurant_phone,
+                       rider.name as rider_name, rider.phone as rider_phone
                 FROM orders o
                 JOIN restaurants r ON o.restaurant_id = r.id
+                LEFT JOIN users rider ON o.rider_id = rider.id
                 WHERE o.user_id = ?
                 ORDER BY o.created_at DESC
             ');
@@ -90,10 +93,13 @@ function handleOrderRoutes($method, $path) {
 
         $query = '
             SELECT o.*, r.name as restaurant_name, r.image_url as restaurant_image, r.latitude as restaurant_latitude, r.longitude as restaurant_longitude,
-                   a.house_number, a.street, a.locality, a.city, a.state, a.pincode, a.latitude, a.longitude
+                   r.address as restaurant_address, r.phone as restaurant_phone,
+                   a.house_number, a.street, a.locality, a.city, a.state, a.pincode, a.latitude, a.longitude,
+                   rider.name as rider_name, rider.phone as rider_phone
             FROM orders o
             JOIN restaurants r ON o.restaurant_id = r.id
             JOIN addresses a ON o.address_id = a.id
+            LEFT JOIN users rider ON o.rider_id = rider.id
             WHERE o.id = ?
         ';
         
@@ -140,7 +146,7 @@ function handleOrderRoutes($method, $path) {
             return;
         }
 
-        $validStatuses = ['pending', 'preparing', 'rider_assigned', 'delivered', 'cancelled'];
+        $validStatuses = ['pending', 'preparing', 'rider_assigned', 'handover', 'delivered', 'cancelled'];
         if (!in_array($data['status'], $validStatuses)) {
             http_response_code(400);
             echo json_encode(['error' => 'Invalid status']);

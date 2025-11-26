@@ -1,0 +1,144 @@
+Analyzing flutter_food_regional...                              
+
+   info • Parameters ''message' and 'data'' could be super parameters • lib/core/exceptions/api_exception.dart:46:3 • use_super_parameters
+warning • Unused import: '../../features/home/presentation/screens/home_screen.dart' • lib/core/router/app_router.dart:5:8 • unused_import
+   info • Don't invoke 'print' in production code • lib/core/services/api_client.dart:27:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/core/services/api_client.dart:30:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/core/services/api_client.dart:57:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/core/services/api_client.dart:60:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/core/services/api_client.dart:82:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/core/services/api_client.dart:85:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/core/services/api_client.dart:112:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/core/services/api_client.dart:115:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/core/services/api_client.dart:147:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/core/services/api_client.dart:150:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/core/services/api_client.dart:159:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/core/services/api_client.dart:161:9 • avoid_print
+warning • The value of the field 'textPrimary' isn't used • lib/features/admin/presentation/screens/admin_home_screen.dart:24:22 • unused_field
+warning • The value of the field 'accentOrange' isn't used • lib/features/admin/presentation/screens/admin_home_screen.dart:26:22 • unused_field
+   info • Don't invoke 'print' in production code • lib/features/admin/presentation/screens/admin_home_screen.dart:57:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/admin/presentation/screens/admin_home_screen.dart:73:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/admin/presentation/screens/admin_home_screen.dart:89:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/admin/presentation/screens/admin_home_screen.dart:106:7 • avoid_print
+   info • The 'child' argument should be last in widget constructor invocations • lib/features/admin/presentation/screens/admin_home_screen.dart:281:78 • sort_child_properties_last
+   info • The 'child' argument should be last in widget constructor invocations • lib/features/admin/presentation/screens/admin_home_screen.dart:476:15 • sort_child_properties_last
+   info • The 'child' argument should be last in widget constructor invocations • lib/features/admin/presentation/screens/admin_home_screen.dart:481:15 • sort_child_properties_last
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/admin/presentation/screens/admin_home_screen.dart:626:43 • deprecated_member_use
+warning • The value of 'refresh' should be used • lib/features/admin/presentation/screens/admin_home_screen.dart:673:25 • unused_result
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/features/admin/presentation/screens/admin_home_screen.dart:685:23 • use_build_context_synchronously
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/admin/presentation/screens/admin_home_screen.dart:717:41 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/features/admin/presentation/screens/admin_home_screen.dart:752:29 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/features/admin/presentation/screens/admin_home_screen.dart:781:35 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/admin/presentation/screens/admin_home_screen.dart:864:41 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/features/admin/presentation/screens/admin_home_screen.dart:944:23 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/admin/presentation/screens/admin_home_screen.dart:1046:38 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/admin/presentation/screens/admin_home_screen.dart:1089:37 • deprecated_member_use
+   info • The 'child' argument should be last in widget constructor invocations • lib/features/admin/presentation/screens/admin_home_screen.dart:1242:15 • sort_child_properties_last
+   info • The 'child' argument should be last in widget constructor invocations • lib/features/admin/presentation/screens/admin_home_screen.dart:1319:13 • sort_child_properties_last
+   info • The 'child' argument should be last in widget constructor invocations • lib/features/admin/presentation/screens/admin_home_screen.dart:1324:13 • sort_child_properties_last
+warning • The value of the local variable 'response' isn't used • lib/features/auth/data/services/auth_service.dart:124:13 • unused_local_variable
+   info • Don't invoke 'print' in production code • lib/features/auth/data/services/auth_service.dart:133:7 • avoid_print
+warning • Unused import: '../../../profile/data/models/address.dart' • lib/features/cart/presentation/screens/checkout_screen.dart:9:8 • unused_import
+warning • The operand can't be 'null', so the condition is always 'false' • lib/features/cart/presentation/screens/checkout_screen.dart:193:51 • unnecessary_null_comparison
+warning • Unused import: '../../../../core/services/storage_service.dart' • lib/features/home/presentation/screens/home_screen.dart:9:8 • unused_import
+warning • Unused import: '../../../../core/constants/api_constants.dart' • lib/features/home/presentation/screens/home_screen.dart:10:8 • unused_import
+warning • The value of the local variable 'user' isn't used • lib/features/home/presentation/screens/home_screen.dart:30:11 • unused_local_variable
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/screens/home_screen.dart:80:72 • deprecated_member_use
+   info • Unnecessary use of multiple underscores • lib/features/home/presentation/screens/home_screen.dart:129:46 • unnecessary_underscores
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/screens/home_screen.dart:156:57 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/screens/home_screen.dart:161:67 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/screens/home_screen.dart:294:65 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/screens/home_screen.dart:299:79 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/screens/home_screen.dart:343:73 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/screens/home_screen.dart:433:49 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/home/presentation/screens/home_screen.dart:491:58 • deprecated_member_use
+   info • Don't invoke 'print' in production code • lib/features/orders/data/services/order_service.dart:12:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/orders/data/services/order_service.dart:26:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/orders/data/services/order_service.dart:45:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/orders/data/services/order_service.dart:52:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/orders/data/services/order_service.dart:60:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/orders/data/services/order_service.dart:63:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/orders/data/services/order_service.dart:69:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/orders/data/services/order_service.dart:77:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/orders/data/services/order_service.dart:83:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/orders/data/services/order_service.dart:91:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/orders/data/services/order_service.dart:92:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/orders/data/services/order_service.dart:95:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/orders/data/services/order_service.dart:99:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/orders/data/services/order_service.dart:102:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/orders/data/services/order_service.dart:108:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/orders/data/services/order_service.dart:116:7 • avoid_print
+warning • Unused import: 'package:intl/intl.dart' • lib/features/orders/presentation/screens/order_status_screen.dart:3:8 • unused_import
+warning • The '!' will have no effect because the receiver can't be null • lib/features/orders/presentation/screens/order_status_screen.dart:71:30 • unnecessary_non_null_assertion
+warning • Unused import: '../../domain/models/order.dart' • lib/features/orders/presentation/screens/orders_screen.dart:5:8 • unused_import
+warning • Unused import: 'package:intl/intl.dart' • lib/features/orders/presentation/widgets/order_progress_bar.dart:3:8 • unused_import
+warning • Unused import: '../../domain/models/order.dart' • lib/features/orders/presentation/widgets/order_progress_bar.dart:4:8 • unused_import
+   info • Unnecessary use of multiple underscores • lib/features/orders/presentation/widgets/order_progress_bar.dart:36:18 • unnecessary_underscores
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:12:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:18:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:21:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:26:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:32:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:35:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:36:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:42:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:49:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:52:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:53:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:59:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:65:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:67:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:68:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:74:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:81:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:84:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:85:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:91:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:98:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:101:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/address_service.dart:102:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/payment_service.dart:12:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/payment_service.dart:18:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/payment_service.dart:25:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/payment_service.dart:32:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/payment_service.dart:33:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/payment_service.dart:39:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/payment_service.dart:46:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/payment_service.dart:47:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/payment_service.dart:55:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/payment_service.dart:56:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/payment_service.dart:62:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/payment_service.dart:68:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/payment_service.dart:70:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/profile/data/services/payment_service.dart:71:7 • avoid_print
+warning • The value of the field 'cardBackground' isn't used • lib/features/restaurant/presentation/screens/restaurant_home_screen.dart:22:22 • unused_field
+warning • The value of the field 'textPrimary' isn't used • lib/features/restaurant/presentation/screens/restaurant_home_screen.dart:23:22 • unused_field
+warning • The value of the field 'accentOrange' isn't used • lib/features/restaurant/presentation/screens/restaurant_home_screen.dart:25:22 • unused_field
+   info • Don't invoke 'print' in production code • lib/features/restaurant/presentation/screens/restaurant_home_screen.dart:53:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/features/restaurant/presentation/screens/restaurant_home_screen.dart:80:7 • avoid_print
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/restaurant/presentation/screens/restaurant_home_screen.dart:163:43 • deprecated_member_use
+warning • The value of 'refresh' should be used • lib/features/restaurant/presentation/screens/restaurant_home_screen.dart:210:25 • unused_result
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/features/restaurant/presentation/screens/restaurant_home_screen.dart:220:23 • use_build_context_synchronously
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/features/restaurant/presentation/screens/restaurant_home_screen.dart:296:29 • deprecated_member_use
+   info • Don't invoke 'print' in production code • lib/features/restaurant/presentation/screens/restaurant_home_screen.dart:758:7 • avoid_print
+   info • The 'child' argument should be last in widget constructor invocations • lib/features/restaurant/presentation/screens/restaurant_home_screen.dart:808:70 • sort_child_properties_last
+   info • The 'child' argument should be last in widget constructor invocations • lib/features/restaurant/presentation/screens/restaurant_home_screen.dart:809:73 • sort_child_properties_last
+   info • The 'child' argument should be last in widget constructor invocations • lib/features/restaurant/presentation/screens/restaurant_home_screen.dart:898:70 • sort_child_properties_last
+   info • The 'child' argument should be last in widget constructor invocations • lib/features/restaurant/presentation/screens/restaurant_home_screen.dart:899:73 • sort_child_properties_last
+   info • Don't invoke 'print' in production code • lib/features/rider/presentation/screens/rider_home_screen.dart:49:7 • avoid_print
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/rider/presentation/screens/rider_home_screen.dart:146:43 • deprecated_member_use
+warning • The value of 'refresh' should be used • lib/features/rider/presentation/screens/rider_home_screen.dart:193:25 • unused_result
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/features/rider/presentation/screens/rider_home_screen.dart:202:23 • use_build_context_synchronously
+warning • The declaration '_buildTabSelector' isn't referenced • lib/features/rider/presentation/screens/rider_home_screen.dart:214:10 • unused_element
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/rider/presentation/screens/rider_home_screen.dart:276:36 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/rider/presentation/screens/rider_home_screen.dart:308:33 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/rider/presentation/screens/rider_home_screen.dart:326:40 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/rider/presentation/screens/rider_home_screen.dart:475:39 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/rider/presentation/screens/rider_home_screen.dart:532:38 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/rider/presentation/screens/rider_home_screen.dart:546:38 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/rider/presentation/screens/rider_home_screen.dart:618:36 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/rider/presentation/screens/rider_home_screen.dart:686:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/rider/presentation/screens/rider_home_screen.dart:697:56 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/rider/presentation/screens/rider_home_screen.dart:697:88 • deprecated_member_use
+   info • Unnecessary use of 'toList' in a spread • lib/features/rider/presentation/screens/rider_home_screen.dart:768:14 • unnecessary_to_list_in_spreads
+

@@ -208,7 +208,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                   'price': item.menuItem.price,
                                 }).toList();
 
-                                await ref.read(orderProvider.notifier).createOrder(
+                                final order = await ref.read(orderProvider.notifier).createOrder(
                                   restaurantId: restaurantId,
                                   addressId: selectedAddress.id!,
                                   totalAmount: finalTotal,
@@ -220,9 +220,16 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                                     const SnackBar(content: Text('Order placed successfully!')),
                                   );
                                   ref.read(cartProvider.notifier).clearCart();
-
+                                  
+                                  if (order != null) {
+                                    context.go('/order-status', extra: order.id);
+                                  } else {
+                                    // Fallback if order creation didn't return object but didn't throw
+                                    context.go('/order-status');
+                                  }
                                 }
-                              } catch (e) {
+
+                                } catch (e) {
                                 if (context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(content: Text('Error placing order: $e')),

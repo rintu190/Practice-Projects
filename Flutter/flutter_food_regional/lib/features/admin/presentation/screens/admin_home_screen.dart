@@ -34,6 +34,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
   bool _ownersLoaded = false;
   bool _restaurantsLoaded = false;
   bool _commissionsLoaded = false;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -144,6 +145,29 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Commission approved successfully')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _rejectCommission(String commissionId) async {
+    try {
+      final apiClient = ApiClient();
+      await apiClient.put(
+        '/commissions/$commissionId/reject',
+        body: {},
+        requiresAuth: true,
+      );
+      _loadCommissions(); // Reload to show updated status
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Commission rejected successfully')),
         );
       }
     } catch (e) {
@@ -550,53 +574,149 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        backgroundColor: backgroundColor,
-        appBar: AppBar(
-          backgroundColor: primaryBlue,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          title: const Text('Admin Dashboard', style: TextStyle(fontWeight: FontWeight.bold)),
-          bottom: const TabBar(
-            indicatorColor: Colors.white,
-            indicatorWeight: 3,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
-            tabs: [
-              Tab(icon: Icon(Icons.shopping_bag), text: 'Orders'),
-              Tab(icon: Icon(Icons.restaurant), text: 'Restaurants'),
-              Tab(icon: Icon(Icons.account_balance_wallet), text: 'Commissions'),
-            ],
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      body: Stack(
+        children: [
+          // Background header with cloud divider
+          _buildHeader(),
+          
+          // Content with IndexedStack
+          SafeArea(
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: [
+                _buildOrdersTab(),
+                _buildRestaurantsTab(),
+                _buildCommissionsTab(),
+              ],
+            ),
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.refresh, color: Colors.white),
-              onPressed: () {
-                ref.refresh(orderProvider);
-                _loadRiders();
-                _loadRestaurantOwners();
-                _loadRestaurants();
-                _loadCommissions();
-              },
+          
+          // Top AppBar with interactive elements
+          _buildAppBar(),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        backgroundColor: Colors.white,
+        selectedItemColor: primaryBlue,
+        unselectedItemColor: textSecondary,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_bag),
+            label: 'Orders',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.restaurant),
+            label: 'Restaurants',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_balance_wallet),
+            label: 'Commissions',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return SizedBox(
+      height: 340,
+      child: Stack(
+        children: [
+          // Blue background with cloud shape
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _CloudHeaderPainter(color: primaryBlue),
             ),
-            IconButton(
-              icon: const Icon(Icons.logout, color: Colors.white),
-              onPressed: () async {
-                await AuthService().logout();
-                if (context.mounted) {
-                  context.go('/login');
-                }
-              },
+          ),
+          // Illustration area
+          SafeArea(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 40), // Space for AppBar
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.admin_panel_settings,
+                      size: 64,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Admin Dashboard',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-        body: TabBarView(
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppBar() {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildOrdersTab(),
-            _buildRestaurantsTab(),
-            _buildCommissionsTab(),
+            const Text(
+              'Admin Dashboard',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.refresh, color: Colors.white),
+                  onPressed: () {
+                    ref.refresh(orderProvider);
+                    _loadRiders();
+                    _loadRestaurantOwners();
+                    _loadRestaurants();
+                    _loadCommissions();
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.settings, color: Colors.white),
+                  onPressed: () {
+                    context.push('/edit-profile');
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.logout, color: Colors.white),
+                  onPressed: () async {
+                    await AuthService().logout();
+                    if (context.mounted) {
+                      context.go('/login');
+                    }
+                  },
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -613,6 +733,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
         }
         return ListView.builder(
           itemCount: orders.length,
+          padding: const EdgeInsets.only(top: 280, bottom: 20),
           itemBuilder: (context, index) {
             final order = orders[index];
             return Container(
@@ -751,7 +872,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
       children: [
         ListView.builder(
           itemCount: _restaurants.length,
-          padding: const EdgeInsets.only(bottom: 80),
+          padding: const EdgeInsets.only(top: 280, bottom: 80),
           itemBuilder: (context, index) {
             final restaurant = _restaurants[index];
             final restaurantId = restaurant['id'];
@@ -933,142 +1054,151 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
       return const Center(child: CircularProgressIndicator(color: primaryBlue));
     }
 
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(24),
-          margin: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [primaryBlue, Color(0xFF4A90C0)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    return ListView.builder(
+      padding: const EdgeInsets.only(top: 340, left: 20, right: 20, bottom: 20),
+      itemCount: _commissions.length + 1,
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          // Summary Card
+          return Container(
+            padding: const EdgeInsets.all(24),
+            margin: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [primaryBlue, Color(0xFF4A90C0)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: primaryBlue.withOpacity(0.3),
+                  blurRadius: 15,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
-            borderRadius: BorderRadius.circular(20),
+            child: Column(
+              children: [
+                const Text(
+                  'Total Commissions Paid',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '₹${_totalCommissions.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (_commissions.isEmpty) {
+          return const Center(child: Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Text('No commissions yet'),
+          ));
+        }
+
+        final commission = _commissions[index - 1];
+        final isRider = commission['user_role'] == 'rider';
+        final isPending = commission['status'] == 'pending';
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          decoration: BoxDecoration(
+            color: cardBackground,
+            borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: primaryBlue.withOpacity(0.3),
-                blurRadius: 15,
-                offset: const Offset(0, 8),
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
-          child: Column(
-            children: [
-              const Text(
-                'Total Commissions Paid',
-                style: TextStyle(color: Colors.white, fontSize: 16),
+          child: ListTile(
+            contentPadding: const EdgeInsets.all(12),
+            leading: CircleAvatar(
+              backgroundColor: isRider ? Colors.green : Colors.orange,
+              child: Icon(
+                isRider ? Icons.delivery_dining : Icons.restaurant,
+                color: Colors.white,
               ),
-              const SizedBox(height: 8),
-              Text(
-                '₹${_totalCommissions.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
+            ),
+            title: Text(commission['user_name'] ?? 'Unknown'),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Order #${commission['order_id'].toString().substring(0, 8)}'),
+                Text(
+                  DateFormat('MMM d, yyyy').format(
+                    DateTime.parse(commission['created_at']),
+                  ),
+                  style: const TextStyle(fontSize: 12),
                 ),
-              ),
-            ],
+              ],
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '₹${double.parse(commission['amount'].toString()).toStringAsFixed(2)}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: isRider ? Colors.green : Colors.orange,
+                      ),
+                    ),
+                    Text(
+                      '${commission['percentage']}%',
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 8),
+                if (isPending) ...[
+                  IconButton(
+                    icon: const Icon(Icons.check_circle, color: Colors.green),
+                    onPressed: () => _approveCommission(commission['id']),
+                    tooltip: 'Approve',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                  const SizedBox(width: 4),
+                  IconButton(
+                    icon: const Icon(Icons.cancel, color: Colors.red),
+                    onPressed: () => _rejectCommission(commission['id']),
+                    tooltip: 'Reject',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ] else ...[
+                  Text(
+                    commission['status'] == 'approved' ? 'Approved' : 'Rejected',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: commission['status'] == 'approved' ? Colors.green : Colors.red,
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          child: _commissions.isEmpty
-              ? const Center(child: Text('No commissions yet'))
-              : ListView.builder(
-                  itemCount: _commissions.length,
-                  itemBuilder: (context, index) {
-                    final commission = _commissions[index];
-                    final isRider = commission['user_role'] == 'rider';
-                    final isPending = commission['status'] == 'pending';
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: cardBackground,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.all(12),
-                        leading: CircleAvatar(
-                          backgroundColor: isRider ? Colors.green : Colors.orange,
-                          child: Icon(
-                            isRider ? Icons.delivery_dining : Icons.restaurant,
-                            color: Colors.white,
-                          ),
-                        ),
-                        title: Row(
-                          children: [
-                            Expanded(child: Text(commission['user_name'] ?? 'Unknown')),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: isPending ? Colors.orange : Colors.green,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                isPending ? 'PENDING' : 'APPROVED',
-                                style: const TextStyle(color: Colors.white, fontSize: 10),
-                              ),
-                            ),
-                          ],
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Order #${commission['order_id'].toString().substring(0, 8)}'),
-                            Text(
-                              DateFormat('MMM d, yyyy').format(
-                                DateTime.parse(commission['created_at']),
-                              ),
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ],
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  '₹${double.parse(commission['amount'].toString()).toStringAsFixed(2)}',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: isRider ? Colors.green : Colors.orange,
-                                  ),
-                                ),
-                                Text(
-                                  '${commission['percentage']}%',
-                                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                                ),
-                              ],
-                            ),
-                            if (isPending)
-                              TextButton(
-                                onPressed: () => _approveCommission(commission['id']),
-                                style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  minimumSize: const Size(50, 20),
-                                ),
-                                child: const Text('Approve', style: TextStyle(fontSize: 10)),
-                              ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-        ),
-      ],
+        );
+      },
     );
+
   }
 
   Future<void> _manageMenuItems(String restaurantId, String restaurantName) async {
@@ -1114,6 +1244,14 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text('₹${item['price']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                              const SizedBox(width: 8),
+                              IconButton(
+                                icon: const Icon(Icons.edit, color: primaryBlue, size: 20),
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                  await _editMenuItemForRestaurant(item, restaurantId);
+                                },
+                              ),
                               IconButton(
                                 icon: const Icon(Icons.delete, color: Colors.red, size: 20),
                                 onPressed: () async {
@@ -1165,15 +1303,17 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
     final descriptionController = TextEditingController();
     final priceController = TextEditingController();
     String? uploadedImageUrl;
+    bool isVeg = true;
 
     final result = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
           title: const Text('Add Menu Item', style: TextStyle(color: primaryBlue, fontWeight: FontWeight.bold)),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 TextField(
                   controller: nameController,
                   decoration: const InputDecoration(
@@ -1183,7 +1323,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                     ),
                   ),
                 ),
-              const SizedBox(height: 12),
+                const SizedBox(height: 12),
                 TextField(
                   controller: descriptionController,
                   decoration: const InputDecoration(
@@ -1194,7 +1334,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                   ),
                   maxLines: 2,
                 ),
-              const SizedBox(height: 12),
+                const SizedBox(height: 12),
                 TextField(
                   controller: priceController,
                   decoration: const InputDecoration(
@@ -1205,29 +1345,78 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                   ),
                   keyboardType: TextInputType.number,
                 ),
-              const SizedBox(height: 12),
-              ImagePickerWidget(
-                initialImageUrl: uploadedImageUrl,
-                onImageUploaded: (url) {
-                  uploadedImageUrl = url;
-                },
-                label: 'Menu Item Image',
-              ),
-            ],
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    const Text('Food Type:', style: TextStyle(fontWeight: FontWeight.w500)),
+                    const SizedBox(width: 16),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isVeg = true;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: isVeg ? Colors.green : Colors.transparent,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.green, width: 2),
+                        ),
+                        child: Icon(
+                          Icons.circle,
+                          size: 16,
+                          color: isVeg ? Colors.white : Colors.green,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isVeg = false;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: !isVeg ? Colors.red : Colors.transparent,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.red, width: 2),
+                        ),
+                        child: Icon(
+                          Icons.circle,
+                          size: 16,
+                          color: !isVeg ? Colors.white : Colors.red,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                ImagePickerWidget(
+                  initialImageUrl: uploadedImageUrl,
+                  onImageUploaded: (url) {
+                    uploadedImageUrl = url;
+                  },
+                  label: 'Menu Item Image',
+                ),
+              ],
+            ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+              style: TextButton.styleFrom(foregroundColor: primaryBlue),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Add'),
+              style: ElevatedButton.styleFrom(backgroundColor: primaryBlue, foregroundColor: Colors.white),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-            style: TextButton.styleFrom(foregroundColor: primaryBlue),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Add'),
-            style: ElevatedButton.styleFrom(backgroundColor: primaryBlue, foregroundColor: Colors.white),
-          ),
-        ],
       ),
     );
 
@@ -1249,6 +1438,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
             'description': descriptionController.text,
             'price': double.parse(priceController.text),
             'image_url': uploadedImageUrl ?? '',
+            'is_veg': isVeg ? 1 : 0,
           },
           requiresAuth: true,
         );
@@ -1270,4 +1460,192 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
     descriptionController.dispose();
     priceController.dispose();
   }
+
+  Future<void> _editMenuItemForRestaurant(Map<String, dynamic> item, String restaurantId) async {
+    final nameController = TextEditingController(text: item['name']);
+    final descriptionController = TextEditingController(text: item['description']);
+    final priceController = TextEditingController(text: item['price'].toString());
+    String? uploadedImageUrl = item['image_url'];
+    bool isVeg = item['is_veg'] == 1 || item['is_veg'] == true;
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Edit Menu Item', style: TextStyle(color: primaryBlue, fontWeight: FontWeight.bold)),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Name *',
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: primaryBlue),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(
+                    labelText: 'Description',
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: primaryBlue),
+                    ),
+                  ),
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: priceController,
+                  decoration: const InputDecoration(
+                    labelText: 'Price *',
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: primaryBlue),
+                    ),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    const Text('Food Type:', style: TextStyle(fontWeight: FontWeight.w500)),
+                    const SizedBox(width: 16),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isVeg = true;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: isVeg ? Colors.green : Colors.transparent,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.green, width: 2),
+                        ),
+                        child: Icon(
+                          Icons.circle,
+                          size: 16,
+                          color: isVeg ? Colors.white : Colors.green,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isVeg = false;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: !isVeg ? Colors.red : Colors.transparent,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.red, width: 2),
+                        ),
+                        child: Icon(
+                          Icons.circle,
+                          size: 16,
+                          color: !isVeg ? Colors.white : Colors.red,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                ImagePickerWidget(
+                  initialImageUrl: uploadedImageUrl,
+                  onImageUploaded: (url) {
+                    uploadedImageUrl = url;
+                  },
+                  label: 'Menu Item Image',
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+              style: TextButton.styleFrom(foregroundColor: primaryBlue),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Save'),
+              style: ElevatedButton.styleFrom(backgroundColor: primaryBlue, foregroundColor: Colors.white),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (result == true && mounted) {
+      try {
+        final apiClient = ApiClient();
+        await apiClient.put(
+          '/menu-items/${item['id']}',
+          body: {
+            'name': nameController.text,
+            'description': descriptionController.text,
+            'price': double.parse(priceController.text),
+            'image_url': uploadedImageUrl ?? item['image_url'],
+            'is_veg': isVeg ? 1 : 0,
+          },
+          requiresAuth: true,
+        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Menu item updated successfully')),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e')),
+          );
+        }
+      }
+    }
+
+    nameController.dispose();
+    descriptionController.dispose();
+    priceController.dispose();
+  }
+}
+
+class _CloudHeaderPainter extends CustomPainter {
+  final Color color;
+
+  _CloudHeaderPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+    
+    // Start from top left
+    path.moveTo(0, 0);
+    path.lineTo(size.width, 0);
+    path.lineTo(size.width, size.height * 0.9); // Right side lower
+
+    // S-curve from right to left
+    path.cubicTo(
+      size.width * 0.75, size.height * 1.0, // Dip down
+      size.width * 0.25, size.height * 0.8, // Arch up (lowered from 0.6)
+      0, size.height * 0.85, // Left side higher
+    );
+
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

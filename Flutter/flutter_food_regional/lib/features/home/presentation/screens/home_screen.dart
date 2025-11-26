@@ -10,6 +10,7 @@ import '../../../../core/services/storage_service.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../auth/data/providers/auth_provider.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../cart/data/providers/cart_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -143,32 +144,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () => context.push('/profile'),
-                            child: Container(
-                              width: 50,
-                              height: 50,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white, width: 2),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.greenAccent.withOpacity(0.6),
-                                    blurRadius: 10,
-                                    spreadRadius: 2,
+                            onTap: () => context.push('/cart'),
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                Container(
+                                  width: 50,
+                                  height: 50,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.2),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: Colors.white, width: 2),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.greenAccent.withOpacity(0.6),
+                                        blurRadius: 10,
+                                        spreadRadius: 2,
+                                      ),
+                                    ],
                                   ),
-                                ],
-                                image: user?.profilePicture != null
-                                    ? DecorationImage(
-                                        image: NetworkImage('${ApiConstants.serverUrl}${user!.profilePicture}'),
-                                        fit: BoxFit.cover,
-                                      )
-                                    : null,
-                              ),
-                              child: user?.profilePicture == null
-                                  ? const Icon(Icons.person, color: Colors.white, size: 30)
-                                  : null,
+                                  child: const Icon(Icons.shopping_cart, color: Colors.white, size: 28),
+                                ),
+                                // Badge showing cart item count
+                                if (ref.watch(cartItemCountProvider) > 0)
+                                  Positioned(
+                                    right: -2,
+                                    top: -2,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(color: Colors.white, width: 2),
+                                      ),
+                                      constraints: const BoxConstraints(
+                                        minWidth: 20,
+                                        minHeight: 20,
+                                      ),
+                                      child: Text(
+                                        '${ref.watch(cartItemCountProvider)}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
                         ],
@@ -418,9 +443,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             label: 'Search',
           ),
           NavigationDestination(
-            icon: Icon(Icons.shopping_cart_outlined),
-            selectedIcon: Icon(Icons.shopping_cart, color: Color(0xFF6C63FF)),
-            label: 'Cart',
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person, color: Color(0xFF6C63FF)),
+            label: 'Profile',
           ),
         ],
         selectedIndex: 0,
@@ -433,7 +458,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               context.push('/search');
               break;
             case 2:
-              context.push('/cart');
+              context.push('/profile');
               break;
           }
         },

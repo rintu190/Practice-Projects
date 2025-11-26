@@ -5,6 +5,7 @@ class MenuItem {
   final double price;
   final String imageUrl;
   final String restaurantId;
+  final bool isVeg;
 
   MenuItem({
     required this.id,
@@ -13,6 +14,7 @@ class MenuItem {
     required this.price,
     required this.imageUrl,
     required this.restaurantId,
+    this.isVeg = true, // Default to veg
   });
 
   factory MenuItem.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class MenuItem {
       price: double.tryParse(json['price'].toString()) ?? 0.0,
       imageUrl: json['image_url'] as String? ?? json['imageUrl'] as String? ?? '',
       restaurantId: json['restaurant_id']?.toString() ?? '',
+      isVeg: json['is_veg'] == 1 || json['is_veg'] == true || json['is_veg'] == '1',
     );
   }
 
@@ -34,6 +37,7 @@ class MenuItem {
       'price': price,
       'image_url': imageUrl,
       'restaurant_id': restaurantId,
+      'is_veg': isVeg ? 1 : 0,
     };
   }
 }

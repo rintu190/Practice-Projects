@@ -80,7 +80,7 @@ class AuthNotifier extends Notifier<AuthState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: 'An unexpected error occurred',
+        error: 'An unexpected error occurred: $e',
       );
       return false;
     }

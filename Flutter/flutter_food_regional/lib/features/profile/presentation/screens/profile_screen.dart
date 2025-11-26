@@ -14,13 +14,17 @@ class ProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
+        ),
         title: const Text('Profile'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () => context.push('/edit-profile'),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -61,6 +65,13 @@ class ProfileScreen extends ConsumerWidget {
               title: const Text('Payment Methods'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.push('/payment-methods'),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.settings_outlined),
+              title: const Text('Settings'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/edit-profile'),
             ),
             const Divider(),
             const SizedBox(height: 32),

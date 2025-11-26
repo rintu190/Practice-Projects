@@ -44,6 +44,13 @@ class CartNotifier extends Notifier<List<CartItem>> {
   void clearCart() {
     state = [];
   }
+
+  bool hasRestaurantConflict(String newRestaurantId) {
+    if (state.isEmpty) return false;
+    // Check if the existing items have a different restaurant ID
+    // We assume all items in the cart are from the same restaurant due to this check
+    return state.first.menuItem.restaurantId != newRestaurantId;
+  }
 }
 
 final cartProvider = NotifierProvider<CartNotifier, List<CartItem>>(() {
@@ -53,4 +60,9 @@ final cartProvider = NotifierProvider<CartNotifier, List<CartItem>>(() {
 final cartTotalProvider = Provider<double>((ref) {
   final cart = ref.watch(cartProvider);
   return cart.fold(0, (sum, item) => sum + item.totalPrice);
+});
+
+final cartItemCountProvider = Provider<int>((ref) {
+  final cart = ref.watch(cartProvider);
+  return cart.fold(0, (sum, item) => sum + item.quantity);
 });

@@ -19,15 +19,16 @@ class OrderNotifier extends AsyncNotifier<List<Order>> {
     return _orderService.getOrders();
   }
 
-  Future<void> createOrder({
+  Future<Order?> createOrder({
     required String restaurantId,
     required String addressId,
     required double totalAmount,
     required List<Map<String, dynamic>> items,
   }) async {
     state = const AsyncValue.loading();
+    Order? createdOrder;
     state = await AsyncValue.guard(() async {
-      await _orderService.createOrder(
+      createdOrder = await _orderService.createOrder(
         restaurantId: restaurantId,
         addressId: addressId,
         totalAmount: totalAmount,
@@ -35,6 +36,7 @@ class OrderNotifier extends AsyncNotifier<List<Order>> {
       );
       return _orderService.getOrders();
     });
+    return createdOrder;
   }
 
   Future<void> updateStatus(String orderId, String status) async {

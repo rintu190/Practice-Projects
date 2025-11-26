@@ -5,6 +5,10 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json; charset=UTF-8");
 
+// Disable error display in output to prevent JSON corruption
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
+
 // Handle PHP built-in server
 if (php_sapi_name() == 'cli-server') {
     $url = parse_url($_SERVER['REQUEST_URI']);
