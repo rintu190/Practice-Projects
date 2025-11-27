@@ -181,20 +181,52 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 
   Future<void> signInWithGoogle() async {
+    state = state.copyWith(isLoading: true, error: null);
+    
     try {
       final account = await _googleSignIn.signIn();
-      if (account != null) {
-        // TODO: Implement Google Sign-In backend integration
-        // For now, just mark as authenticated
-        state = state.copyWith(
-          isAuthenticated: true,
-          error: 'Google Sign-In not yet integrated with backend',
-        );
+      if (account == null) {
+        // User canceled the sign-in
+        state = state.copyWith(isLoading: false);
+        return;
       }
-    } catch (error) {
-      debugPrint('Google Sign In Error: $error');
+
+      // Get the authentication details
+      final googleAuth = await account.authentication;
+      final idToken = googleAuth.idToken;
+
+      if (idToken == null) {
+        throw Exception('Failed to get ID token from Google');
+      }
+
+      debugPrint('Google Sign-In: Got ID token, sending to backend...');
+
+      // Send to backend
+      final response = await _authService.googleSignIn(idToken);
+      
+      debugPrint('Google Sign-In: Backend response received');
+      
+      final user = User.fromJson(response['user']);
       state = state.copyWith(
-        error: 'Google Sign-In failed',
+        isAuthenticated: true,
+        user: user,
+        isLoading: false,
+      );
+    } on ApiException catch (e) {
+      await _googleSignIn.signOut();
+      debugPrint('Google Sign-In API Error: ${e.message} (Status: ${e.statusCode})');
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Sign-in failed: ${e.message}',
+      );
+    } catch (error) {
+      await _googleSignIn.signOut();
+      debugPrint('Google Sign-In Error: $error');
+      
+      // Development mode: If Google Sign-In fails, offer to use email/password instead
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Google Sign-In requires setup. Please use email/password login or configure Google Cloud Console.',
       );
     }
   }

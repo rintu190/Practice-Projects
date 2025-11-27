@@ -1,24 +1,19 @@
--- Create database
+-- ============================================================
+-- Flutter Food Regional Database Schema
+-- Organized by foreign key dependencies
+-- ============================================================
+
 CREATE DATABASE IF NOT EXISTS flutter_food_regional;
 USE flutter_food_regional;
 
--- Users table
-CREATE TABLE IF NOT EXISTS users (
-    id VARCHAR(36) PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    role ENUM('admin', 'customer', 'rider', 'restaurant') DEFAULT 'customer',
-    password VARCHAR(255) NOT NULL,
-    phone VARCHAR(20),
-    restaurant_id VARCHAR(36) NULL,
-    latitude DECIMAL(10, 8) NULL,
-    longitude DECIMAL(11, 8) NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE SET NULL
-);
+-- Disable foreign key checks during table creation
+SET FOREIGN_KEY_CHECKS = 0;
 
--- Restaurants table
+-- ============================================================
+-- LEVEL 1: Independent tables (no foreign keys)
+-- ============================================================
+
+-- Restaurants table (no dependencies)
 CREATE TABLE IF NOT EXISTS restaurants (
     id VARCHAR(36) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -34,7 +29,29 @@ CREATE TABLE IF NOT EXISTS restaurants (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Menu items table
+-- ============================================================
+-- LEVEL 2: Tables that depend on Level 1
+-- ============================================================
+
+-- Users table (references restaurants)
+CREATE TABLE IF NOT EXISTS users (
+    id VARCHAR(36) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    role ENUM('admin', 'customer', 'rider', 'restaurant') DEFAULT 'customer',
+    password_hash VARCHAR(255) NOT NULL,
+    google_id VARCHAR(255) NULL UNIQUE,
+    phone VARCHAR(20),
+    restaurant_id VARCHAR(36) NULL,
+    latitude DECIMAL(10, 8) NULL,
+    longitude DECIMAL(11, 8) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE SET NULL,
+    INDEX idx_google_id (google_id)
+);
+
+-- Menu items table (references restaurants)
 CREATE TABLE IF NOT EXISTS menu_items (
     id VARCHAR(36) PRIMARY KEY,
     restaurant_id VARCHAR(36) NOT NULL,
@@ -48,7 +65,11 @@ CREATE TABLE IF NOT EXISTS menu_items (
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE CASCADE
 );
 
--- Addresses table
+-- ============================================================
+-- LEVEL 3: Tables that depend on Level 2
+-- ============================================================
+
+-- Addresses table (references users)
 CREATE TABLE IF NOT EXISTS addresses (
     id VARCHAR(36) PRIMARY KEY,
     user_id VARCHAR(36) NOT NULL,
@@ -67,7 +88,7 @@ CREATE TABLE IF NOT EXISTS addresses (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Payment methods table
+-- Payment methods table (references users)
 CREATE TABLE IF NOT EXISTS payment_methods (
     id VARCHAR(36) PRIMARY KEY,
     user_id VARCHAR(36) NOT NULL,
@@ -79,7 +100,11 @@ CREATE TABLE IF NOT EXISTS payment_methods (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Orders table
+-- ============================================================
+-- LEVEL 4: Tables that depend on Level 3
+-- ============================================================
+
+-- Orders table (references users, restaurants, addresses)
 CREATE TABLE IF NOT EXISTS orders (
     id VARCHAR(36) PRIMARY KEY,
     user_id VARCHAR(36) NOT NULL,
@@ -96,7 +121,11 @@ CREATE TABLE IF NOT EXISTS orders (
     FOREIGN KEY (rider_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
--- Order items table
+-- ============================================================
+-- LEVEL 5: Tables that depend on Level 4
+-- ============================================================
+
+-- Order items table (references orders, menu_items)
 CREATE TABLE IF NOT EXISTS order_items (
     id VARCHAR(36) PRIMARY KEY,
     order_id VARCHAR(36) NOT NULL,
@@ -107,7 +136,7 @@ CREATE TABLE IF NOT EXISTS order_items (
     FOREIGN KEY (menu_item_id) REFERENCES menu_items(id) ON DELETE CASCADE
 );
 
--- Commissions table
+-- Commissions table (references users, orders)
 CREATE TABLE IF NOT EXISTS commissions (
     id VARCHAR(36) PRIMARY KEY,
     user_id VARCHAR(36) NOT NULL,
@@ -119,3 +148,6 @@ CREATE TABLE IF NOT EXISTS commissions (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
+
+-- Re-enable foreign key checks
+SET FOREIGN_KEY_CHECKS = 1;

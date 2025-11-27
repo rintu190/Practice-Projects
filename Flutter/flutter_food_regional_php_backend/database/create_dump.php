@@ -23,25 +23,35 @@ try {
     $db = $database->getConnection();
     $dbName = $_ENV['DB_NAME'];
     
-    echo "Starting database dump for '$dbName'...\n";
+    echo "╔════════════════════════════════════════════════════════════╗\n";
+    echo "║  Creating Database Dump for '$dbName'\n";
+    echo "╚════════════════════════════════════════════════════════════╝\n\n";
     
-    $output = "-- Database Dump for $dbName\n";
-    $output .= "-- Generated at " . date('Y-m-d H:i:s') . "\n\n";
-    $output .= "SET FOREIGN_KEY_CHECKS=0;\n\n";
+    $output = "-- ============================================================\n";
+    $output .= "-- Database Dump for $dbName\n";
+    $output .= "-- Generated at " . date('Y-m-d H:i:s') . "\n";
+    $output .= "-- ============================================================\n\n";
+    $output .= "SET FOREIGN_KEY_CHECKS=0;\n";
+    $output .= "SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";\n";
+    $output .= "SET time_zone = \"+00:00\";\n\n";
     
     // Get all tables
     $stmt = $db->query("SHOW TABLES");
     $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
     
+    echo "Found " . count($tables) . " table(s) to dump\n\n";
+    
     foreach ($tables as $table) {
-        echo "Processing table: $table\n";
+        echo "Processing: $table ... ";
         
         // Get create table statement
         $stmt = $db->query("SHOW CREATE TABLE `$table`");
         $row = $stmt->fetch(PDO::FETCH_NUM);
         $createTable = $row[1];
         
-        $output .= "-- Table structure for `$table`\n";
+        $output .= "-- ============================================================\n";
+        $output .= "-- Table: `$table`\n";
+        $output .= "-- ============================================================\n\n";
         $output .= "DROP TABLE IF EXISTS `$table`;\n";
         $output .= "$createTable;\n\n";
         
@@ -50,7 +60,13 @@ try {
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         if (count($rows) > 0) {
-            $output .= "-- Dumping data for `$table`\n";
+            $output .= "-- Data for table `$table`\n";
+            $output .= "LOCK TABLES `$table` WRITE;\n";
+            
+            // Get column names
+            $stmt = $db->query("DESCRIBE `$table`");
+            $columns = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            $columnList = "`" . implode("`, `", $columns) . "`";
             
             foreach ($rows as $row) {
                 $fields = array_map(function($value) use ($db) {
@@ -59,9 +75,13 @@ try {
                 }, array_values($row));
                 
                 $values = implode(", ", $fields);
-                $output .= "INSERT INTO `$table` VALUES ($values);\n";
+                $output .= "INSERT INTO `$table` ($columnList) VALUES ($values);\n";
             }
-            $output .= "\n";
+            
+            $output .= "UNLOCK TABLES;\n\n";
+            echo "✓ (" . count($rows) . " rows)\n";
+        } else {
+            echo "✓ (empty)\n";
         }
     }
     
@@ -69,11 +89,22 @@ try {
     
     // Save to file
     $dumpFile = __DIR__ . '/full_dump.sql';
+    
+    // Ensure compatibility with older MySQL versions
+    $output = str_replace('utf8mb4_0900_ai_ci', 'utf8mb4_unicode_ci', $output);
+    
     file_put_contents($dumpFile, $output);
     
-    echo "Database dump created successfully at: $dumpFile\n";
+    $fileSize = filesize($dumpFile);
+    $fileSizeKB = round($fileSize / 1024, 2);
+    
+    echo "\n╔════════════════════════════════════════════════════════════╗\n";
+    echo "║  Dump created successfully!\n";
+    echo "║  File: $dumpFile\n";
+    echo "║  Size: $fileSizeKB KB\n";
+    echo "╚════════════════════════════════════════════════════════════╝\n";
     
 } catch (Exception $e) {
-    echo "ERROR: " . $e->getMessage() . "\n";
+    echo "\n✗ ERROR: " . $e->getMessage() . "\n";
     exit(1);
 }

@@ -17,7 +17,7 @@ class RestaurantDetailScreen extends ConsumerStatefulWidget {
 enum FoodFilter { all, veg, nonVeg }
 
 class _RestaurantDetailScreenState extends ConsumerState<RestaurantDetailScreen> {
-  FoodFilter _foodFilter = FoodFilter.veg; // Default to veg
+  FoodFilter _foodFilter = FoodFilter.all; // Default to all
 
   @override
   Widget build(BuildContext context) {

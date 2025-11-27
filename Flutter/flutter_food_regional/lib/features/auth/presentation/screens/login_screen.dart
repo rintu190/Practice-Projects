@@ -261,9 +261,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               SizedBox(
                                 width: double.infinity,
                                 child: OutlinedButton.icon(
-                                  onPressed: () {
-                                    ref.read(authProvider.notifier).signInWithGoogle();
-                                    context.go('/home');
+                                  onPressed: authState.isLoading ? null : () async {
+                                    await ref.read(authProvider.notifier).signInWithGoogle();
+                                    if (mounted) {
+                                      final authState = ref.read(authProvider);
+                                      if (authState.isAuthenticated && authState.error == null) {
+                                        context.go('/home');
+                                      } else if (authState.error != null) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(authState.error!),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+                                      }
+                                    }
                                   },
                                   icon: Image.network(
                                     'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png',

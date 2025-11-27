@@ -43,6 +43,15 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = str_replace('/index.php', '', $uri);
 
 // Remove base path if running from subdirectory
+$scriptDir = dirname($_SERVER['SCRIPT_NAME']);
+// Ensure scriptDir is not just '/' or backslash on Windows
+if ($scriptDir !== '/' && $scriptDir !== '\\') {
+    if (strpos($uri, $scriptDir) === 0) {
+        $uri = substr($uri, strlen($scriptDir));
+    }
+}
+
+// Also handle if user manually set a base path in .env or hardcoded
 $basePath = '/api';
 if (strpos($uri, $basePath) === 0) {
     $uri = substr($uri, strlen($basePath));
@@ -61,6 +70,13 @@ try {
     }
 
     // Auth routes
+    if (strpos($uri, '/auth/google') === 0) {
+        require_once __DIR__ . '/routes/google_auth.php';
+        $path = substr($uri, 12); // Remove '/auth/google'
+        handleGoogleAuthRoutes($method, $path);
+        exit();
+    }
+
     if (strpos($uri, '/auth') === 0) {
         require_once __DIR__ . '/routes/auth.php';
         $path = substr($uri, 5); // Remove '/auth'

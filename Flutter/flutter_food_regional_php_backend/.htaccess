@@ -1,5 +1,6 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    RewriteBase /
     
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
@@ -10,6 +11,12 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ index.php [QSA,L]
 </IfModule>
+
+# Prevent directory listing
+Options -Indexes
+
+# Ensure 404s are handled by index.php if not caught above
+ErrorDocument 404 /index.php
 
 # CORS Headers
 <IfModule mod_headers.c>

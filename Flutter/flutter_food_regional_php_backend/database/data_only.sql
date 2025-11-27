@@ -11,29 +11,11 @@ SET time_zone = "+00:00";
 -- Table: `addresses`
 -- ============================================================
 
-DROP TABLE IF EXISTS `addresses`;
-CREATE TABLE `addresses` (
-  `id` varchar(36) NOT NULL,
-  `user_id` varchar(36) NOT NULL,
-  `house_number` varchar(100) NOT NULL,
-  `street` varchar(255) NOT NULL,
-  `locality` varchar(255) NOT NULL,
-  `city` varchar(100) NOT NULL,
-  `state` varchar(100) NOT NULL,
-  `pincode` varchar(10) NOT NULL,
-  `landmark` varchar(255) DEFAULT NULL,
-  `latitude` decimal(10,8) DEFAULT NULL,
-  `longitude` decimal(11,8) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `is_default` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `addresses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data for table `addresses`
 LOCK TABLES `addresses` WRITE;
+SET FOREIGN_KEY_CHECKS=0;
+TRUNCATE TABLE `addresses`;
 INSERT INTO `addresses` VALUES ('1cb81d3f-024a-404a-a216-051246b24d2d', '3d3f9ec4-f1ac-4fd9-a005-a0813f8a2473', '283/405', 'farm road', 'mahanadi vihar', 'boudh', 'odisha', '762014', NULL, '37.42199830', '-122.08400000', '2025-11-23 13:20:52', '2025-11-24 09:15:47', '1');
 INSERT INTO `addresses` VALUES ('3fd766d1-194a-4a7a-b60c-a3866b093cd2', 'eb8d60e3-3563-42f9-84f1-9a1511a7ba13', '123', 'Main St', 'Downtown', 'Metropolis', 'NY', '10001', NULL, NULL, NULL, '2025-11-22 17:00:59', '2025-11-22 17:00:59', '0');
 INSERT INTO `addresses` VALUES ('92eba9ac-d892-43bc-b55a-28e995a313d5', '3d3f9ec4-f1ac-4fd9-a005-a0813f8a2473', 'wq', 'w', 'qwq', 'qwq', 'wqw', '121', NULL, '39.23725500', '-123.15003170', '2025-11-24 07:33:25', '2025-11-24 07:33:25', '0');
@@ -43,21 +25,6 @@ UNLOCK TABLES;
 -- Table: `commissions`
 -- ============================================================
 
-DROP TABLE IF EXISTS `commissions`;
-CREATE TABLE `commissions` (
-  `id` varchar(36) NOT NULL,
-  `user_id` varchar(36) NOT NULL,
-  `order_id` varchar(36) NOT NULL,
-  `amount` decimal(10,2) NOT NULL,
-  `percentage` decimal(5,2) NOT NULL,
-  `status` varchar(20) DEFAULT 'pending',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `order_id` (`order_id`),
-  CONSTRAINT `commissions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `commissions_ibfk_2` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data for table `commissions`
 LOCK TABLES `commissions` WRITE;
@@ -80,21 +47,6 @@ UNLOCK TABLES;
 -- Table: `menu_items`
 -- ============================================================
 
-DROP TABLE IF EXISTS `menu_items`;
-CREATE TABLE `menu_items` (
-  `id` varchar(36) NOT NULL,
-  `restaurant_id` varchar(36) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `description` text,
-  `price` decimal(10,2) NOT NULL,
-  `image_url` text,
-  `is_veg` tinyint(1) DEFAULT '1',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `restaurant_id` (`restaurant_id`),
-  CONSTRAINT `menu_items_ibfk_1` FOREIGN KEY (`restaurant_id`) REFERENCES `restaurants` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data for table `menu_items`
 LOCK TABLES `menu_items` WRITE;
@@ -138,19 +90,6 @@ UNLOCK TABLES;
 -- Table: `order_items`
 -- ============================================================
 
-DROP TABLE IF EXISTS `order_items`;
-CREATE TABLE `order_items` (
-  `id` varchar(36) NOT NULL,
-  `order_id` varchar(36) NOT NULL,
-  `menu_item_id` varchar(36) NOT NULL,
-  `quantity` int NOT NULL,
-  `price` decimal(10,2) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `order_id` (`order_id`),
-  KEY `menu_item_id` (`menu_item_id`),
-  CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`menu_item_id`) REFERENCES `menu_items` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data for table `order_items`
 LOCK TABLES `order_items` WRITE;
@@ -171,27 +110,6 @@ UNLOCK TABLES;
 -- Table: `orders`
 -- ============================================================
 
-DROP TABLE IF EXISTS `orders`;
-CREATE TABLE `orders` (
-  `id` varchar(36) NOT NULL,
-  `user_id` varchar(36) NOT NULL,
-  `restaurant_id` varchar(36) NOT NULL,
-  `address_id` varchar(36) NOT NULL,
-  `rider_id` varchar(36) DEFAULT NULL,
-  `total_amount` decimal(10,2) NOT NULL,
-  `status` varchar(50) DEFAULT 'pending',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `restaurant_id` (`restaurant_id`),
-  KEY `address_id` (`address_id`),
-  KEY `fk_orders_rider` (`rider_id`),
-  CONSTRAINT `fk_orders_rider` FOREIGN KEY (`rider_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`restaurant_id`) REFERENCES `restaurants` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `orders_ibfk_3` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data for table `orders`
 LOCK TABLES `orders` WRITE;
@@ -210,19 +128,6 @@ UNLOCK TABLES;
 -- Table: `payment_methods`
 -- ============================================================
 
-DROP TABLE IF EXISTS `payment_methods`;
-CREATE TABLE `payment_methods` (
-  `id` varchar(36) NOT NULL,
-  `user_id` varchar(36) NOT NULL,
-  `type` varchar(20) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `subtitle` varchar(255) NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `payment_methods_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data for table `payment_methods`
 LOCK TABLES `payment_methods` WRITE;
@@ -233,22 +138,6 @@ UNLOCK TABLES;
 -- Table: `restaurants`
 -- ============================================================
 
-DROP TABLE IF EXISTS `restaurants`;
-CREATE TABLE `restaurants` (
-  `id` varchar(36) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `cuisine` varchar(50) NOT NULL,
-  `rating` decimal(2,1) DEFAULT '0.0',
-  `delivery_time` varchar(50) DEFAULT NULL,
-  `address` text,
-  `phone` varchar(20) DEFAULT NULL,
-  `image_url` text,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `latitude` decimal(10,8) DEFAULT NULL,
-  `longitude` decimal(11,8) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data for table `restaurants`
 LOCK TABLES `restaurants` WRITE;
@@ -271,37 +160,15 @@ UNLOCK TABLES;
 -- Table: `users`
 -- ============================================================
 
-DROP TABLE IF EXISTS `users`;
-CREATE TABLE `users` (
-  `id` varchar(36) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `role` enum('admin','customer','rider','restaurant') DEFAULT 'customer',
-  `restaurant_id` varchar(36) DEFAULT NULL,
-  `password_hash` varchar(255) NOT NULL,
-  `phone` varchar(20) DEFAULT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `latitude` decimal(10,8) DEFAULT NULL,
-  `longitude` decimal(11,8) DEFAULT NULL,
-  `google_id` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`),
-  UNIQUE KEY `google_id` (`google_id`),
-  KEY `fk_users_restaurant` (`restaurant_id`),
-  KEY `idx_google_id` (`google_id`),
-  CONSTRAINT `fk_users_restaurant` FOREIGN KEY (`restaurant_id`) REFERENCES `restaurants` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data for table `users`
 LOCK TABLES `users` WRITE;
-INSERT INTO `users` VALUES ('18111f0b-fe42-43b7-a0a5-763d469333d6', 'admin', 'admin@gmail.com', 'admin', NULL, '$2y$12$pmFPSoz7aKNWX5yEEzL9aeLV1eo8H6kEJuSh1VPXE0U937eHzs.Mi', NULL, NULL, '2025-11-23 06:50:43', '2025-11-23 06:51:03', NULL, NULL, NULL);
-INSERT INTO `users` VALUES ('1d44c7dc-4b35-4603-846a-63e66a307c21', 'Rider', 'rider@gmail.com', 'rider', NULL, '$2y$12$0SsKm/RouJoalh4OtRlv4.VwEOg9ZFIPQSJg.G3VZJwm/.EV16A72', '1234123123', NULL, '2025-11-23 06:48:52', '2025-11-25 06:24:16', NULL, NULL, NULL);
-INSERT INTO `users` VALUES ('3d3f9ec4-f1ac-4fd9-a005-a0813f8a2473', 'Gajendra Bagha', 'rintu1990@gmail.com', 'customer', NULL, '$2y$12$.OWrfdVSkt/mMKuXRitBXuN2t0Ti5l/tONMghte.9.xt0jYXFFyma', '12312312', '/uploads/profiles/69254db09e4985.66994585.jpg', '2025-11-22 16:22:25', '2025-11-25 06:33:20', NULL, NULL, NULL);
-INSERT INTO `users` VALUES ('79a74d09-4461-4afc-86a0-03ce4e8374df', 'Payment User', 'payment@example.com', 'customer', NULL, '$2y$12$fSbtFtvBIFOlGRZYnhddCeZMU5XRA8efqA4Fc1zRgU6OXwcjwYOUW', NULL, NULL, '2025-11-22 17:21:40', '2025-11-22 17:21:40', NULL, NULL, NULL);
-INSERT INTO `users` VALUES ('eb8d60e3-3563-42f9-84f1-9a1511a7ba13', 'Test User', 'testuser@example.com', 'customer', NULL, '$2y$12$OOsHlrS86nFyMNL/I9M3luQFTm9VlCon2DdGnIVGjn1nV0jiew5Ui', NULL, NULL, '2025-11-22 17:00:48', '2025-11-22 17:00:48', NULL, NULL, NULL);
-INSERT INTO `users` VALUES ('ef9b7dec-5425-4e65-9f45-7b87b0842ccc', 'restaurant', 'restaurant@gmail.com', 'restaurant', '1', '$2y$12$6VeH5eK7PIK22QEEZDrsPuYonqGVLMWBJxAPZdk9/Fu/iOxzx.oC.', NULL, NULL, '2025-11-23 07:44:30', '2025-11-23 12:24:16', NULL, NULL, NULL);
+INSERT INTO `users` (`id`, `name`, `email`, `role`, `restaurant_id`, `password_hash`, `phone`, `profile_picture`, `created_at`, `updated_at`, `latitude`, `longitude`, `google_id`) VALUES ('18111f0b-fe42-43b7-a0a5-763d469333d6', 'admin', 'admin@gmail.com', 'admin', NULL, '$2y$12$pmFPSoz7aKNWX5yEEzL9aeLV1eo8H6kEJuSh1VPXE0U937eHzs.Mi', NULL, NULL, '2025-11-23 06:50:43', '2025-11-23 06:51:03', NULL, NULL, NULL);
+INSERT INTO `users` (`id`, `name`, `email`, `role`, `restaurant_id`, `password_hash`, `phone`, `profile_picture`, `created_at`, `updated_at`, `latitude`, `longitude`, `google_id`) VALUES ('1d44c7dc-4b35-4603-846a-63e66a307c21', 'Rider', 'rider@gmail.com', 'rider', NULL, '$2y$12$0SsKm/RouJoalh4OtRlv4.VwEOg9ZFIPQSJg.G3VZJwm/.EV16A72', '1234123123', NULL, '2025-11-23 06:48:52', '2025-11-25 06:24:16', NULL, NULL, NULL);
+INSERT INTO `users` (`id`, `name`, `email`, `role`, `restaurant_id`, `password_hash`, `phone`, `profile_picture`, `created_at`, `updated_at`, `latitude`, `longitude`, `google_id`) VALUES ('3d3f9ec4-f1ac-4fd9-a005-a0813f8a2473', 'Gajendra Bagha', 'rintu1990@gmail.com', 'customer', NULL, '$2y$12$.OWrfdVSkt/mMKuXRitBXuN2t0Ti5l/tONMghte.9.xt0jYXFFyma', '12312312', '/uploads/profiles/69254db09e4985.66994585.jpg', '2025-11-22 16:22:25', '2025-11-25 06:33:20', NULL, NULL, NULL);
+INSERT INTO `users` (`id`, `name`, `email`, `role`, `restaurant_id`, `password_hash`, `phone`, `profile_picture`, `created_at`, `updated_at`, `latitude`, `longitude`, `google_id`) VALUES ('79a74d09-4461-4afc-86a0-03ce4e8374df', 'Payment User', 'payment@example.com', 'customer', NULL, '$2y$12$fSbtFtvBIFOlGRZYnhddCeZMU5XRA8efqA4Fc1zRgU6OXwcjwYOUW', NULL, NULL, '2025-11-22 17:21:40', '2025-11-22 17:21:40', NULL, NULL, NULL);
+INSERT INTO `users` (`id`, `name`, `email`, `role`, `restaurant_id`, `password_hash`, `phone`, `profile_picture`, `created_at`, `updated_at`, `latitude`, `longitude`, `google_id`) VALUES ('eb8d60e3-3563-42f9-84f1-9a1511a7ba13', 'Test User', 'testuser@example.com', 'customer', NULL, '$2y$12$OOsHlrS86nFyMNL/I9M3luQFTm9VlCon2DdGnIVGjn1nV0jiew5Ui', NULL, NULL, '2025-11-22 17:00:48', '2025-11-22 17:00:48', NULL, NULL, NULL);
+INSERT INTO `users` (`id`, `name`, `email`, `role`, `restaurant_id`, `password_hash`, `phone`, `profile_picture`, `created_at`, `updated_at`, `latitude`, `longitude`, `google_id`) VALUES ('ef9b7dec-5425-4e65-9f45-7b87b0842ccc', 'restaurant', 'restaurant@gmail.com', 'restaurant', '1', '$2y$12$6VeH5eK7PIK22QEEZDrsPuYonqGVLMWBJxAPZdk9/Fu/iOxzx.oC.', NULL, NULL, '2025-11-23 07:44:30', '2025-11-23 12:24:16', NULL, NULL, NULL);
 UNLOCK TABLES;
 
 SET FOREIGN_KEY_CHECKS=1;

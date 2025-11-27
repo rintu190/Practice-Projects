@@ -1,8 +1,15 @@
 import 'dart:io';
 
 class ApiConstants {
+  // Configuration
+  static const bool useProduction = true; // Set to true for production
+  static const String productionUrl = 'https://www.bytesqube.com/FoodDelivery/api';
+
   // Base URL - dynamic based on platform
   static String get baseUrl {
+    if (useProduction) {
+      return productionUrl;
+    }
     if (Platform.isAndroid) {
       return 'http://10.0.2.2:8000/api';
     }
@@ -11,6 +18,10 @@ class ApiConstants {
   }
 
   static String get serverUrl {
+    if (useProduction) {
+      // Removes '/api' from the end to get the root server URL for images
+      return productionUrl.replaceAll(RegExp(r'/api$'), '');
+    }
     if (Platform.isAndroid) {
       return 'http://10.0.2.2:8000';
     }

@@ -6,16 +6,31 @@ use Firebase\JWT\Key;
 class AuthMiddleware {
     
     public static function authenticate() {
-        $headers = null;
+        $authHeader = null;
+        
+        // 1. Try apache_request_headers()
         if (function_exists('apache_request_headers')) {
             $headers = apache_request_headers();
+            // Handle case-insensitivity
+            $headers = array_change_key_case($headers, CASE_LOWER);
+            if (isset($headers['authorization'])) {
+                $authHeader = $headers['authorization'];
+            }
         }
         
-        $authHeader = null;
-        if (isset($headers['Authorization'])) {
-            $authHeader = $headers['Authorization'];
-        } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        // 2. Try $_SERVER['HTTP_AUTHORIZATION']
+        if (!$authHeader && isset($_SERVER['HTTP_AUTHORIZATION'])) {
             $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
+        }
+        
+        // 3. Try $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] (Common in shared hosting)
+        if (!$authHeader && isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+            $authHeader = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+        }
+        
+        // 4. Try getting from $_GET for debugging/fallback (optional, but useful)
+        if (!$authHeader && isset($_GET['token'])) {
+            $authHeader = 'Bearer ' . $_GET['token'];
         }
 
         if (!$authHeader) {

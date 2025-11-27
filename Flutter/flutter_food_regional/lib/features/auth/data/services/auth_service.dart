@@ -135,6 +135,35 @@ class AuthService {
     }
   }
 
+  // Google Sign-In
+  Future<Map<String, dynamic>> googleSignIn(String idToken) async {
+    final response = await _apiClient.post(
+      '/auth/google',
+      body: {'idToken': idToken},
+      requiresAuth: false,
+    );
+
+    // Save token and user data
+    final token = response['token'] as String;
+    final userData = response['user'] as Map<String, dynamic>;
+    
+    await StorageService.saveToken(token);
+    await StorageService.saveUserData(
+      id: userData['id'],
+      name: userData['name'],
+      email: userData['email'],
+      phone: userData['phone'],
+      role: userData['role'] ?? 'customer',
+    );
+
+    return response;
+  }
+
+  // Save token (for Google auth service)
+  Future<void> saveToken(String token) async {
+    await StorageService.saveToken(token);
+  }
+
   // Logout
   Future<void> logout() async {
     await StorageService.clearAll();
