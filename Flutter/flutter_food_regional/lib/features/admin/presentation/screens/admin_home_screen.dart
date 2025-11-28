@@ -17,14 +17,6 @@ class AdminHomeScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
-  // Modern color palette
-  static const Color primaryBlue = Color(0xFF5BA3D0);
-  static const Color backgroundColor = Color(0xFFF5F9FC);
-  static const Color cardBackground = Colors.white;
-  static const Color textPrimary = Color(0xFF2D3748);
-  static const Color textSecondary = Color(0xFF718096);
-  static const Color accentOrange = Color(0xFFFF6B6B);
-  
   List<Map<String, dynamic>> _riders = [];
   List<Map<String, dynamic>> _restaurantOwners = [];
   List<Map<String, dynamic>> _restaurants = [];
@@ -200,48 +192,48 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
       final result = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Edit Restaurant Details', style: TextStyle(color: primaryBlue, fontWeight: FontWeight.bold)),
+          title: Text('Edit Restaurant Details', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Restaurant Name',
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: primaryBlue),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: cuisineController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Cuisine',
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: primaryBlue),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: addressController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Address',
-                    border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue)),
+                    border: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.primary)),
                   ),
                   maxLines: 2,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: phoneController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Phone',
-                    border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue)),
+                    border: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.primary)),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 ImagePickerWidget(
                   initialImageUrl: uploadedImageUrl,
                   onImageUploaded: (url) {
@@ -249,33 +241,33 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                   },
                   label: 'Restaurant Image',
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
                       child: TextField(
                         controller: latController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Latitude',
-                          border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue)),
+                          border: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.primary)),
                         ),
                         keyboardType: TextInputType.number,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: TextField(
                         controller: lngController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Longitude',
-                          border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue)),
+                          border: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.primary)),
                         ),
                         keyboardType: TextInputType.number,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 TextButton.icon(
                   onPressed: () async {
                     try {
@@ -290,8 +282,8 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                       }
                     }
                   },
-                  icon: const Icon(Icons.my_location),
-                  label: const Text('Pin Current Location'),
+                  icon: Icon(Icons.my_location),
+                  label: Text('Pin Current Location'),
                 ),
               ],
             ),
@@ -299,9 +291,9 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: Text('Cancel'),
             ),
-            ElevatedButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Save'), style: ElevatedButton.styleFrom(backgroundColor: primaryBlue, foregroundColor: Colors.white)),
+            ElevatedButton(onPressed: () => Navigator.of(context).pop(true), child: Text('Save'), style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary, foregroundColor: Colors.white)),
           ],
         ),
       );
@@ -368,52 +360,52 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
       final result = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Add New Restaurant', style: TextStyle(color: primaryBlue, fontWeight: FontWeight.bold)),
+          title: Text('Add New Restaurant', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Restaurant Name *',
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: primaryBlue),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: cuisineController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Cuisine *',
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: primaryBlue),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: addressController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Address',
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: primaryBlue),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                   maxLines: 2,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: phoneController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Phone',
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: primaryBlue),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 ImagePickerWidget(
                   initialImageUrl: uploadedImageUrl,
                   onImageUploaded: (url) {
@@ -421,50 +413,50 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                   },
                   label: 'Restaurant Image',
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: ratingController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Rating',
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: primaryBlue),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                   keyboardType: TextInputType.number,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: deliveryTimeController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Delivery Time',
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: primaryBlue),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
                       child: TextField(
                         controller: latController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Latitude',
                           border: OutlineInputBorder(
-                            borderSide: BorderSide(color: primaryBlue),
+                            borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                           ),
                         ),
                         keyboardType: TextInputType.number,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: TextField(
                         controller: lngController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Longitude',
                           border: OutlineInputBorder(
-                            borderSide: BorderSide(color: primaryBlue),
+                            borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                           ),
                         ),
                         keyboardType: TextInputType.number,
@@ -472,7 +464,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 TextButton.icon(
                   onPressed: () async {
                     try {
@@ -487,8 +479,8 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                       }
                     }
                   },
-                  icon: const Icon(Icons.my_location),
-                  label: const Text('Pin Current Location'),
+                  icon: Icon(Icons.my_location),
+                  label: Text('Pin Current Location'),
                 ),
               ],
             ),
@@ -496,13 +488,13 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
-              style: TextButton.styleFrom(foregroundColor: primaryBlue),
+              child: Text('Cancel'),
+              style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.primary),
             ),
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Create'),
-              style: ElevatedButton.styleFrom(backgroundColor: primaryBlue, foregroundColor: Colors.white),
+              child: Text('Create'),
+              style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary, foregroundColor: Colors.white),
             ),
           ],
         ),
@@ -575,7 +567,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           // Background header with cloud divider
@@ -604,10 +596,10 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
             _selectedIndex = index;
           });
         },
-        backgroundColor: Colors.white,
-        selectedItemColor: primaryBlue,
-        unselectedItemColor: textSecondary,
-        items: const [
+        backgroundColor: Theme.of(context).cardColor,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Colors.grey,
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_bag),
             label: 'Orders',
@@ -633,7 +625,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
           // Blue background with cloud shape
           Positioned.fill(
             child: CustomPaint(
-              painter: _CloudHeaderPainter(color: primaryBlue),
+              painter: _CloudHeaderPainter(color: Theme.of(context).colorScheme.primary),
             ),
           ),
           // Illustration area
@@ -642,21 +634,21 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 40), // Space for AppBar
+                  SizedBox(height: 40), // Space for AppBar
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.admin_panel_settings,
                       size: 64,
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: 16),
+                  Text(
                     'Admin Dashboard',
                     style: TextStyle(
                       fontSize: 20,
@@ -676,11 +668,11 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
   Widget _buildAppBar() {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Admin Dashboard',
               style: TextStyle(
                 fontSize: 24,
@@ -691,7 +683,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.refresh, color: Colors.white),
+                  icon: Icon(Icons.refresh, color: Colors.white),
                   onPressed: () {
                     ref.refresh(orderProvider);
                     _loadRiders();
@@ -701,13 +693,13 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.settings, color: Colors.white),
+                  icon: Icon(Icons.settings, color: Colors.white),
                   onPressed: () {
                     context.push('/edit-profile');
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.logout, color: Colors.white),
+                  icon: Icon(Icons.logout, color: Colors.white),
                   onPressed: () async {
                     await AuthService().logout();
                     if (context.mounted) {
@@ -729,17 +721,17 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
     return ordersAsync.when(
       data: (orders) {
         if (orders.isEmpty) {
-          return const Center(child: Text('No orders found'));
+          return Center(child: Text('No orders found'));
         }
         return ListView.builder(
           itemCount: orders.length,
-          padding: const EdgeInsets.only(top: 280, bottom: 20),
+          padding: EdgeInsets.only(top: 280, bottom: 20),
           itemBuilder: (context, index) {
             final order = orders[index];
             return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: cardBackground,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
@@ -750,7 +742,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                 ],
               ),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -767,19 +759,19 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text('Customer: ${order.userName ?? "Unknown"}'),
                     Text('Restaurant: ${order.restaurantName ?? "Unknown"}'),
                     Text('Total: ₹${order.totalAmount.toStringAsFixed(2)}'),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Row(
                       children: [
-                        const Text('Status: '),
-                        const SizedBox(width: 8),
+                        Text('Status: '),
+                        SizedBox(width: 8),
                         Expanded(
                           child: DropdownButtonFormField<String>(
                             value: order.status,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               border: OutlineInputBorder(),
                               contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             ),
@@ -799,20 +791,20 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Row(
                       children: [
-                        const Text('Rider: '),
-                        const SizedBox(width: 8),
+                        Text('Rider: '),
+                        SizedBox(width: 8),
                         Expanded(
                           child: _ridersLoaded
                               ? DropdownButtonFormField<String>(
                                   value: order.riderId,
-                                  decoration: const InputDecoration(
+                                  decoration: InputDecoration(
                                     border: OutlineInputBorder(),
                                     contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                   ),
-                                  hint: const Text('Assign Rider'),
+                                  hint: Text('Assign Rider'),
                                   items: [
                                     const DropdownMenuItem(value: null, child: Text('No Rider')),
                                     ..._riders.map((rider) => DropdownMenuItem(
@@ -831,7 +823,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                       ],
                     ),
                     if (order.riderName != null) ...[
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Text('Assigned to: ${order.riderName}', style: const TextStyle(color: Colors.green)),
                     ],
                   ],
@@ -841,14 +833,14 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(child: Text('Error: $error')),
     );
   }
 
   Widget _buildRestaurantsTab() {
     if (!_ownersLoaded || !_restaurantsLoaded) {
-      return const Center(child: CircularProgressIndicator(color: primaryBlue));
+      return Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary));
     }
 
     if (_restaurants.isEmpty) {
@@ -856,12 +848,12 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('No restaurants found'),
-            const SizedBox(height: 16),
+            Text('No restaurants found'),
+            SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _addRestaurant,
-              icon: const Icon(Icons.add),
-              label: const Text('Add First Restaurant'),
+              icon: Icon(Icons.add),
+              label: Text('Add First Restaurant'),
             ),
           ],
         ),
@@ -872,7 +864,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
       children: [
         ListView.builder(
           itemCount: _restaurants.length,
-          padding: const EdgeInsets.only(top: 280, bottom: 80),
+          padding: EdgeInsets.only(top: 280, bottom: 80),
           itemBuilder: (context, index) {
             final restaurant = _restaurants[index];
             final restaurantId = restaurant['id'];
@@ -884,9 +876,9 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
             );
 
             return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: cardBackground,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
@@ -897,7 +889,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                 ],
               ),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -914,7 +906,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                                   fontSize: 18,
                                 ),
                               ),
-                              const SizedBox(height: 4),
+                              SizedBox(height: 4),
                               Text(
                                 restaurant['cuisine'] ?? '',
                                 style: TextStyle(
@@ -926,7 +918,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.edit),
+                          icon: Icon(Icons.edit),
                           tooltip: 'Edit Restaurant',
                           onPressed: () => _editRestaurant(restaurantId),
                           color: Colors.blue,
@@ -934,11 +926,11 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                       ],
                     ),
                     if (restaurant['address'] != null && restaurant['address'].toString().isNotEmpty) ...[
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Row(
                         children: [
                           Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
-                          const SizedBox(width: 4),
+                          SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               restaurant['address'],
@@ -949,11 +941,11 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                       ),
                     ],
                     if (restaurant['phone'] != null && restaurant['phone'].toString().isNotEmpty) ...[
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Row(
                         children: [
                           Icon(Icons.phone, size: 16, color: Colors.grey[600]),
-                          const SizedBox(width: 4),
+                          SizedBox(width: 4),
                           Text(
                             restaurant['phone'],
                             style: TextStyle(fontSize: 13, color: Colors.grey[700]),
@@ -961,22 +953,22 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                         ],
                       ),
                     ],
-                    const SizedBox(height: 12),
-                    const Divider(),
-                    const SizedBox(height: 8),
-                    const Text(
+                    SizedBox(height: 12),
+                    Divider(),
+                    SizedBox(height: 8),
+                    Text(
                       'Assigned Owner:',
                       style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     DropdownButtonFormField<String>(
                       value: assignedOwner['id'],
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         isDense: true,
                       ),
-                      hint: const Text('Select Owner'),
+                      hint: Text('Select Owner'),
                       items: [
                         const DropdownMenuItem(value: null, child: Text('No Owner')),
                         ..._restaurantOwners.map((owner) => DropdownMenuItem(
@@ -991,9 +983,9 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                       },
                     ),
                     if (assignedOwner.isNotEmpty) ...[
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: Colors.green.shade50,
                           borderRadius: BorderRadius.circular(8),
@@ -1001,7 +993,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                         child: Row(
                           children: [
                             Icon(Icons.person, size: 16, color: Colors.green.shade700),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 'Managed by: ${assignedOwner['name']}',
@@ -1016,15 +1008,15 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                         ),
                       ),
                     ],
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     ElevatedButton.icon(
                       onPressed: () => _manageMenuItems(restaurantId, restaurant['name']),
-                      icon: const Icon(Icons.restaurant_menu, size: 16),
-                      label: const Text('Manage Menu Items', style: TextStyle(fontSize: 12)),
+                      icon: Icon(Icons.restaurant_menu, size: 16),
+                      label: Text('Manage Menu Items', style: TextStyle(fontSize: 12)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         minimumSize: const Size(0, 32),
                       ),
                     ),
@@ -1039,9 +1031,9 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
           bottom: 16,
           child: FloatingActionButton.extended(
             onPressed: _addRestaurant,
-            icon: const Icon(Icons.add),
-            label: const Text('Add Restaurant'),
-            backgroundColor: primaryBlue,
+            icon: Icon(Icons.add),
+            label: Text('Add Restaurant'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
             foregroundColor: Colors.white,
           ),
         ),
@@ -1051,28 +1043,28 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
 
   Widget _buildCommissionsTab() {
     if (!_commissionsLoaded) {
-      return const Center(child: CircularProgressIndicator(color: primaryBlue));
+      return Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary));
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.only(top: 340, left: 20, right: 20, bottom: 20),
+      padding: EdgeInsets.only(top: 340, left: 20, right: 20, bottom: 20),
       itemCount: _commissions.length + 1,
       itemBuilder: (context, index) {
         if (index == 0) {
           // Summary Card
           return Container(
-            padding: const EdgeInsets.all(24),
-            margin: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(24),
+            margin: EdgeInsets.all(16),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [primaryBlue, Color(0xFF4A90C0)],
+              gradient: LinearGradient(
+                colors: [Theme.of(context).colorScheme.primary, Color(0xFF4A90C0)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: primaryBlue.withOpacity(0.3),
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                   blurRadius: 15,
                   offset: const Offset(0, 8),
                 ),
@@ -1080,11 +1072,11 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
             ),
             child: Column(
               children: [
-                const Text(
+                Text(
                   'Total Commissions Paid',
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   '₹${_totalCommissions.toStringAsFixed(2)}',
                   style: const TextStyle(
@@ -1099,7 +1091,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
         }
 
         if (_commissions.isEmpty) {
-          return const Center(child: Padding(
+          return Center(child: Padding(
             padding: EdgeInsets.all(20.0),
             child: Text('No commissions yet'),
           ));
@@ -1109,9 +1101,9 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
         final isRider = commission['user_role'] == 'rider';
         final isPending = commission['status'] == 'pending';
         return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           decoration: BoxDecoration(
-            color: cardBackground,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
@@ -1122,7 +1114,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
             ],
           ),
           child: ListTile(
-            contentPadding: const EdgeInsets.all(12),
+            contentPadding: EdgeInsets.all(12),
             leading: CircleAvatar(
               backgroundColor: isRider ? Colors.green : Colors.orange,
               child: Icon(
@@ -1165,18 +1157,18 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 if (isPending) ...[
                   IconButton(
-                    icon: const Icon(Icons.check_circle, color: Colors.green),
+                    icon: Icon(Icons.check_circle, color: Colors.green),
                     onPressed: () => _approveCommission(commission['id']),
                     tooltip: 'Approve',
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                   ),
-                  const SizedBox(width: 4),
+                  SizedBox(width: 4),
                   IconButton(
-                    icon: const Icon(Icons.cancel, color: Colors.red),
+                    icon: Icon(Icons.cancel, color: Colors.red),
                     onPressed: () => _rejectCommission(commission['id']),
                     tooltip: 'Reject',
                     padding: EdgeInsets.zero,
@@ -1225,18 +1217,18 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: Text('Menu Items - $restaurantName', style: const TextStyle(color: primaryBlue, fontWeight: FontWeight.bold)),
+          title: Text('Menu Items - $restaurantName', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
           content: SizedBox(
             width: double.maxFinite,
             height: 400,
             child: menuItems.isEmpty
-                ? const Center(child: Text('No menu items yet'))
+                ? Center(child: Text('No menu items yet'))
                 : ListView.builder(
                     itemCount: menuItems.length,
                     itemBuilder: (context, index) {
                       final item = menuItems[index];
                       return Card(
-                        margin: const EdgeInsets.only(bottom: 8),
+                        margin: EdgeInsets.only(bottom: 8),
                         child: ListTile(
                           title: Text(item['name'] ?? ''),
                           subtitle: Text(item['description'] ?? ''),
@@ -1244,16 +1236,16 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text('₹${item['price']}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               IconButton(
-                                icon: const Icon(Icons.edit, color: primaryBlue, size: 20),
+                                icon: Icon(Icons.edit, color: Theme.of(context).colorScheme.primary, size: 20),
                                 onPressed: () async {
                                   Navigator.pop(context);
                                   await _editMenuItemForRestaurant(item, restaurantId);
                                 },
                               ),
                               IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+                                icon: Icon(Icons.delete, color: Colors.red, size: 20),
                                 onPressed: () async {
                                   try {
                                     await apiClient.delete('/menu-items/${item['id']}', requiresAuth: true);
@@ -1280,17 +1272,17 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
-              style: TextButton.styleFrom(foregroundColor: primaryBlue),
+              child: Text('Close'),
+              style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.primary),
             ),
             ElevatedButton.icon(
               onPressed: () async {
                 Navigator.pop(context);
                 await _addMenuItemForRestaurant(restaurantId);
               },
-              icon: const Icon(Icons.add),
-              label: const Text('Add Item'),
-              style: ElevatedButton.styleFrom(backgroundColor: primaryBlue, foregroundColor: Colors.white),
+              icon: Icon(Icons.add),
+              label: Text('Add Item'),
+              style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary, foregroundColor: Colors.white),
             ),
           ],
         ),
@@ -1309,47 +1301,47 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Add Menu Item', style: TextStyle(color: primaryBlue, fontWeight: FontWeight.bold)),
+          title: Text('Add Menu Item', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Name *',
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: primaryBlue),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: descriptionController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Description',
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: primaryBlue),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                   maxLines: 2,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: priceController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Price *',
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: primaryBlue),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                   keyboardType: TextInputType.number,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Row(
                   children: [
-                    const Text('Food Type:', style: TextStyle(fontWeight: FontWeight.w500)),
-                    const SizedBox(width: 16),
+                    Text('Food Type:', style: TextStyle(fontWeight: FontWeight.w500)),
+                    SizedBox(width: 16),
                     GestureDetector(
                       onTap: () {
                         setState(() {
@@ -1357,7 +1349,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                         });
                       },
                       child: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: isVeg ? Colors.green : Colors.transparent,
                           shape: BoxShape.circle,
@@ -1370,7 +1362,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     GestureDetector(
                       onTap: () {
                         setState(() {
@@ -1378,7 +1370,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                         });
                       },
                       child: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: !isVeg ? Colors.red : Colors.transparent,
                           shape: BoxShape.circle,
@@ -1393,7 +1385,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 ImagePickerWidget(
                   initialImageUrl: uploadedImageUrl,
                   onImageUploaded: (url) {
@@ -1407,13 +1399,13 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
-              style: TextButton.styleFrom(foregroundColor: primaryBlue),
+              child: Text('Cancel'),
+              style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.primary),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Add'),
-              style: ElevatedButton.styleFrom(backgroundColor: primaryBlue, foregroundColor: Colors.white),
+              child: Text('Add'),
+              style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary, foregroundColor: Colors.white),
             ),
           ],
         ),
@@ -1472,47 +1464,47 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Edit Menu Item', style: TextStyle(color: primaryBlue, fontWeight: FontWeight.bold)),
+          title: Text('Edit Menu Item', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Name *',
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: primaryBlue),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: descriptionController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Description',
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: primaryBlue),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                   maxLines: 2,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: priceController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Price *',
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: primaryBlue),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                   keyboardType: TextInputType.number,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Row(
                   children: [
-                    const Text('Food Type:', style: TextStyle(fontWeight: FontWeight.w500)),
-                    const SizedBox(width: 16),
+                    Text('Food Type:', style: TextStyle(fontWeight: FontWeight.w500)),
+                    SizedBox(width: 16),
                     GestureDetector(
                       onTap: () {
                         setState(() {
@@ -1520,7 +1512,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                         });
                       },
                       child: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: isVeg ? Colors.green : Colors.transparent,
                           shape: BoxShape.circle,
@@ -1533,7 +1525,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     GestureDetector(
                       onTap: () {
                         setState(() {
@@ -1541,7 +1533,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                         });
                       },
                       child: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: !isVeg ? Colors.red : Colors.transparent,
                           shape: BoxShape.circle,
@@ -1556,7 +1548,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 ImagePickerWidget(
                   initialImageUrl: uploadedImageUrl,
                   onImageUploaded: (url) {
@@ -1570,13 +1562,13 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
-              style: TextButton.styleFrom(foregroundColor: primaryBlue),
+              child: Text('Cancel'),
+              style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.primary),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Save'),
-              style: ElevatedButton.styleFrom(backgroundColor: primaryBlue, foregroundColor: Colors.white),
+              child: Text('Save'),
+              style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary, foregroundColor: Colors.white),
             ),
           ],
         ),

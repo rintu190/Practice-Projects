@@ -35,7 +35,7 @@ class _RestaurantDetailScreenState extends ConsumerState<RestaurantDetailScreen>
               leading: Container(
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
@@ -45,7 +45,7 @@ class _RestaurantDetailScreenState extends ConsumerState<RestaurantDetailScreen>
                   ],
                 ),
                 child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black),
+                  icon: Icon(Icons.arrow_back, color: Theme.of(context).iconTheme.color),
                   onPressed: () => context.pop(),
                 ),
               ),
@@ -76,9 +76,9 @@ class _RestaurantDetailScreenState extends ConsumerState<RestaurantDetailScreen>
             SliverToBoxAdapter(
               child: Container(
                 transform: Matrix4.translationValues(0, -20, 0),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF5F7FA),
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,7 +142,7 @@ class _RestaurantDetailScreenState extends ConsumerState<RestaurantDetailScreen>
                               Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(25),
-                                  border: Border.all(color: Colors.grey.shade300, width: 2),
+                                  border: Border.all(color: Theme.of(context).dividerColor, width: 2),
                                 ),
                                 child: Row(
                                   children: [
@@ -165,7 +165,7 @@ class _RestaurantDetailScreenState extends ConsumerState<RestaurantDetailScreen>
                                         child: Text(
                                           'All',
                                           style: TextStyle(
-                                            color: _foodFilter == FoodFilter.all ? Colors.white : Colors.grey.shade700,
+                                            color: _foodFilter == FoodFilter.all ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 12,
                                           ),
@@ -254,7 +254,7 @@ class _RestaurantDetailScreenState extends ConsumerState<RestaurantDetailScreen>
                         return Container(
                           margin: const EdgeInsets.only(bottom: 16),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(

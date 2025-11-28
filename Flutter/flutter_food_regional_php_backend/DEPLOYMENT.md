@@ -131,10 +131,10 @@ Test these endpoints to verify deployment:
 
 ```bash
 # Health check
-curl https://yourdomain.com/api/
+curl https://bytesqube.com/fooddelivery/api/
 
 # Get restaurants
-curl https://yourdomain.com/api/restaurants
+curl https://bytesqube.com/fooddelivery/api/restaurants
 
 # Register a user
 curl -X POST https://yourdomain.com/api/auth/register \

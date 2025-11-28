@@ -95,10 +95,10 @@ class SignupScreen extends ConsumerWidget {
                       child: Container(
                         padding: const EdgeInsets.all(32),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.8),
+                          color: Theme.of(context).cardTheme.color?.withValues(alpha: 0.8) ?? Colors.white.withValues(alpha: 0.8),
                           borderRadius: BorderRadius.circular(30),
                           border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.5),
+                            color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
                           ),
                           boxShadow: [
                             BoxShadow(
@@ -114,7 +114,7 @@ class SignupScreen extends ConsumerWidget {
                               'Create Account',
                               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black87,
+                                // color: Colors.black87, // Removed hardcoded color
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -130,7 +130,7 @@ class SignupScreen extends ConsumerWidget {
                               decoration: InputDecoration(
                                 hintText: 'Full Name',
                                 prefixIcon: const Icon(Icons.person_outline),
-                                fillColor: Colors.white.withValues(alpha: 0.7),
+                                // fillColor removed to use theme
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -139,7 +139,7 @@ class SignupScreen extends ConsumerWidget {
                               decoration: InputDecoration(
                                 hintText: 'Email',
                                 prefixIcon: const Icon(Icons.email_outlined),
-                                fillColor: Colors.white.withValues(alpha: 0.7),
+                                // fillColor removed to use theme
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -149,7 +149,7 @@ class SignupScreen extends ConsumerWidget {
                               decoration: InputDecoration(
                                 hintText: 'Password',
                                 prefixIcon: const Icon(Icons.lock_outline),
-                                fillColor: Colors.white.withValues(alpha: 0.7),
+                                // fillColor removed to use theme
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -159,7 +159,7 @@ class SignupScreen extends ConsumerWidget {
                               decoration: InputDecoration(
                                 hintText: 'Confirm Password',
                                 prefixIcon: const Icon(Icons.lock_outline),
-                                fillColor: Colors.white.withValues(alpha: 0.7),
+                                // fillColor removed to use theme
                               ),
                             ),
                             const SizedBox(height: 32),
@@ -202,9 +202,9 @@ class SignupScreen extends ConsumerWidget {
                                 ),
                                 label: const Text('Sign up with Google'),
                                 style: OutlinedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  side: BorderSide(color: Colors.grey.shade300),
-                                  foregroundColor: Colors.black87,
+                                  backgroundColor: Theme.of(context).cardTheme.color,
+                                  side: BorderSide(color: Theme.of(context).dividerColor),
+                                  foregroundColor: Theme.of(context).textTheme.bodyLarge?.color,
                                 ),
                               ),
                             ),

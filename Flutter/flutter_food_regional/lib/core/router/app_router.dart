@@ -14,6 +14,7 @@ import '../../features/orders/presentation/screens/order_status_screen.dart';
 import '../../features/profile/presentation/screens/address_screen.dart';
 import '../../features/profile/presentation/screens/payment_methods_screen.dart';
 import '../../features/profile/presentation/screens/edit_profile_screen.dart';
+import '../../features/settings/presentation/screens/settings_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -79,6 +80,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/edit-profile',
       builder: (context, state) => const EditProfileScreen(),
+    ),
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) => const SettingsScreen(),
     ),
   ],
 );

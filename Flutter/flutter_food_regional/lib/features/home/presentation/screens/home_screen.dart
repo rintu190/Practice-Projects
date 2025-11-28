@@ -205,7 +205,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Row(
@@ -230,9 +230,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Expanded(
                   child: Container(
                     width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
                     ),
                     child: ClipRRect(
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
@@ -287,16 +287,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     child: Container(
                                       margin: const EdgeInsets.only(bottom: 20),
                                       decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: Theme.of(context).cardColor,
                                         borderRadius: BorderRadius.circular(24),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.black.withOpacity( 0.05),
+                                            color: Colors.black.withValues(alpha: 0.05),
                                             blurRadius: 20,
                                             offset: const Offset(0, 5),
                                           ),
                                         ],
-                                        border: Border.all(color: Colors.grey.withOpacity( 0.1)),
+                                        border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
                                       ),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -319,7 +319,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                 child: Container(
                                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                                   decoration: BoxDecoration(
-                                                    color: Colors.white,
+                                                    color: Theme.of(context).cardColor,
                                                     borderRadius: BorderRadius.circular(20),
                                                   ),
                                                   child: Row(
@@ -340,7 +340,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                 child: Container(
                                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                                   decoration: BoxDecoration(
-                                                    color: Colors.white.withOpacity( 0.9),
+                                                    color: Theme.of(context).cardColor.withValues(alpha: 0.9),
                                                     borderRadius: BorderRadius.circular(20),
                                                   ),
                                                   child: Text(
@@ -429,7 +429,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
       bottomNavigationBar: NavigationBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
         indicatorColor: const Color(0xFF6C63FF).withOpacity( 0.1),
         destinations: const [
           NavigationDestination(
@@ -483,7 +483,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               height: 60,
               width: 60,
               decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFF6C63FF) : Colors.grey[100],
+                color: isSelected ? const Color(0xFF6C63FF) : Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: isSelected
                     ? [

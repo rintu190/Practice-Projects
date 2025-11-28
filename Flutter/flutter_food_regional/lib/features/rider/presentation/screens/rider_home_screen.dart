@@ -23,12 +23,12 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
   int _selectedIndex = 0;
 
   // Modern color palette
-  static const Color primaryBlue = Color(0xFF5BA3D0);
-  static const Color backgroundColor = Color(0xFFF5F9FC);
-  static const Color cardBackground = Colors.white;
-  static const Color textPrimary = Color(0xFF2D3748);
-  static const Color textSecondary = Color(0xFF718096);
-  static const Color accentOrange = Color(0xFFFF6B6B);
+  
+  
+  
+  
+  
+  
 
   @override
   void initState() {
@@ -59,7 +59,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
     final user = ref.watch(authProvider).user;
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           // Background header with cloud divider
@@ -85,7 +85,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
                   ],
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator(color: primaryBlue)),
+              loading: () => Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary)),
               error: (error, stack) => Center(child: Text('Error: $error')),
             ),
           ),
@@ -101,10 +101,10 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
             _selectedIndex = index;
           });
         },
-        backgroundColor: Colors.white,
-        selectedItemColor: primaryBlue,
-        unselectedItemColor: textSecondary,
-        items: const [
+        backgroundColor: Theme.of(context).cardColor,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Colors.grey,
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.delivery_dining),
             label: 'Active Orders',
@@ -130,7 +130,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
           // Blue background with cloud shape
           Positioned.fill(
             child: CustomPaint(
-              painter: _CloudHeaderPainter(color: primaryBlue),
+              painter: _CloudHeaderPainter(color: Theme.of(context).colorScheme.primary),
             ),
           ),
           // Illustration area
@@ -139,21 +139,21 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 40), // Space for AppBar
+                  SizedBox(height: 40), // Space for AppBar
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.delivery_dining,
                       size: 64,
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: 16),
+                  Text(
                     'Rider Dashboard',
                     style: TextStyle(
                       fontSize: 20,
@@ -173,13 +173,13 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
   Widget _buildAppBar(String riderName) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               'Hi, $riderName',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -188,20 +188,20 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.refresh, color: Colors.white),
+                  icon: Icon(Icons.refresh, color: Colors.white),
                   onPressed: () {
                     ref.refresh(orderProvider);
                     _loadCommissions();
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.settings, color: Colors.white),
+                  icon: Icon(Icons.settings, color: Colors.white),
                   onPressed: () {
                     context.push('/edit-profile');
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.logout, color: Colors.white),
+                  icon: Icon(Icons.logout, color: Colors.white),
                   onPressed: () async {
                     await AuthService().logout();
                     if (context.mounted) {
@@ -219,10 +219,10 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
 
   Widget _buildTabSelector() {
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(4),
+      margin: EdgeInsets.all(16),
+      padding: EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: cardBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -241,9 +241,9 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
       child: GestureDetector(
         onTap: () => setState(() => _selectedIndex = index),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? primaryBlue : Colors.transparent,
+            color: isSelected ? Theme.of(context).colorScheme.primary : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
@@ -252,13 +252,13 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
               Icon(
                 icon,
                 size: 18,
-                color: isSelected ? Colors.white : textSecondary,
+                color: isSelected ? Colors.white : Colors.grey,
               ),
-              const SizedBox(width: 6),
+              SizedBox(width: 6),
               Text(
                 label,
                 style: TextStyle(
-                  color: isSelected ? Colors.white : textSecondary,
+                  color: isSelected ? Colors.white : Colors.grey,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   fontSize: 14,
                 ),
@@ -279,12 +279,12 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
             Icon(
               isActive ? Icons.delivery_dining : Icons.history,
               size: 64,
-              color: textSecondary.withOpacity(0.5),
+              color: Colors.grey.withOpacity(0.5),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               isActive ? 'No active orders' : 'No order history',
-              style: const TextStyle(color: textSecondary, fontSize: 16),
+              style: TextStyle(color: Colors.grey, fontSize: 16),
             ),
           ],
         ),
@@ -292,7 +292,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.only(top: 320, left: 16, right: 16, bottom: 20),
+      padding: EdgeInsets.only(top: 320, left: 16, right: 16, bottom: 20),
       itemCount: orders.length,
       itemBuilder: (context, index) {
         final order = orders[index];
@@ -305,9 +305,9 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
     final canMarkDelivered = isActive && order.status != 'cancelled';
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: cardBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -318,7 +318,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -327,15 +327,15 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: primaryBlue.withOpacity(0.1),
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     'ORDER #${order.id?.substring(0, 8).toUpperCase()}',
-                    style: const TextStyle(
-                      color: primaryBlue,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                       letterSpacing: 0.5,
@@ -343,14 +343,14 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: _getStatusColor(order.status),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     order.status.toUpperCase(),
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
@@ -360,12 +360,12 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
               ],
             ),
             
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // Route Display (Restaurant → Customer)
             _buildRouteDisplay(order),
             
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // Price and Time
             Row(
@@ -374,18 +374,18 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Total Amount',
                       style: TextStyle(
-                        color: textSecondary,
+                        color: Colors.grey,
                         fontSize: 12,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       '₹ ${order.totalAmount.toStringAsFixed(0)}',
-                      style: const TextStyle(
-                        color: accentOrange,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
@@ -395,26 +395,26 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const Text(
+                    Text(
                       'Order Time',
                       style: TextStyle(
-                        color: textSecondary,
+                        color: Colors.grey,
                         fontSize: 12,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       DateFormat('HH:mm a').format(order.createdAt ?? DateTime.now()),
-                      style: const TextStyle(
-                        color: textPrimary,
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyLarge!.color!,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
                       DateFormat('MMM d').format(order.createdAt ?? DateTime.now()),
-                      style: const TextStyle(
-                        color: textSecondary,
+                      style: TextStyle(
+                        color: Colors.grey,
                         fontSize: 12,
                       ),
                     ),
@@ -424,7 +424,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
             ),
             
             if (canMarkDelivered) ...[
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -432,15 +432,15 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
                     ref.read(orderProvider.notifier).updateStatus(order.id!, 'delivered');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryBlue,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 0,
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.check_circle, size: 20),
@@ -465,9 +465,9 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
 
   Widget _buildRouteDisplay(Order order) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -476,31 +476,31 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.green.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.restaurant, color: Colors.green, size: 20),
+                child: Icon(Icons.restaurant, color: Colors.green, size: 20),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Pickup From',
                       style: TextStyle(
-                        color: textSecondary,
+                        color: Colors.grey,
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(
                       order.restaurantName ?? 'Unknown',
-                      style: const TextStyle(
-                        color: textPrimary,
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyLarge!.color!,
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
@@ -508,8 +508,8 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
                     if (order.restaurantAddress != null)
                       Text(
                         order.restaurantAddress!,
-                        style: const TextStyle(
-                          color: textSecondary,
+                        style: TextStyle(
+                          color: Colors.grey,
                           fontSize: 12,
                         ),
                         maxLines: 1,
@@ -520,7 +520,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
               ),
               if (order.restaurantLatitude != null && order.restaurantLongitude != null)
                 IconButton(
-                  icon: const Icon(Icons.map, color: primaryBlue, size: 20),
+                  icon: Icon(Icons.map, color: Theme.of(context).colorScheme.primary, size: 20),
                   onPressed: () => _openMap(order.restaurantLatitude!, order.restaurantLongitude!),
                 ),
             ],
@@ -528,17 +528,17 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
           
           // Arrow
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
+            padding: EdgeInsets.symmetric(vertical: 8),
             child: Row(
               children: [
-                const SizedBox(width: 20),
+                SizedBox(width: 20),
                 Container(
                   width: 2,
                   height: 20,
-                  color: primaryBlue.withOpacity(0.3),
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                 ),
-                const SizedBox(width: 10),
-                const Icon(Icons.arrow_downward, color: primaryBlue, size: 16),
+                SizedBox(width: 10),
+                Icon(Icons.arrow_downward, color: Theme.of(context).colorScheme.primary, size: 16),
               ],
             ),
           ),
@@ -547,31 +547,31 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: primaryBlue.withOpacity(0.1),
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.person, color: primaryBlue, size: 20),
+                child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary, size: 20),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Deliver To',
                       style: TextStyle(
-                        color: textSecondary,
+                        color: Colors.grey,
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(
                       order.userName ?? 'Unknown',
-                      style: const TextStyle(
-                        color: textPrimary,
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyLarge!.color!,
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
@@ -579,8 +579,8 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
                     if (order.houseNumber != null)
                       Text(
                         '${order.houseNumber}, ${order.locality ?? ""}',
-                        style: const TextStyle(
-                          color: textSecondary,
+                        style: TextStyle(
+                          color: Colors.grey,
                           fontSize: 12,
                         ),
                         maxLines: 1,
@@ -591,7 +591,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
               ),
               if (order.latitude != null && order.longitude != null)
                 IconButton(
-                  icon: const Icon(Icons.map, color: primaryBlue, size: 20),
+                  icon: Icon(Icons.map, color: Theme.of(context).colorScheme.primary, size: 20),
                   onPressed: () => _openMap(order.latitude!, order.longitude!),
                 ),
             ],
@@ -603,25 +603,25 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
 
   Widget _buildEarningsTab() {
     if (!_commissionsLoaded) {
-      return const Center(child: CircularProgressIndicator(color: primaryBlue));
+      return Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary));
     }
 
     return ListView(
-      padding: const EdgeInsets.only(top: 340, left: 20, right: 20, bottom: 20),
+      padding: EdgeInsets.only(top: 340, left: 20, right: 20, bottom: 20),
       children: [
         // Total Earnings Card
         Container(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [primaryBlue, Color(0xFF4A90C0)],
+            gradient: LinearGradient(
+              colors: [Theme.of(context).colorScheme.primary, Color(0xFF4A90C0)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: primaryBlue.withOpacity(0.3),
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                 blurRadius: 15,
                 offset: const Offset(0, 8),
               ),
@@ -629,7 +629,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
           ),
           child: Column(
             children: [
-              const Text(
+              Text(
                 'Total Earnings',
                 style: TextStyle(
                   color: Colors.white70,
@@ -637,10 +637,10 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 '₹ ${_totalEarnings.toStringAsFixed(2)}',
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 42,
                   fontWeight: FontWeight.bold,
@@ -650,31 +650,31 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
           ),
         ),
         
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
         
         // Commission List Header
-        const Padding(
+        Padding(
           padding: EdgeInsets.symmetric(horizontal: 4),
           child: Text(
             'Commission History',
             style: TextStyle(
-              color: textPrimary,
+              color: Theme.of(context).textTheme.bodyLarge!.color!,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
         
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         
         // Commission List
         if (_commissions.isEmpty)
-          const Center(
+          Center(
             child: Padding(
               padding: EdgeInsets.all(40),
               child: Text(
                 'No commissions yet',
-                style: TextStyle(color: textSecondary, fontSize: 16),
+                style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
             ),
           )
@@ -686,10 +686,10 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
             final isApproved = status == 'approved';
             
             return Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.all(16),
+              margin: EdgeInsets.only(bottom: 12),
+              padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: cardBackground,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
@@ -702,7 +702,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: isRejected 
                           ? Colors.red.withOpacity(0.1) 
@@ -718,7 +718,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -728,22 +728,22 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
                             Expanded(
                               child: Text(
                                 'Order #${commission['order_id'].toString().substring(0, 8)}',
-                                style: const TextStyle(
-                                  color: textPrimary,
+                                style: TextStyle(
+                                  color: Theme.of(context).textTheme.bodyLarge!.color!,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
                                 ),
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: isRejected ? Colors.red : (isPending ? Colors.orange : Colors.green),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 isRejected ? 'REJECTED' : (isPending ? 'PENDING' : 'APPROVED'),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
@@ -752,20 +752,20 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Text(
                           DateFormat('MMM d, yyyy').format(
                             DateTime.parse(commission['created_at']),
                           ),
-                          style: const TextStyle(
-                            color: textSecondary,
+                          style: TextStyle(
+                            color: Colors.grey,
                             fontSize: 12,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Text(
                     '₹${double.parse(commission['amount'].toString()).toStringAsFixed(2)}',
                     style: TextStyle(
@@ -787,7 +787,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen> {
       case 'pending':
         return Colors.orange;
       case 'preparing':
-        return primaryBlue;
+        return Theme.of(context).colorScheme.primary;
       case 'rider_assigned':
         return const Color(0xFF9B59B6);
       case 'delivered':

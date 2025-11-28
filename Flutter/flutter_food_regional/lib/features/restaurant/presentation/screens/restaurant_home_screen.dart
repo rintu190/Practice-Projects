@@ -17,12 +17,12 @@ class RestaurantHomeScreen extends ConsumerStatefulWidget {
 
 class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
   // Modern color palette
-  static const Color primaryBlue = Color(0xFF5BA3D0);
-  static const Color backgroundColor = Color(0xFFF5F9FC);
-  static const Color cardBackground = Colors.white;
-  static const Color textPrimary = Color(0xFF2D3748);
-  static const Color textSecondary = Color(0xFF718096);
-  static const Color accentOrange = Color(0xFFFF6B6B);
+  
+  
+  
+  
+  
+  
   
   List<Map<String, dynamic>> _commissions = [];
   double _totalEarnings = 0.0;
@@ -89,7 +89,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
     final ordersAsync = ref.watch(orderProvider);
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           // Background header with cloud divider
@@ -118,10 +118,10 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
             _selectedIndex = index;
           });
         },
-        backgroundColor: Colors.white,
-        selectedItemColor: primaryBlue,
-        unselectedItemColor: textSecondary,
-        items: const [
+        backgroundColor: Theme.of(context).cardColor,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Colors.grey,
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_bag),
             label: 'Orders',
@@ -147,7 +147,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
           // Blue background with cloud shape
           Positioned.fill(
             child: CustomPaint(
-              painter: _CloudHeaderPainter(color: primaryBlue),
+              painter: _CloudHeaderPainter(color: Theme.of(context).colorScheme.primary),
             ),
           ),
           // Illustration area
@@ -156,21 +156,21 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 40), // Space for AppBar
+                  SizedBox(height: 40), // Space for AppBar
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.restaurant,
                       size: 64,
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: 16),
+                  Text(
                     'Restaurant Dashboard',
                     style: TextStyle(
                       fontSize: 20,
@@ -190,11 +190,11 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
   Widget _buildAppBar() {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Expanded(
+            Expanded(
               child: Text(
                 'Restaurant Dashboard',
                 style: TextStyle(
@@ -208,7 +208,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.refresh, color: Colors.white),
+                  icon: Icon(Icons.refresh, color: Colors.white),
                   onPressed: () {
                     ref.refresh(orderProvider);
                     _loadCommissions();
@@ -216,13 +216,13 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.settings, color: Colors.white),
+                  icon: Icon(Icons.settings, color: Colors.white),
                   onPressed: () {
                     context.push('/edit-profile');
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.logout, color: Colors.white),
+                  icon: Icon(Icons.logout, color: Colors.white),
                   onPressed: () async {
                     await AuthService().logout();
                     if (context.mounted) {
@@ -242,17 +242,17 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
     return ordersAsync.when(
       data: (orders) {
         if (orders.isEmpty) {
-          return const Center(child: Text('No orders found'));
+          return Center(child: Text('No orders found'));
         }
         return ListView.builder(
           itemCount: orders.length,
-          padding: const EdgeInsets.only(top: 320, bottom: 20),
+          padding: EdgeInsets.only(top: 320, bottom: 20),
           itemBuilder: (context, index) {
             final order = orders[index];
             return Card(
-              margin: const EdgeInsets.all(8),
+              margin: EdgeInsets.all(8),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -261,25 +261,25 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
                       children: [
                         Text(
                           'Order #${order.id?.substring(0, 8)}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(
                           DateFormat('MMM d, HH:mm').format(order.createdAt ?? DateTime.now()),
-                          style: const TextStyle(color: Colors.grey, fontSize: 12),
+                          style: TextStyle(color: Colors.grey, fontSize: 12),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text('Customer: ${order.userName ?? "Unknown"}'),
                     if (order.userPhone != null) Text('Phone: ${order.userPhone}'),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     
                     // Order Items
-                    const Text('Items:', style: TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 4),
+                    Text('Items:', style: TextStyle(fontWeight: FontWeight.bold)),
+                    SizedBox(height: 4),
                     if (order.items != null && order.items!.isNotEmpty) ...[
                       ...order.items!.map((item) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 2),
+                        padding: EdgeInsets.symmetric(vertical: 2),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -290,24 +290,24 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
                           ],
                         ),
                       )),
-                      const Divider(),
+                      Divider(),
                     ],
                     
                     Text('Total: ₹${order.totalAmount.toStringAsFixed(2)}', 
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    const SizedBox(height: 16),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    SizedBox(height: 16),
                     Row(
                       children: [
-                        const Text('Status: '),
-                        const SizedBox(width: 8),
+                        Text('Status: '),
+                        SizedBox(width: 8),
                         Expanded(
                           child: DropdownButtonFormField<String>(
                             value: _mapToRestaurantStatus(order.status),
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               border: OutlineInputBorder(),
                               contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             ),
-                            items: const [
+                            items: [
                               DropdownMenuItem(value: 'pending', child: Text('Order Accepted')),
                               DropdownMenuItem(value: 'preparing', child: Text('Preparation')),
                               DropdownMenuItem(value: 'handover', child: Text('Hand Over')),
@@ -329,25 +329,25 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(child: Text('Error: $error')),
     );
   }
 
   Widget _buildEarningsTab() {
     if (!_commissionsLoaded) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(child: CircularProgressIndicator());
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.only(top: 320, bottom: 20),
+      padding: EdgeInsets.only(top: 320, bottom: 20),
       itemCount: _commissions.length + 1,
       itemBuilder: (context, index) {
         if (index == 0) {
           // Summary Card
           return Container(
-            padding: const EdgeInsets.all(24),
-            margin: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(24),
+            margin: EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [Colors.orange.shade400, Colors.orange.shade600],
@@ -358,14 +358,14 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
             ),
             child: Column(
               children: [
-                const Text(
+                Text(
                   'Total Earnings',
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   '₹${_totalEarnings.toStringAsFixed(2)}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 36,
                     fontWeight: FontWeight.bold,
@@ -377,7 +377,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
         }
 
         if (_commissions.isEmpty) {
-          return const Center(child: Padding(
+          return Center(child: Padding(
             padding: EdgeInsets.all(20.0),
             child: Text('No commissions yet'),
           ));
@@ -390,7 +390,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
         final isApproved = status == 'approved';
         
         return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: ListTile(
             leading: CircleAvatar(
               backgroundColor: Colors.orange,
@@ -400,14 +400,14 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
               children: [
                 Expanded(child: Text('Order #${commission['order_id'].toString().substring(0, 8)}')),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: isRejected ? Colors.red : (isPending ? Colors.orange : Colors.green),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     isRejected ? 'REJECTED' : (isPending ? 'PENDING' : 'APPROVED'),
-                    style: const TextStyle(color: Colors.white, fontSize: 10),
+                    style: TextStyle(color: Colors.white, fontSize: 10),
                   ),
                 ),
               ],
@@ -419,7 +419,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
             ),
             trailing: Text(
               '₹${double.parse(commission['amount'].toString()).toStringAsFixed(2)}',
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
                 color: Colors.orange,
@@ -456,30 +456,30 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
 
   Widget _buildRestaurantDetailsTab() {
     if (!_restaurantLoaded) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(child: CircularProgressIndicator());
     }
 
     if (_restaurantData == null) {
-      return const Center(
+      return Center(
         child: Text('No restaurant assigned to your account'),
       );
     }
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(top: 340, left: 16, right: 16, bottom: 20),
+      padding: EdgeInsets.only(top: 340, left: 16, right: 16, bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Restaurant Details',
                         style: TextStyle(
                           fontSize: 20,
@@ -488,12 +488,12 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
                       ),
                       ElevatedButton.icon(
                         onPressed: () => _editRestaurant(_restaurantData!['id']),
-                        icon: const Icon(Icons.edit),
-                        label: const Text('Edit'),
+                        icon: Icon(Icons.edit),
+                        label: Text('Edit'),
                       ),
                     ],
                   ),
-                  const Divider(height: 24),
+                  Divider(height: 24),
                   _buildDetailRow('Name', _restaurantData!['name'] ?? 'N/A'),
                   _buildDetailRow('Cuisine', _restaurantData!['cuisine'] ?? 'N/A'),
                   _buildDetailRow('Address', _restaurantData!['address'] ?? 'N/A'),
@@ -504,12 +504,12 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           // Menu Items Section
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Menu Items',
                 style: TextStyle(
                   fontSize: 20,
@@ -518,18 +518,18 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
               ),
               ElevatedButton.icon(
                 onPressed: _addMenuItem,
-                icon: const Icon(Icons.add),
-                label: const Text('Add Item'),
+                icon: Icon(Icons.add),
+                label: Text('Add Item'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryBlue,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           if (!_menuItemsLoaded)
-            const Center(child: CircularProgressIndicator())
+            Center(child: CircularProgressIndicator())
           else if (_menuItems.isEmpty)
             const Card(
               child: Padding(
@@ -541,7 +541,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
             )
           else
             ..._menuItems.map((item) => Card(
-                  margin: const EdgeInsets.only(bottom: 8),
+                  margin: EdgeInsets.only(bottom: 8),
                   child: ListTile(
                     title: Text(item['name'] ?? ''),
                     subtitle: Text(item['description'] ?? ''),
@@ -550,19 +550,19 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
                       children: [
                         Text(
                           '₹${item['price']}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                             color: Colors.green,
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.blue),
+                          icon: Icon(Icons.edit, color: Colors.blue),
                           onPressed: () => _editMenuItem(item),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
+                          icon: Icon(Icons.delete, color: Colors.red),
                           onPressed: () => _deleteMenuItem(item['id']),
                         ),
                       ],
@@ -576,7 +576,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -584,7 +584,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
             width: 120,
             child: Text(
               '$label:',
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: Colors.grey,
               ),
@@ -593,7 +593,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 16),
             ),
           ),
         ],
@@ -622,44 +622,44 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
       final result = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Edit Restaurant Details'),
+          title: Text('Edit Restaurant Details'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Restaurant Name',
                     border: OutlineInputBorder(),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: cuisineController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Cuisine',
                     border: OutlineInputBorder(),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: addressController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Address',
                     border: OutlineInputBorder(),
                   ),
                   maxLines: 2,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: phoneController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Phone',
                     border: OutlineInputBorder(),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 ImagePickerWidget(
                   initialImageUrl: uploadedImageUrl,
                   onImageUploaded: (url) {
@@ -667,24 +667,24 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
                   },
                   label: 'Restaurant Image',
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
                       child: TextField(
                         controller: latController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Latitude',
                           border: OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: TextField(
                         controller: lngController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Longitude',
                           border: OutlineInputBorder(),
                         ),
@@ -693,7 +693,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 TextButton.icon(
                   onPressed: () async {
                     try {
@@ -708,8 +708,8 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
                       }
                     }
                   },
-                  icon: const Icon(Icons.my_location),
-                  label: const Text('Pin Current Location'),
+                  icon: Icon(Icons.my_location),
+                  label: Text('Pin Current Location'),
                 ),
               ],
             ),
@@ -717,11 +717,11 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Save'),
+              child: Text('Save'),
             ),
           ],
         ),
@@ -801,33 +801,33 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Add Menu Item', style: TextStyle(color: primaryBlue, fontWeight: FontWeight.bold)),
+          title: Text('Add Menu Item', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Name *', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
+                  decoration: InputDecoration(labelText: 'Name *', border: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.primary))),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
+                  decoration: InputDecoration(labelText: 'Description', border: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.primary))),
                   maxLines: 2,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: priceController,
-                  decoration: const InputDecoration(labelText: 'Price *', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
+                  decoration: InputDecoration(labelText: 'Price *', border: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.primary))),
                   keyboardType: TextInputType.number,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 // Veg/Non-Veg Toggle
                 Row(
                   children: [
-                    const Text('Food Type:', style: TextStyle(fontWeight: FontWeight.w500)),
-                    const SizedBox(width: 16),
+                    Text('Food Type:', style: TextStyle(fontWeight: FontWeight.w500)),
+                    SizedBox(width: 16),
                     GestureDetector(
                       onTap: () {
                         setState(() {
@@ -835,7 +835,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
                         });
                       },
                       child: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: isVeg ? Colors.green : Colors.transparent,
                           shape: BoxShape.circle,
@@ -848,7 +848,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     GestureDetector(
                       onTap: () {
                         setState(() {
@@ -856,7 +856,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
                         });
                       },
                       child: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: !isVeg ? Colors.red : Colors.transparent,
                           shape: BoxShape.circle,
@@ -871,7 +871,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 ImagePickerWidget(
                   initialImageUrl: uploadedImageUrl,
                   onImageUploaded: (url) {
@@ -883,8 +883,8 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel'), style: TextButton.styleFrom(foregroundColor: primaryBlue)),
-            ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Add'), style: ElevatedButton.styleFrom(backgroundColor: primaryBlue, foregroundColor: Colors.white)),
+            TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel'), style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.primary)),
+            ElevatedButton(onPressed: () => Navigator.pop(context, true), child: Text('Add'), style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary, foregroundColor: Colors.white)),
           ],
         ),
       ),
@@ -944,33 +944,33 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Edit Menu Item', style: TextStyle(color: primaryBlue, fontWeight: FontWeight.bold)),
+          title: Text('Edit Menu Item', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
+                  decoration: InputDecoration(labelText: 'Name', border: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.primary))),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
+                  decoration: InputDecoration(labelText: 'Description', border: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.primary))),
                   maxLines: 2,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextField(
                   controller: priceController,
-                  decoration: const InputDecoration(labelText: 'Price', border: OutlineInputBorder(borderSide: BorderSide(color: primaryBlue))),
+                  decoration: InputDecoration(labelText: 'Price', border: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.primary))),
                   keyboardType: TextInputType.number,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 // Veg/Non-Veg Toggle
                 Row(
                   children: [
-                    const Text('Food Type:', style: TextStyle(fontWeight: FontWeight.w500)),
-                    const SizedBox(width: 16),
+                    Text('Food Type:', style: TextStyle(fontWeight: FontWeight.w500)),
+                    SizedBox(width: 16),
                     GestureDetector(
                       onTap: () {
                         setState(() {
@@ -978,7 +978,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
                         });
                       },
                       child: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: isVeg ? Colors.green : Colors.transparent,
                           shape: BoxShape.circle,
@@ -991,7 +991,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     GestureDetector(
                       onTap: () {
                         setState(() {
@@ -999,7 +999,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
                         });
                       },
                       child: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: !isVeg ? Colors.red : Colors.transparent,
                           shape: BoxShape.circle,
@@ -1014,7 +1014,7 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 ImagePickerWidget(
                   initialImageUrl: uploadedImageUrl,
                   onImageUploaded: (url) {
@@ -1026,8 +1026,8 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel'), style: TextButton.styleFrom(foregroundColor: primaryBlue)),
-            ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Save'), style: ElevatedButton.styleFrom(backgroundColor: primaryBlue, foregroundColor: Colors.white)),
+            TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel'), style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.primary)),
+            ElevatedButton(onPressed: () => Navigator.pop(context, true), child: Text('Save'), style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary, foregroundColor: Colors.white)),
           ],
         ),
       ),
@@ -1072,14 +1072,14 @@ class _RestaurantHomeScreenState extends ConsumerState<RestaurantHomeScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Menu Item'),
-        content: const Text('Are you sure you want to delete this item?'),
+        title: Text('Delete Menu Item'),
+        content: Text('Are you sure you want to delete this item?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel')),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text('Delete'),
           ),
         ],
       ),

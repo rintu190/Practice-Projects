@@ -53,7 +53,7 @@ class CartScreen extends ConsumerWidget {
                         margin: const EdgeInsets.only(bottom: 16),
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
@@ -62,6 +62,7 @@ class CartScreen extends ConsumerWidget {
                               offset: const Offset(0, 5),
                             ),
                           ],
+                          border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
                         ),
                         child: Row(
                           children: [
@@ -99,7 +100,7 @@ class CartScreen extends ConsumerWidget {
                             ),
                             Container(
                               decoration: BoxDecoration(
-                                color: Colors.grey[100],
+                                color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Row(
@@ -132,7 +133,7 @@ class CartScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
                     boxShadow: [
                       BoxShadow(

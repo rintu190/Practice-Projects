@@ -68,10 +68,17 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const Divider(),
             ListTile(
+              leading: const Icon(Icons.edit_outlined),
+              title: const Text('Edit Profile'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/edit-profile'),
+            ),
+            const Divider(),
+            ListTile(
               leading: const Icon(Icons.settings_outlined),
               title: const Text('Settings'),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.push('/edit-profile'),
+              onTap: () => context.push('/settings'),
             ),
             const Divider(),
             const SizedBox(height: 32),
@@ -96,3 +103,5 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 }
+
+

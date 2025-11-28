@@ -134,10 +134,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(32),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.8),
+                            color: Theme.of(context).cardTheme.color?.withValues(alpha: 0.8) ?? Colors.white.withValues(alpha: 0.8),
                             borderRadius: BorderRadius.circular(30),
                             border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.5),
+                              color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
                             ),
                             boxShadow: [
                               BoxShadow(
@@ -153,7 +153,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 'Welcome Back!',
                                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                                  // color: Colors.black87, // Removed hardcoded color
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -179,12 +179,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 decoration: InputDecoration(
                                   hintText: 'Email',
                                   prefixIcon: const Icon(Icons.email_outlined),
-                                  fillColor: Colors.white.withValues(alpha: 0.7),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  filled: true,
+                                  // fillColor removed to use theme
                                 ),
                               ),
                               const SizedBox(height: 16),
@@ -215,12 +210,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                       });
                                     },
                                   ),
-                                  fillColor: Colors.white.withValues(alpha: 0.7),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  filled: true,
+                                  // fillColor removed to use theme
                                 ),
                               ),
                               const SizedBox(height: 32),
@@ -284,9 +274,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   label: const Text('Sign in with Google'),
                                   style: OutlinedButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(vertical: 16),
-                                    backgroundColor: Colors.white,
-                                    side: BorderSide(color: Colors.grey.shade300),
-                                    foregroundColor: Colors.black87,
+                                    backgroundColor: Theme.of(context).cardTheme.color,
+                                    side: BorderSide(color: Theme.of(context).dividerColor),
+                                    foregroundColor: Theme.of(context).textTheme.bodyLarge?.color,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),

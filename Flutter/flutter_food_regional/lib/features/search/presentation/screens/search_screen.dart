@@ -36,9 +36,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: Colors.grey[100],
+                fillColor: Theme.of(context).cardColor,
               ),
             ),
             const SizedBox(height: 16),
