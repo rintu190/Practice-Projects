@@ -217,13 +217,43 @@ class _InvestmentDetailScreenState extends State<InvestmentDetailScreen> {
     final remainingDays =
         maturityDate.difference(now).inDays.clamp(0, totalDays);
 
-    // Calculate daily profit rate (simplified - assumes daily distribution)
-    final dailyProfit = _investment.amount * (_investment.roiPercentage / 100);
+    // Calculate Total Expected Profit based on frequency and duration
+    double totalExpectedProfit = 0.0;
+    final roi = _investment.roiPercentage;
+    final amount = _investment.amount;
+    
+    switch (_investment.roiFrequency.toLowerCase()) {
+      case 'daily':
+        totalExpectedProfit = amount * (roi / 100) * totalDays;
+        break;
+      case 'weekly':
+        totalExpectedProfit = amount * (roi / 100) * (totalDays / 7);
+        break;
+      case 'bi-weekly':
+        totalExpectedProfit = amount * (roi / 100) * (totalDays / 14);
+        break;
+      case 'monthly':
+        totalExpectedProfit = amount * (roi / 100) * (totalDays / 30);
+        break;
+      case 'quarterly':
+        totalExpectedProfit = amount * (roi / 100) * (totalDays / 90);
+        break;
+      case 'yearly':
+      case 'annually':
+        totalExpectedProfit = amount * (roi / 100) * (totalDays / 365);
+        break;
+      case 'maturity':
+        totalExpectedProfit = amount * (roi / 100);
+        break;
+      default:
+        // Default to daily if unknown
+        totalExpectedProfit = amount * (roi / 100) * totalDays;
+    }
 
     // Project remaining profit
-    final projectedProfit = dailyProfit * remainingDays;
-    final totalProjected = _investment.totalProfitEarned + projectedProfit;
-    final finalAmount = _investment.amount + totalProjected;
+    final projectedProfit = (totalExpectedProfit - _investment.totalProfitEarned).clamp(0.0, double.infinity);
+    final totalProjected = totalExpectedProfit; // Total expected is the target
+    final finalAmount = _investment.amount + totalExpectedProfit;
 
     return Container(
       padding: const EdgeInsets.all(20),

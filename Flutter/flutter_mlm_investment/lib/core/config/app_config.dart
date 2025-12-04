@@ -1,6 +1,6 @@
 class AppConfig {
   // App Information
-  static const String appName = 'MLM Investment';
+  static const String appName = 'Nexus';
   static const String appVersion = '1.0.0';
   static const String appBuildNumber = '1';
   

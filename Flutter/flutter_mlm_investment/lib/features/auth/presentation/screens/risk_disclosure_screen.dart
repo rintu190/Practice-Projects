@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/config/compliance_config.dart';
-import '../../../../features/dashboard/presentation/screens/dashboard_screen.dart';
+import 'kyc_upload_screen.dart';
 
 class RiskDisclosureScreen extends StatefulWidget {
   const RiskDisclosureScreen({super.key});
@@ -31,35 +31,16 @@ class _RiskDisclosureScreenState extends State<RiskDisclosureScreen> {
     });
 
     // Simulate API call to record consent
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
 
     if (mounted) {
       setState(() {
         _isLoading = false;
       });
 
-      // Show success dialog
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          title: const Text('Registration Complete'),
-          content: const Text(
-            'Your account has been created successfully. Please wait for admin approval of your KYC documents.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                // Navigate to Dashboard (Placeholder for now)
-                Navigator.of(context).pop(); // Close dialog
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const DashboardScreen()),
-                );
-              },
-              child: const Text('Go to Dashboard'),
-            ),
-          ],
-        ),
+      // Navigate to KYC Upload
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const KycUploadScreen()),
       );
     }
   }

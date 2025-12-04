@@ -6,6 +6,8 @@ import '../../data/services/admin_service.dart';
 import '../../../pnl/presentation/screens/pnl_upload_screen.dart';
 import '../screens/approvals_screen.dart';
 import '../screens/commission_settings_screen.dart';
+import '../screens/user_management_screen.dart';
+import '../screens/investment_products_screen.dart';
 
 class AdminPanelScreen extends StatefulWidget {
   const AdminPanelScreen({super.key});
@@ -168,6 +170,42 @@ ${data['errors'].isNotEmpty ? '\n⚠️ Errors:\n${(data['errors'] as List).join
               ),
             ),
             const SizedBox(height: 12),
+
+            // Manage Users Card
+            _buildActionCard(
+              icon: Icons.people_outline,
+              title: 'Manage Users',
+              description: 'View, edit, and manage user accounts and wallets',
+              buttonText: 'View Users',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const UserManagementScreen(),
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 16),
+
+            // Manage Investment Plans Card
+            _buildActionCard(
+              icon: Icons.inventory_2_outlined,
+              title: 'Investment Plans',
+              description: 'Create and update investment products and ROI settings',
+              buttonText: 'Manage Plans',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const InvestmentProductsScreen(),
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 16),
 
             // Profit Calculation Card
             _buildActionCard(

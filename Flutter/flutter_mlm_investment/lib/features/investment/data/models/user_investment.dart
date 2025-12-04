@@ -11,6 +11,7 @@ class UserInvestment {
   final bool autoRenew;
   final String status; // 'active', 'matured', 'withdrawn', 'renewed'
   final String? productName; // Optional, joined from product table usually
+  final String roiFrequency;
 
   UserInvestment({
     required this.id,
@@ -25,6 +26,7 @@ class UserInvestment {
     required this.autoRenew,
     required this.status,
     this.productName,
+    required this.roiFrequency,
   });
 
   factory UserInvestment.fromJson(Map<String, dynamic> json) {
@@ -34,13 +36,14 @@ class UserInvestment {
       productId: json['product_id'],
       amount: double.parse(json['amount'].toString()),
       roiPercentage: double.parse((json['roi_percentage'] ?? 0).toString()),
-      createdAt: DateTime.parse(json['created_at']),
+      createdAt: DateTime.parse(json['created_at'] ?? DateTime.now().toIso8601String()),
       maturityDate: json['maturity_date'] != null ? DateTime.parse(json['maturity_date']) : null,
       lastProfitDate: json['last_profit_date'] != null ? DateTime.parse(json['last_profit_date']) : null,
       totalProfitEarned: double.parse((json['total_profit_earned'] ?? 0).toString()),
       autoRenew: json['auto_renew'] == 1 || json['auto_renew'] == true,
       status: json['status'] ?? 'active',
       productName: json['product_name'],
+      roiFrequency: json['roi_frequency'] ?? 'daily',
     );
   }
 }

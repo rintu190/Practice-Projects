@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../data/providers/auth_provider.dart';
 import '../../../dashboard/presentation/screens/dashboard_screen.dart';
-
+import 'risk_disclosure_screen.dart';
 class RegistrationDetailsScreen extends StatefulWidget {
   final String phoneNumber;
 
@@ -37,15 +37,15 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
           widget.phoneNumber,
           _passwordController.text,
           _nameController.text,
-          _referralController.text.isEmpty ? null : _referralController.text,
+          _referralController.text.trim().toUpperCase(),
         );
         
         if (mounted) {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const DashboardScreen()),
-            (route) => false,
-          );
+          MaterialPageRoute(builder: (context) => const RiskDisclosureScreen()),
+          (route) => false,
+        );
         }
       } catch (e) {
         if (mounted) {
@@ -86,6 +86,31 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
                     color: AppColors.textSecondary,
                   ),
                 ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, color: AppColors.primary, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Referral code is required to join',
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 32),
                 
                 // Name
@@ -117,14 +142,29 @@ class _RegistrationDetailsScreenState extends State<RegistrationDetailsScreen> {
                 ),
                 const SizedBox(height: 16),
                 
-                // Referral Code
+                // Referral Code (Mandatory)
                 TextFormField(
                   controller: _referralController,
+                  textCapitalization: TextCapitalization.characters,
                   decoration: const InputDecoration(
-                    labelText: 'Referral Code (Optional)',
+                    labelText: 'Referral Code *',
+                    hintText: 'Enter sponsor\'s referral code',
                     prefixIcon: Icon(Icons.group_add_outlined),
                     border: OutlineInputBorder(),
+                    helperText: 'Required - Ask your sponsor for their code',
                   ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Referral code is required';
+                    }
+                    if (value.trim().length < 6) {
+                      return 'Invalid referral code (minimum 6 characters)';
+                    }
+                    if (!RegExp(r'^[A-Z0-9]+$').hasMatch(value.trim().toUpperCase())) {
+                      return 'Referral code can only contain letters and numbers';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 32),
                 

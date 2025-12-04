@@ -111,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                 child: const Icon(Icons.lock_outline_rounded, size: 40, color: AppColors.primary),
               ),
               const SizedBox(height: 24),
-              Text('Welcome Back', style: Theme.of(context).textTheme.displaySmall),
+              Text('Welcome Back to Nexus', style: Theme.of(context).textTheme.displaySmall),
               const SizedBox(height: 32),
 
               // Tabs

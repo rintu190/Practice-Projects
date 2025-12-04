@@ -37,12 +37,14 @@ class _TeamScreenState extends State<TeamScreen> {
     try {
       final purchases = await _packageService.getMyPurchases();
       // Get the most recent joining package that's not expired
-      final joiningPackages = purchases.where((p) => 
-        p.packageType == 'joining' && 
-        p.status == 'completed' &&
-        (p.expiresAt == null || DateTime.parse(p.expiresAt!).isAfter(DateTime.now()))
-      ).toList();
-      
+      final joiningPackages = purchases
+          .where((p) =>
+              p.packageType == 'joining' &&
+              p.status == 'completed' &&
+              (p.expiresAt == null ||
+                  DateTime.parse(p.expiresAt!).isAfter(DateTime.now())))
+          .toList();
+
       if (joiningPackages.isNotEmpty) {
         setState(() {
           _activePackage = joiningPackages.first;
@@ -96,7 +98,10 @@ class _TeamScreenState extends State<TeamScreen> {
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Colors.purple.shade700, Colors.purple.shade500],
+                          colors: [
+                            Colors.purple.shade700,
+                            Colors.purple.shade500
+                          ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -162,7 +167,8 @@ class _TeamScreenState extends State<TeamScreen> {
                                 child: const Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.check_circle, color: Colors.green, size: 14),
+                                    Icon(Icons.check_circle,
+                                        color: Colors.green, size: 14),
                                     SizedBox(width: 4),
                                     Text(
                                       'ACTIVE',
@@ -193,7 +199,8 @@ class _TeamScreenState extends State<TeamScreen> {
                                     ),
                                     Text(
                                       Formatters.formatDate(
-                                        DateTime.parse(_activePackage!.purchasedAt),
+                                        DateTime.parse(
+                                            _activePackage!.purchasedAt),
                                       ),
                                       style: const TextStyle(
                                         color: Colors.white,
@@ -207,7 +214,8 @@ class _TeamScreenState extends State<TeamScreen> {
                               if (_activePackage!.expiresAt != null)
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Text(
                                         'Expires',
@@ -218,7 +226,8 @@ class _TeamScreenState extends State<TeamScreen> {
                                       ),
                                       Text(
                                         Formatters.formatDate(
-                                          DateTime.parse(_activePackage!.expiresAt!),
+                                          DateTime.parse(
+                                              _activePackage!.expiresAt!),
                                         ),
                                         style: const TextStyle(
                                           color: Colors.white,
@@ -239,7 +248,8 @@ class _TeamScreenState extends State<TeamScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const PackagesScreen(),
+                                    builder: (context) =>
+                                        const PackagesScreen(),
                                   ),
                                 ).then((_) => _loadActivePackage());
                               },
@@ -248,7 +258,8 @@ class _TeamScreenState extends State<TeamScreen> {
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.white,
                                 side: const BorderSide(color: Colors.white),
-                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
                               ),
                             ),
                           ),
@@ -263,7 +274,10 @@ class _TeamScreenState extends State<TeamScreen> {
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Colors.orange.shade700, Colors.orange.shade500],
+                          colors: [
+                            Colors.orange.shade700,
+                            Colors.orange.shade500
+                          ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -425,9 +439,9 @@ class _TeamScreenState extends State<TeamScreen> {
                               final member = members[index];
                               // Map backend data to UI format
                               final uiMember = {
-                                'name': member['full_name'] ?? 'User',
-                                'id': 'USR${member['id']}',
-                                'rank': 'Member', // Default
+                                'name': member['full_name'] ?? member['phone'] ?? 'User',
+                                'id': member['referral_code'] ?? 'USR${member['id']}',
+                                'rank': member['rank'] ?? 'Basic',
                                 'status': member['status'] ?? 'Inactive',
                                 'joinDate': Formatters.formatDate(
                                     DateTime.parse(member['created_at'])),

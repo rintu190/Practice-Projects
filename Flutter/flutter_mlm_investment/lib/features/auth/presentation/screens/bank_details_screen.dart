@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/validators.dart';
 import 'risk_disclosure_screen.dart';
+import '../../../../features/dashboard/presentation/screens/dashboard_screen.dart';
 
 class BankDetailsScreen extends StatefulWidget {
   const BankDetailsScreen({super.key});
@@ -46,10 +47,11 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
           const SnackBar(content: Text('Bank Details Saved Successfully!')),
         );
 
-        // Navigate to Risk Disclosure Screen
-        Navigator.push(
+        // Navigate to Dashboard
+        Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (_) => const RiskDisclosureScreen()),
+          MaterialPageRoute(builder: (_) => const DashboardScreen()),
+          (route) => false,
         );
       }
     }
@@ -189,9 +191,10 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
                   child: TextButton(
                     onPressed: () {
                       // Skip logic
-                      Navigator.push(
+                      Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (_) => const RiskDisclosureScreen()),
+                        MaterialPageRoute(builder: (_) => const DashboardScreen()),
+                        (route) => false,
                       );
                     },
                     child: const Text('Skip for now'),

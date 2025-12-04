@@ -111,13 +111,14 @@ public function distributeProfit($investmentId, $userId, $profitAmount, $creditT
         ");
         $stmt->execute([$profitAmount, $investmentId]);
 
-        // Credit to e_wallet (only one wallet now)
+        // Credit to earnings_balance (not e_wallet)
     $stmt = $this->conn->prepare("
         UPDATE wallets 
-        SET e_wallet_balance = e_wallet_balance + ?
+        SET earnings_balance = earnings_balance + ?,
+            total_earned = total_earned + ?
         WHERE user_id = ?
     ");
-    $stmt->execute([$profitAmount, $userId]);
+    $stmt->execute([$profitAmount, $profitAmount, $userId]);
 
     // Get investment product name for better description
     $productStmt = $this->conn->prepare("
@@ -131,12 +132,12 @@ public function distributeProfit($investmentId, $userId, $profitAmount, $creditT
     
     $description = "📈 Investment Profit" . ($productName ? " - $productName" : " #$investmentId");
 
-    // Create transaction record
+    // Create transaction record (to earnings)
     $stmt = $this->conn->prepare("
         INSERT INTO transactions (
             user_id, wallet_type, type, amount, 
             description, reference_type, reference_id, created_at
-        ) VALUES (?, 'e_wallet', 'credit', ?, ?, 'investment_profit', ?, NOW())
+        ) VALUES (?, 'earnings', 'credit', ?, ?, 'investment_profit', ?, NOW())
     ");
     $stmt->execute([
         $userId,

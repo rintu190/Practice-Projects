@@ -64,9 +64,9 @@ class DashboardController {
             $userStmt->execute([$this->userId]);
             $user = $userStmt->fetch();
 
-            // 2. Get Wallet Balance (only e_wallet now)
+            // 2. Get Wallet Balance (e_wallet and earnings)
             $walletStmt = $this->conn->prepare("
-                SELECT e_wallet_balance, total_earned 
+                SELECT e_wallet_balance, earnings_balance, total_earned 
                 FROM wallets 
                 WHERE user_id = ?
             ");
@@ -83,29 +83,36 @@ class DashboardController {
             $invStmt->execute([$this->userId]);
             $investment = $invStmt->fetch();
 
-            // 3b. Get Total Unrealized P&L from daily_pnl and investment_profits for ACTIVE investments only
+            // 3b. Get Unrealized P&L (from daily_pnl only) for ACTIVE investments
             $unrealizedStmt = $this->conn->prepare("
-                SELECT SUM(pnl) as total_unrealized_pnl FROM (
-                    SELECT dp.net_pnl as pnl 
-                    FROM daily_pnl dp
-                    JOIN user_investments ui ON dp.investment_id = ui.id
-                    WHERE dp.user_id = ? AND ui.status = 'active'
-                    
-                    UNION ALL
-                    
-                    SELECT ip.amount as pnl
-                    FROM investment_profits ip
-                    JOIN user_investments ui ON ip.investment_id = ui.id
-                    WHERE ip.user_id = ? AND ui.status = 'active'
-                ) as combined
+                SELECT SUM(dp.net_pnl) as total_unrealized_pnl 
+                FROM daily_pnl dp
+                JOIN user_investments ui ON dp.investment_id = ui.id
+                WHERE dp.user_id = ? AND ui.status = 'active'
             ");
-            $unrealizedStmt->execute([$this->userId, $this->userId]);
-            $unrealizedData = $unrealizedStmt->fetch();
-            $unrealizedPnl = (float)($unrealizedData['total_unrealized_pnl'] ?? 0);
+            $unrealizedStmt->execute([$this->userId]);
+            $unrealizedPnl = (float)($unrealizedStmt->fetch()['total_unrealized_pnl'] ?? 0);
+
+            // 3c. Get Realized P&L (from investment_profits) for ACTIVE investments
+            // This helps show the total return of current active investments
+            $realizedStmt = $this->conn->prepare("
+                SELECT SUM(ip.amount) as total_realized_pnl
+                FROM investment_profits ip
+                JOIN user_investments ui ON ip.investment_id = ui.id
+                WHERE ip.user_id = ? AND ui.status = 'active'
+            ");
+            $realizedStmt->execute([$this->userId]);
+            $realizedPnl = (float)($realizedStmt->fetch()['total_realized_pnl'] ?? 0);
 
             // Calculate current value = total_invested + unrealized_pnl
+            // Realized profits are already in wallet/earnings, so they don't add to current investment value
+            // unless we want to show 'Total Value Generated', but 'Current Value' usually implies liquidation value.
+            // For now, let's assume Current Value = Principal + Unrealized Gains
             $totalInvested = (float)($investment['total_invested'] ?? 0);
             $currentValue = $totalInvested + $unrealizedPnl;
+            
+            // Total Profit on Active Investments = Realized + Unrealized
+            $totalActiveProfit = $realizedPnl + $unrealizedPnl;
 
             // 4. Get Team Stats from genealogy
             $teamStmt = $this->conn->prepare("
@@ -164,12 +171,13 @@ class DashboardController {
                 ],
                 'wallet' => [
                     'balance' => (float)($wallet['e_wallet_balance'] ?? 0),
+                    'earnings_balance' => (float)($wallet['earnings_balance'] ?? 0),
                     'total_earned' => (float)($wallet['total_earned'] ?? 0),
                 ],
                 'investment' => [
                     'total_invested' => $totalInvested,
                     'current_value' => $currentValue,
-                    'total_profit' => $unrealizedPnl,
+                    'total_profit' => $totalActiveProfit,
                     'unrealized_pnl' => $unrealizedPnl,
                 ],
                 'team' => [

@@ -22,6 +22,12 @@ class GenealogyController {
             case 'get_stats':
                 $this->getStats();
                 break;
+            case 'get_code':
+                $this->getCode();
+                break;
+            case 'get_analytics':
+                $this->getAnalytics();
+                break;
             default:
                 $this->sendResponse(400, false, 'Invalid action');
         }
@@ -67,7 +73,7 @@ class GenealogyController {
 
         // Get User Details
         $stmt = $this->conn->prepare("
-            SELECT u.id, u.phone, u.rank, up.full_name, g.leg
+            SELECT u.id, u.phone, u.rank, u.referral_code, up.full_name, g.leg
             FROM users u
             LEFT JOIN user_profiles up ON u.id = up.user_id
             LEFT JOIN genealogy g ON u.id = g.user_id
@@ -79,7 +85,8 @@ class GenealogyController {
         if (!$user) return null;
 
         $node = [
-            'id' => $user['id'],
+            'id' => $user['referral_code'] ?: $user['id'], // Use referral code or user ID
+            'user_id' => $user['id'], // Keep actual user ID for internal use
             'name' => $user['full_name'] ?? $user['phone'] ?? 'User ' . $user['id'],
             'rank' => $user['rank'],
             'leg' => $user['leg'],
@@ -138,23 +145,112 @@ class GenealogyController {
 
     private function getStats() {
         try {
-            // Total Team
+            // Direct Referrals
             $stmt = $this->conn->prepare("SELECT COUNT(*) FROM genealogy WHERE sponsor_id = ?");
             $stmt->execute([$this->userId]);
             $directs = $stmt->fetchColumn();
 
-            // Total Downline (Recursive - simplified for now to just directs + their directs)
-            // Real MLM systems need a better way to count total downline (e.g. materialized path)
-            // For now, we'll just return directs count as 'Team Size' for the demo
-            
+            // Total Team (Recursive) - Get all downline members
+            $totalTeam = $this->getDownlineCount($this->userId);
+
+            // Active Members - Users with active investments
+            $activeStmt = $this->conn->prepare("
+                SELECT COUNT(DISTINCT g.user_id) 
+                FROM genealogy g
+                INNER JOIN user_investments ui ON g.user_id = ui.user_id
+                WHERE ui.status = 'active' 
+                AND g.sponsor_id = ?
+            ");
+            $activeStmt->execute([$this->userId]);
+            $activeMembers = $activeStmt->fetchColumn();
+
             $this->sendResponse(200, true, 'Stats fetched', [
                 'direct_referrals' => $directs,
-                'total_team' => $directs, // Placeholder for full recursive count
-                'active_members' => $directs // Placeholder
+                'total_team' => $totalTeam,
+                'active_members' => $activeMembers
             ]);
         } catch (Exception $e) {
             $this->sendResponse(500, false, 'Failed to fetch stats: ' . $e->getMessage());
         }
+    }
+
+    private function getCode() {
+        try {
+            $stmt = $this->conn->prepare("SELECT referral_code FROM users WHERE id = ?");
+            $stmt->execute([$this->userId]);
+            $code = $stmt->fetchColumn();
+
+            if (!$code) {
+                $this->sendResponse(404, false, 'Referral code not found');
+            }
+
+            // Construct deep link (placeholder for now, should match Play Store guide)
+            // In production, this would be a Firebase Dynamic Link or similar
+            $link = "https://mlminvestment.page.link/?link=https://mlminvestment.com/register?ref={$code}&apn=com.example.mlm_investment";
+
+            $this->sendResponse(200, true, 'Referral code fetched', [
+                'code' => $code,
+                'link' => $link
+            ]);
+        } catch (Exception $e) {
+            $this->sendResponse(500, false, 'Failed to fetch code: ' . $e->getMessage());
+        }
+    }
+
+    private function getAnalytics() {
+        try {
+            // Total Signups (Direct Referrals)
+            $stmt = $this->conn->prepare("SELECT COUNT(*) FROM genealogy WHERE sponsor_id = ?");
+            $stmt->execute([$this->userId]);
+            $signups = $stmt->fetchColumn();
+
+            // Active Members (Directs with active investments)
+            $activeStmt = $this->conn->prepare("
+                SELECT COUNT(DISTINCT g.user_id) 
+                FROM genealogy g
+                INNER JOIN user_investments ui ON g.user_id = ui.user_id
+                WHERE ui.status = 'active' 
+                AND g.sponsor_id = ?
+            ");
+            $activeStmt->execute([$this->userId]);
+            $activeMembers = $activeStmt->fetchColumn();
+
+            // Total Earned (from commissions)
+            // Assuming 'earnings_balance' in users table includes commissions, 
+            // OR we can sum from commissions table. Let's use commissions table for accuracy if available,
+            // otherwise user's total_earned field.
+            $earnStmt = $this->conn->prepare("SELECT total_earned FROM users WHERE id = ?");
+            $earnStmt->execute([$this->userId]);
+            $totalEarned = $earnStmt->fetchColumn() ?: 0;
+
+            // Conversion Rate
+            $conversionRate = $signups > 0 ? round(($activeMembers / $signups) * 100, 1) : 0;
+
+            $this->sendResponse(200, true, 'Analytics fetched', [
+                'signups' => $signups,
+                'active_referrals' => $activeMembers,
+                'total_earned' => $totalEarned,
+                'conversion_rate' => $conversionRate
+            ]);
+        } catch (Exception $e) {
+            $this->sendResponse(500, false, 'Failed to fetch analytics: ' . $e->getMessage());
+        }
+    }
+
+    private function getDownlineCount($userId) {
+        // Get all direct referrals
+        $stmt = $this->conn->prepare("SELECT user_id FROM genealogy WHERE sponsor_id = ?");
+        $stmt->execute([$userId]);
+        $directs = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        
+        $count = count($directs);
+        
+        // Recursively count their downlines
+        foreach ($directs as $directId) {
+            $count += $this->getDownlineCount($directId);
+        }
+        
+        return $count;
     }
 
     private function sendResponse($code, $success, $message, $data = null) {

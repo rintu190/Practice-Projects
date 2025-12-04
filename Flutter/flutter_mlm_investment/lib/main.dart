@@ -10,6 +10,7 @@ import 'features/dashboard/data/providers/dashboard_provider.dart';
 import 'features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'features/team/data/providers/genealogy_provider.dart';
 import 'features/team/data/providers/referral_provider.dart';
+import 'features/earnings/data/providers/earnings_provider.dart';
 import 'core/widgets/auth_guard.dart';
 
 void main() async {
@@ -41,6 +42,7 @@ void main() async {
         ),
         ChangeNotifierProvider(create: (_) => GenealogyProvider()),
         ChangeNotifierProvider(create: (_) => ReferralProvider()),
+        ChangeNotifierProvider(create: (_) => EarningsProvider()),
       ],
       child: const MyApp(),
     ),

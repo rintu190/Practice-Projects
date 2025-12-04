@@ -46,6 +46,9 @@ class WalletController {
             case 'withdraw':
                 $this->withdraw();
                 break;
+            case 'withdraw_earnings':
+                $this->withdrawEarnings();
+                break;
             default:
                 $this->sendResponse(400, false, 'Invalid action');
         }
@@ -310,6 +313,89 @@ class WalletController {
 
         } catch (Exception $e) {
             $this->sendResponse(500, false, 'Transfer failed: ' . $e->getMessage());
+        }
+    }
+
+    private function withdrawEarnings() {
+        try {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $amount = $data['amount'] ?? null;
+
+            if (!$amount || $amount <= 0) {
+                $this->sendResponse(400, false, 'Invalid amount');
+            }
+
+            $this->conn->beginTransaction();
+
+            // Get current balances
+            $stmt = $this->conn->prepare("
+                SELECT earnings_balance, e_wallet_balance 
+                FROM wallets 
+                WHERE user_id = ?
+            ");
+            $stmt->execute([$this->userId]);
+            $wallet = $stmt->fetch();
+
+            if (!$wallet) {
+                $this->sendResponse(404, false, 'Wallet not found');
+            }
+
+            $earningsBefore = (float)$wallet['earnings_balance'];
+            $walletBefore = (float)$wallet['e_wallet_balance'];
+
+            // Check if sufficient earnings balance
+            if ($earningsBefore < $amount) {
+                $this->sendResponse(400, false, 'Insufficient earnings balance');
+            }
+
+            // Transfer from earnings to e-wallet
+            $stmt = $this->conn->prepare("
+                UPDATE wallets 
+                SET earnings_balance = earnings_balance - ?,
+                    e_wallet_balance = e_wallet_balance + ?
+                WHERE user_id = ?
+            ");
+            $stmt->execute([$amount, $amount, $this->userId]);
+
+            $earningsAfter = $earningsBefore - $amount;
+            $walletAfter = $walletBefore + $amount;
+
+            // Record withdrawal
+            $stmt = $this->conn->prepare("
+                INSERT INTO earnings_withdrawals (
+                    user_id, amount, earnings_before, earnings_after,
+                    wallet_before, wallet_after, status
+                ) VALUES (?, ?, ?, ?, ?, ?, 'completed')
+            ");
+            $stmt->execute([
+                $this->userId, $amount, $earningsBefore, $earningsAfter,
+                $walletBefore, $walletAfter
+            ]);
+
+            // Create transaction record
+            $stmt = $this->conn->prepare("
+                INSERT INTO transactions (
+                    user_id, wallet_type, type, amount,
+                    description, balance_before, balance_after, status, created_at
+                ) VALUES (?, 'e_wallet', 'credit', ?, ?, ?, ?, 'completed', NOW())
+            ");
+            $stmt->execute([
+                $this->userId, $amount,
+                '💸 Earnings Withdrawal to Wallet',
+                $walletBefore, $walletAfter
+            ]);
+
+            $this->conn->commit();
+
+            $this->sendResponse(200, true, 'Earnings withdrawn successfully', [
+                'amount' => $amount,
+                'earnings_balance' => $earningsAfter,
+                'e_wallet_balance' => $walletAfter
+            ]);
+
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            $this->sendResponse(500, false, 'Withdrawal failed: ' . $e->getMessage());
         }
     }
 

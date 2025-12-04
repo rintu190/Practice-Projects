@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
-import '../../../support/presentation/screens/help_support_screen.dart';
+import '../../../support/presentation/screens/support_screen.dart';
 import '../../../support/presentation/screens/terms_conditions_screen.dart';
 import '../../../support/presentation/screens/privacy_policy_screen.dart';
 import '../../../profile/presentation/screens/bank_details_screen.dart';
@@ -240,7 +240,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const HelpSupportScreen(),
+                        builder: (context) => const SupportScreen(),
                       ),
                     );
                   },

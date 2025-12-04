@@ -15,7 +15,8 @@ import '../widgets/earnings_card.dart';
 import '../../../admin/presentation/screens/admin_panel_screen.dart';
 import '../../../auth/data/providers/auth_provider.dart';
 import '../../../packages/presentation/screens/packages_screen.dart';
-
+import '../../../earnings/presentation/screens/earnings_breakdown_screen.dart';
+import '../../../support/presentation/screens/support_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -168,6 +169,14 @@ class HomeTab extends StatelessWidget {
                     EarningsCard(
                       amount: Formatters.formatCurrency(
                           (wallet['total_earned'] ?? 0).toDouble()),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EarningsBreakdownScreen(),
+                          ),
+                        );
+                      },
                     ),
                   if (wallet != null && wallet['total_earned'] != null)
                     const SizedBox(height: 24),
@@ -175,7 +184,7 @@ class HomeTab extends StatelessWidget {
                   // Rank Card
                   if (user != null && user['rank'] != null)
                     RankCard(
-                      currentRank: user['rank'] ?? 'Member',
+                      currentRank: user['rank'] ?? 'Basic',
                       nextRankData: user['next_rank'],
                     ),
                   if (user != null && user['rank'] != null)
@@ -285,7 +294,8 @@ class HomeTab extends StatelessWidget {
                             children: [
                               Text(
                                 Formatters.formatCurrency(
-                                    (investment['unrealized_pnl'] ?? 0).toDouble()),
+                                    (investment['unrealized_pnl'] ?? 0)
+                                        .toDouble()),
                                 style: Theme.of(context)
                                     .textTheme
                                     .headlineMedium
@@ -362,7 +372,14 @@ class HomeTab extends StatelessWidget {
                             icon: Icons.support_agent,
                             label: 'Support',
                             color: Colors.orange,
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SupportScreen(),
+                                ),
+                              );
+                            },
                           ),
                           if (isAdmin)
                             _buildQuickAction(

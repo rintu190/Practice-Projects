@@ -51,70 +51,134 @@ class _CommissionSettingsScreenState extends State<CommissionSettingsScreen> {
           : ListView.builder(
               itemCount: _rules.length,
               itemBuilder: (context, index) {
-                final rule = _rules[index];
-                return Card(
-                  margin: const EdgeInsets.all(8),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(rule['name'], style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        Text('Type: ${rule['type']} | Model: ${rule['model_type']}'),
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextFormField(
-                                initialValue: rule['percentage'].toString(),
-                                decoration: const InputDecoration(labelText: 'Percentage (%)'),
-                                keyboardType: TextInputType.number,
-                                onFieldSubmitted: (val) {
-                                  _updateRule(
-                                    int.parse(rule['id'].toString()),
-                                    double.tryParse(val) ?? 0,
-                                    double.parse(rule['fixed_amount'].toString()),
-                                    rule['is_active'] == 1,
-                                  );
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: TextFormField(
-                                initialValue: rule['fixed_amount'].toString(),
-                                decoration: const InputDecoration(labelText: 'Fixed Amount'),
-                                keyboardType: TextInputType.number,
-                                onFieldSubmitted: (val) {
-                                  _updateRule(
-                                    int.parse(rule['id'].toString()),
-                                    double.parse(rule['percentage'].toString()),
-                                    double.tryParse(val) ?? 0,
-                                    rule['is_active'] == 1,
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        SwitchListTile(
-                          title: const Text('Active'),
-                          value: rule['is_active'] == 1,
-                          onChanged: (val) {
-                             _updateRule(
-                                int.parse(rule['id'].toString()),
-                                double.parse(rule['percentage'].toString()),
-                                double.parse(rule['fixed_amount'].toString()),
-                                val,
-                              );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
+                return CommissionRuleCard(
+                  rule: _rules[index],
+                  onUpdate: _updateRule,
                 );
               },
             ),
     );
   }
 }
+
+class CommissionRuleCard extends StatefulWidget {
+  final dynamic rule;
+  final Function(int, double, double, bool) onUpdate;
+
+  const CommissionRuleCard({
+    Key? key,
+    required this.rule,
+    required this.onUpdate,
+  }) : super(key: key);
+
+  @override
+  _CommissionRuleCardState createState() => _CommissionRuleCardState();
+}
+
+class _CommissionRuleCardState extends State<CommissionRuleCard> {
+  late TextEditingController _percentageController;
+  late TextEditingController _fixedAmountController;
+  late bool _isActive;
+
+  @override
+  void initState() {
+    super.initState();
+    _percentageController = TextEditingController(text: widget.rule['percentage'].toString());
+    _fixedAmountController = TextEditingController(text: widget.rule['fixed_amount'].toString());
+    _isActive = widget.rule['is_active'] == 1;
+  }
+
+  @override
+  void didUpdateWidget(CommissionRuleCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.rule != widget.rule) {
+      _percentageController.text = widget.rule['percentage'].toString();
+      _fixedAmountController.text = widget.rule['fixed_amount'].toString();
+      _isActive = widget.rule['is_active'] == 1;
+    }
+  }
+
+  @override
+  void dispose() {
+    _percentageController.dispose();
+    _fixedAmountController.dispose();
+    super.dispose();
+  }
+
+  void _handleSave() {
+    widget.onUpdate(
+      int.parse(widget.rule['id'].toString()),
+      double.tryParse(_percentageController.text) ?? 0,
+      double.tryParse(_fixedAmountController.text) ?? 0,
+      _isActive,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.all(8),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(widget.rule['name'], style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text('Type: ${widget.rule['type']} | Model: ${widget.rule['model_type']}',
+                          style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.save, color: Colors.blue),
+                  onPressed: _handleSave,
+                  tooltip: 'Save Changes',
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _percentageController,
+                    decoration: const InputDecoration(labelText: 'Percentage (%)'),
+                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: TextField(
+                    controller: _fixedAmountController,
+                    decoration: const InputDecoration(labelText: 'Fixed Amount'),
+                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  ),
+                ),
+              ],
+            ),
+            SwitchListTile(
+              title: const Text('Active'),
+              value: _isActive,
+              onChanged: (val) {
+                setState(() {
+                  _isActive = val;
+                });
+                // Optional: Auto-save on toggle, or let user click save
+                // For now, let's auto-save toggle for convenience, but keep text fields manual
+                _handleSave(); 
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

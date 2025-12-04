@@ -14,6 +14,7 @@ class InvestmentProduct {
   final double earlyWithdrawalPenalty;
   final String? category;
   final String? tier;
+  final String status;
 
   InvestmentProduct({
     required this.id,
@@ -31,6 +32,7 @@ class InvestmentProduct {
     required this.earlyWithdrawalPenalty,
     this.category,
     this.tier,
+    required this.status,
   });
 
   factory InvestmentProduct.fromJson(Map<String, dynamic> json) {
@@ -50,6 +52,7 @@ class InvestmentProduct {
       earlyWithdrawalPenalty: double.parse((json['early_withdrawal_penalty'] ?? 0).toString()),
       category: json['category'],
       tier: json['tier'],
+      status: json['status'] ?? 'active',
     );
   }
 }

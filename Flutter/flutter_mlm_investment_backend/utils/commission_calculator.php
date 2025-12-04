@@ -183,10 +183,10 @@ class CommissionCalculator {
 
 
     private function creditCommission($userId, $fromUserId, $amount, $type, $refId, $desc, $level = null) {
-        // 1. Add to Wallet
+        // 1. Add to Earnings Balance (not e-wallet)
         $stmt = $this->conn->prepare("
             UPDATE wallets 
-            SET e_wallet_balance = e_wallet_balance + ?, 
+            SET earnings_balance = earnings_balance + ?, 
                 total_earned = total_earned + ? 
             WHERE user_id = ?
         ");
@@ -225,9 +225,9 @@ class CommissionCalculator {
             $transactionDesc = "🤝 Matching Bonus from " . ($userPhone ?: "User #$fromUserId");
         }
 
-        // 4. Record Transaction
-        // Get current balance for balance_after
-        $balStmt = $this->conn->prepare("SELECT e_wallet_balance FROM wallets WHERE user_id = ?");
+        // 4. Record Transaction (to earnings, not e-wallet)
+        // Get current earnings balance for balance_after
+        $balStmt = $this->conn->prepare("SELECT earnings_balance FROM wallets WHERE user_id = ?");
         $balStmt->execute([$userId]);
         $currentBalance = $balStmt->fetchColumn();
 
@@ -235,7 +235,7 @@ class CommissionCalculator {
             INSERT INTO transactions (
                 user_id, wallet_type, type, amount, 
                 description, balance_before, balance_after, status, created_at
-            ) VALUES (?, 'e_wallet', 'credit', ?, ?, ?, ?, 'completed', NOW())
+            ) VALUES (?, 'earnings', 'credit', ?, ?, ?, ?, 'completed', NOW())
         ");
         
         $balanceBefore = $currentBalance - $amount; // Since we already updated the wallet

@@ -55,7 +55,10 @@ function getCommissionRules() {
 function updateCommissionRule() {
     $data = json_decode(file_get_contents('php://input'), true);
     
+    error_log("Update Commission Rule Request: " . print_r($data, true));
+
     if (!isset($data['id']) || !isset($data['percentage'])) {
+        error_log("Missing fields: id or percentage");
         echo json_encode(['success' => false, 'message' => 'Missing required fields']);
         return;
     }

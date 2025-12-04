@@ -203,7 +203,10 @@ class InvestmentController {
                     ui.*,
                     ip.name as product_name,
                     ip.roi_percentage as expected_roi,
-                    ip.duration_days
+                    ip.duration_days,
+                    ip.product_type,
+                    ip.risk_level,
+                    ip.roi_frequency
                 FROM user_investments ui
                 JOIN investment_products ip ON ui.product_id = ip.id
                 WHERE ui.user_id = ?";

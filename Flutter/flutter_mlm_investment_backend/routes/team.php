@@ -47,7 +47,9 @@ class TeamController {
             $stmt = $this->conn->prepare("
                 SELECT 
                     u.id, 
-                    u.phone, 
+                    u.phone,
+                    u.referral_code,
+                    u.rank,
                     u.created_at,
                     p.full_name,
                     p.profile_image,

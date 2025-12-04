@@ -6,6 +6,7 @@ import '../../../../core/utils/formatters.dart';
 import '../../data/providers/dashboard_provider.dart';
 import '../../../wallet/presentation/screens/add_funds_screen.dart';
 import '../../../wallet/presentation/screens/withdraw_screen.dart';
+import '../../../wallet/presentation/screens/transaction_history_screen.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});
@@ -32,7 +33,13 @@ class _WalletScreenState extends State<WalletScreen> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.history_rounded),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const TransactionHistoryScreen()),
+                  );
+                },
               ),
             ],
           ),
@@ -112,7 +119,14 @@ class _WalletScreenState extends State<WalletScreen> {
                                 ),
                           ),
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const TransactionHistoryScreen()),
+                              );
+                            },
                             child: const Text('View All'),
                           ),
                         ],
