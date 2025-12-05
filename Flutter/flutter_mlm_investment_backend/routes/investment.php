@@ -8,10 +8,12 @@ class InvestmentController {
     private $conn;
     private $userId;
 
-    public function __construct() {
+    public function __construct($requireAuth = true) {
         $this->db = Database::getInstance();
         $this->conn = $this->db->getConnection();
-        $this->authenticate();
+        if ($requireAuth) {
+            $this->authenticate();
+        }
     }
 
     private function authenticate() {
@@ -34,6 +36,16 @@ class InvestmentController {
     }
 
     public function handleRequest($action) {
+        // Public endpoints that don't require authentication
+        $publicEndpoints = ['get_products'];
+        
+        // Authenticate only if not a public endpoint
+        if (!in_array($action, $publicEndpoints)) {
+            if (!$this->userId) {
+                $this->authenticate();
+            }
+        }
+        
         switch ($action) {
             case 'get_products':
                 $this->getProducts();
@@ -260,7 +272,8 @@ class InvestmentController {
 }
 
 if (isset($_GET['action'])) {
-    $investment = new InvestmentController();
+    // Don't require auth in constructor, let handleRequest decide
+    $investment = new InvestmentController(false);
     $investment->handleRequest($_GET['action']);
 }
 ?>

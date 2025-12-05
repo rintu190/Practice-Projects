@@ -121,6 +121,8 @@ if (isset($_GET['action'])) {
         case 'get_all_tickets':
         case 'reply_ticket':
         case 'close_ticket':
+        case 'trigger_profit_calculation':
+        case 'diagnose_profits':
             require_once __DIR__ . '/routes/admin.php';
             break;
             

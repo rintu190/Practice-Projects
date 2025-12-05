@@ -77,6 +77,9 @@ class AdminController {
             case 'update_product':
                 $this->updateProduct();
                 break;
+            case 'diagnose_profits':
+                $this->diagnoseProfits();
+                break;
             default:
                 $this->sendResponse(400, false, 'Invalid action');
         }
@@ -936,6 +939,127 @@ class AdminController {
             $this->sendResponse(200, true, 'Product updated successfully');
         } catch (Exception $e) {
             $this->sendResponse(500, false, 'Error updating product: ' . $e->getMessage());
+        }
+    }
+
+    private function diagnoseProfits() {
+        try {
+            $result = [
+                'active_investments' => [],
+                'recent_profits' => [],
+                'summary' => []
+            ];
+
+            // Get active investments with eligibility check
+            $stmt = $this->conn->query("
+                SELECT 
+                    ui.id,
+                    ui.user_id,
+                    ui.amount,
+                    ui.created_at,
+                    ui.maturity_date,
+                    ui.last_profit_date,
+                    ui.total_profit_earned,
+                    ui.status,
+                    ip.name as product_name,
+                    ip.roi_percentage,
+                    ip.roi_frequency,
+                    DATEDIFF(CURDATE(), ui.last_profit_date) as days_since_last_profit,
+                    DATEDIFF(ui.maturity_date, CURDATE()) as days_to_maturity,
+                    u.phone
+                FROM user_investments ui
+                JOIN investment_products ip ON ui.product_id = ip.id
+                JOIN users u ON ui.user_id = u.id
+                WHERE ui.status = 'active'
+                ORDER BY ui.id
+            ");
+
+            $investments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($investments as $inv) {
+                // Calculate eligibility
+                $eligible = false;
+                $reason = "";
+                $dailyProfit = 0;
+
+                if ($inv['roi_frequency'] == 'daily') {
+                    $dailyProfit = ($inv['amount'] * $inv['roi_percentage']) / 100;
+                    if (!$inv['last_profit_date'] || $inv['last_profit_date'] < date('Y-m-d')) {
+                        $eligible = true;
+                        $reason = "Daily profit due";
+                    } else {
+                        $reason = "Already calculated today (" . $inv['last_profit_date'] . ")";
+                    }
+                } elseif ($inv['roi_frequency'] == 'monthly') {
+                    $dailyProfit = ($inv['amount'] * $inv['roi_percentage']) / 100 / 30;
+                    if (!$inv['last_profit_date'] || $inv['days_since_last_profit'] >= 30) {
+                        $eligible = true;
+                        $reason = "Monthly profit due (30 days passed)";
+                    } else {
+                        $reason = "Monthly profit not due yet ({$inv['days_since_last_profit']}/30 days)";
+                    }
+                } elseif ($inv['roi_frequency'] == 'weekly') {
+                    $dailyProfit = ($inv['amount'] * $inv['roi_percentage']) / 100 / 7;
+                    if (!$inv['last_profit_date'] || $inv['days_since_last_profit'] >= 7) {
+                        $eligible = true;
+                        $reason = "Weekly profit due (7 days passed)";
+                    } else {
+                        $reason = "Weekly profit not due yet ({$inv['days_since_last_profit']}/7 days)";
+                    }
+                }
+
+                $result['active_investments'][] = [
+                    'id' => $inv['id'],
+                    'user_id' => $inv['user_id'],
+                    'phone' => $inv['phone'],
+                    'product' => $inv['product_name'],
+                    'amount' => $inv['amount'],
+                    'roi' => $inv['roi_percentage'] . '% ' . $inv['roi_frequency'],
+                    'created' => $inv['created_at'],
+                    'maturity' => $inv['maturity_date'],
+                    'days_to_maturity' => $inv['days_to_maturity'],
+                    'last_profit_date' => $inv['last_profit_date'] ?: 'Never',
+                    'days_since_last_profit' => $inv['days_since_last_profit'] ?: 0,
+                    'total_earned' => $inv['total_profit_earned'],
+                    'daily_profit' => round($dailyProfit, 2),
+                    'eligible' => $eligible,
+                    'reason' => $reason
+                ];
+            }
+
+            // Get recent profits
+            $stmt = $this->conn->query("
+                SELECT 
+                    ip.id,
+                    ip.investment_id,
+                    ip.user_id,
+                    ip.amount,
+                    ip.profit_date,
+                    ip.credited_to,
+                    u.phone
+                FROM investment_profits ip
+                JOIN users u ON ip.user_id = u.id
+                ORDER BY ip.created_at DESC
+                LIMIT 10
+            ");
+
+            $result['recent_profits'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Summary
+            $result['summary'] = [
+                'total_active_investments' => count($investments),
+                'eligible_for_profit' => count(array_filter($result['active_investments'], function($inv) {
+                    return $inv['eligible'];
+                })),
+                'total_recent_profits' => count($result['recent_profits']),
+                'current_date' => date('Y-m-d'),
+                'current_time' => date('Y-m-d H:i:s')
+            ];
+
+            $this->sendResponse(200, true, 'Profit diagnostic completed', $result);
+
+        } catch (Exception $e) {
+            $this->sendResponse(500, false, 'Error diagnosing profits: ' . $e->getMessage());
         }
     }
 

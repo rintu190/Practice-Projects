@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../utils/CommissionCalculator.php';
+require_once __DIR__ . '/../utils/commission_calculator.php';
 
 $action = $_GET['action'] ?? '';
 $method = $_SERVER['REQUEST_METHOD'];
@@ -107,14 +107,19 @@ function triggerCommissionCalculation() {
     $data = json_decode(file_get_contents('php://input'), true);
     $userId = $data['user_id'] ?? null;
     $amount = $data['amount'] ?? 0;
+    $investmentId = $data['investment_id'] ?? null;
     
     if (!$userId || !$amount) {
         echo json_encode(['success' => false, 'message' => 'User ID and Amount required']);
         return;
     }
     
-    $calculator = new CommissionCalculator();
-    $result = $calculator->processTransactionCommissions($userId, $amount);
-    
-    echo json_encode($result);
+    try {
+        $calculator = new CommissionCalculator();
+        $calculator->distributeCommissions($userId, $amount, $investmentId);
+        
+        echo json_encode(['success' => true, 'message' => 'Commissions calculated and distributed successfully']);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+    }
 }

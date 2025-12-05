@@ -2,30 +2,39 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform;
 
 class ApiConfig {
-  // Base URL - Automatically detects platform
-  // For Web/Desktop: use localhost
-  // For Android Emulator: use 10.0.2.2
-  // For iOS Simulator: use localhost
-  // For Physical Device: use your computer's IP address (e.g., 192.168.1.8)
+  // Environment Configuration
+  // Set to true for production, false for local development
+  static const bool isProduction = true;
+
+  // Production URL
+  static const String productionUrl = 'https://www.bytesqube.com/Nexus';
+
+  // Local Development URLs
+  static const String localWebUrl = 'http://localhost:8000';
+  static const String localAndroidUrl = 'http://10.0.2.2:8000';
+  static const String localIOSUrl = 'http://localhost:8000';
+
+  // Base URL - Automatically detects environment and platform
   static String get baseUrl {
+    // Use production URL if isProduction is true
+    if (isProduction) {
+      return productionUrl;
+    }
+
+    // Local development URLs based on platform
     if (kIsWeb) {
-      // Web platform
-      return 'http://localhost:8000';
+      return localWebUrl;
     } else {
       try {
         if (Platform.isAndroid) {
-          // Android emulator
-          return 'http://10.0.2.2:8000';
+          return localAndroidUrl;
         } else if (Platform.isIOS) {
-          // iOS simulator
-          return 'http://localhost:8000';
+          return localIOSUrl;
         } else {
-          // Desktop (macOS, Windows, Linux)
-          return 'http://localhost:8000';
+          return localWebUrl;
         }
       } catch (e) {
-        // Fallback
-        return 'http://localhost:8000';
+        return localWebUrl;
       }
     }
   }
@@ -40,7 +49,6 @@ class ApiConfig {
   static const String loginPassword = '/?action=login_password';
   static const String register = '/?action=register';
   static const String logout = '/?action=logout';
-
 
   // KYC Endpoints
   static const String uploadKyc = '/?action=upload';
@@ -126,7 +134,8 @@ class ApiConfig {
   static const String approveDeposits = '/?action=approve_deposits';
   static const String approveWithdrawals = '/?action=approve_withdrawals';
   static const String approveTransfers = '/?action=approve_transfers';
-  static const String triggerProfitCalculation = '/?action=trigger_profit_calculation';
+  static const String triggerProfitCalculation =
+      '/?action=trigger_profit_calculation';
   static const String adjustWallet = '/?action=adjust_wallet';
   static const String createProduct = '/?action=create_product';
   static const String updateProduct = '/?action=update_product';

@@ -221,7 +221,6 @@ class _ApprovalsScreenState extends State<ApprovalsScreen> {
                             userName: userName,
                             amount: amount,
                             createdAt: createdAt,
-                            itemData: item,
                             onApprove: () => _approveItem(type, itemId as int),
                             onReject: () => _rejectItem(type, itemId as int),
                           );
@@ -237,7 +236,6 @@ class _ApprovalsScreenState extends State<ApprovalsScreen> {
     required String userName,
     required dynamic amount,
     required String createdAt,
-    required Map<String, dynamic> itemData,
     required VoidCallback onApprove,
     required VoidCallback onReject,
   }) {
@@ -253,12 +251,6 @@ class _ApprovalsScreenState extends State<ApprovalsScreen> {
     } else if (type == 'transfer') {
       typeColor = Colors.blue;
       typeIcon = Icons.compare_arrows;
-    } else if (type == 'kyc') {
-      typeColor = Colors.orange;
-      typeIcon = Icons.badge;
-    } else if (type == 'bank') {
-      typeColor = Colors.purple;
-      typeIcon = Icons.account_balance;
     }
 
     return Container(
@@ -313,68 +305,55 @@ class _ApprovalsScreenState extends State<ApprovalsScreen> {
           const SizedBox(height: 12),
 
           // Details
-          if (type == 'kyc') ...[
-            Text('Document: ${itemData['document_type'] ?? 'N/A'}'),
-            Text('Number: ${itemData['document_number'] ?? 'N/A'}'),
-            if (itemData['document_image'] != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text('Image: ${itemData['document_image']}', style: const TextStyle(fontSize: 12, color: Colors.blue)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Amount',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    Formatters.formatCurrency(
+                        double.tryParse(amount.toString()) ?? 0.0),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
               ),
-          ] else if (type == 'bank') ...[
-            Text('Bank: ${itemData['bank_name'] ?? 'N/A'}'),
-            Text('Account: ${itemData['account_number'] ?? 'N/A'}'),
-            Text('IFSC: ${itemData['ifsc_code'] ?? 'N/A'}'),
-          ] else ...[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Amount',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  const Text(
+                    'Created',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      Formatters.formatCurrency(double.tryParse(amount.toString()) ?? 0.0),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    createdAt.split(' ').isNotEmpty
+                        ? createdAt.split(' ')[0]
+                        : createdAt,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
                     ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Text(
-                      'Created',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      createdAt.split(' ').isNotEmpty
-                          ? createdAt.split(' ')[0]
-                          : createdAt,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                  ),
+                ],
+              ),
+            ],
+          ),
 
           const SizedBox(height: 16),
 
