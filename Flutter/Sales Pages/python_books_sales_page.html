@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="The Python Intelligence Library - Master AI, Data Science, and Financial Engineering.">
+    <title>Python Intelligence Suite - BytesQube</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-green: #0aff0a;
+            --bg-black: #020205;
+            --bg-card: #0a0a12;
+            --text-main: #ffffff;
+            --text-muted: #8892b0;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg-black);
+            color: var(--text-main);
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(188, 19, 254, 0.1), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.1), transparent 25%);
+        }
+
+        .mono {
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        /* Glitch Text Effect */
+        .glitch-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            padding: 20px;
+        }
+
+        .hero-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.8), var(--bg-black)),
+                url('https://www.transparenttextures.com/patterns/circuit-board.png');
+            opacity: 0.5;
+            z-index: -1;
+        }
+
+        .hero h1 {
+            font-size: 5.5rem;
+            line-height: 0.9;
+            margin-bottom: 30px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            text-transform: uppercase;
+        }
+
+        .hero h1 span {
+            display: block;
+            background: linear-gradient(90deg, #fff, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 50px;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        /* Cyber Button */
+        .btn-cyber {
+            position: relative;
+            padding: 20px 60px;
+            background: transparent;
+            color: var(--neon-blue);
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 700;
+            text-transform: uppercase;
+            border: 1px solid var(--neon-blue);
+            text-decoration: none;
+            overflow: hidden;
+            transition: 0.3s;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 95% 100%, 0 100%);
+            display: inline-block;
+        }
+
+        .btn-cyber:hover {
+            background: rgba(0, 243, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.4);
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .btn-cyber::before {
+            content: '>>_';
+            margin-right: 10px;
+        }
+
+        /* Domains Grid */
+        .domains-section {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .domain-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .domain-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 40px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .domain-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-purple), transparent);
+            transform: scaleX(0);
+            transition: 0.5s;
+        }
+
+        .domain-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .domain-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .domain-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .domain-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .domain-card p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .tag-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 5px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            font-family: 'IBM Plex Mono', monospace;
+            color: #fff;
+        }
+
+        /* Pipeline Visual */
+        .pipeline-section {
+            padding: 120px 0;
+            background: #050508;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pipeline-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .pipeline-step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #111;
+            border: 2px solid var(--neon-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 1.5rem;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+
+        .step-label {
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--neon-blue);
+        }
+
+        .pipeline-line {
+            position: absolute;
+            top: 40px;
+            left: 50px;
+            right: 50px;
+            height: 2px;
+            background: #222;
+            z-index: 1;
+        }
+
+        /* Library Grid */
+        .library-section {
+            padding: 100px 0;
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 30px;
+        }
+
+        .book-item {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 15px;
+            border: 1px solid var(--border);
+            transition: 0.4s;
+            position: relative;
+        }
+
+        .book-item:hover {
+            border-color: var(--neon-green);
+            background: rgba(10, 255, 10, 0.05);
+        }
+
+        .book-cover {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            filter: grayscale(80%);
+            transition: 0.4s;
+            margin-bottom: 20px;
+        }
+
+        .book-item:hover .book-cover {
+            filter: grayscale(0%);
+        }
+
+        .book-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+
+        .book-cat {
+            font-size: 0.8rem;
+            color: var(--neon-green);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* Automation Section */
+        .automation-section {
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .auto-box {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 1px solid var(--neon-purple);
+            padding: 60px;
+            display: inline-block;
+            max-width: 800px;
+            position: relative;
+        }
+
+        .code-snippet {
+            background: #000;
+            padding: 20px;
+            text-align: left;
+            font-family: 'IBM Plex Mono', monospace;
+            color: #0f0;
+            font-size: 0.9rem;
+            border-left: 3px solid var(--neon-green);
+            margin-bottom: 30px;
+        }
+
+        @media(max-width: 900px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .domain-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pipeline-flex {
+                flex-direction: column;
+                gap: 40px;
+            }
+
+            .pipeline-line {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Career Stats */
+        .stats-section {
+            padding: 100px 0;
+            background: #020205;
+            position: relative;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 50px;
+        }
+
+        .stat-card {
+            border: 1px solid var(--border);
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.02);
+            position: relative;
+        }
+
+        .stat-val {
+            font-size: 2.5rem;
+            color: var(--neon-green);
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        /* Testimonials as Logs */
+        .logs-section {
+            padding: 100px 0;
+            background: #0a0a0e;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .log-entry {
+            border-left: 2px solid var(--neon-purple);
+            padding-left: 20px;
+            margin-bottom: 40px;
+            color: var(--text-muted);
+        }
+
+        .log-time {
+            color: var(--neon-blue);
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .log-msg {
+            color: #fff;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="hero">
+        <div class="hero-bg"></div>
+        <div class="container">
+            <p class="mono" style="color: var(--neon-blue); letter-spacing: 2px;">import future_tech</p>
+            <h1>
+                <span>Protocol:</span>
+                <span style="color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.5);">Intelligence</span>
+            </h1>
+            <p>The comprehensive Python compendium. From automating mundane tasks to training Neural Networks and
+                High-Frequency Trading bots.</p>
+            <a href="https://www.bytesqube.com/product/python-books-bundle" class="btn-cyber">Initialize Download</a>
+        </div>
+    </header>
+
+    <section class="domains-section">
+        <div class="container">
+            <div class="section-title">System Modules</div>
+
+            <div class="domain-grid">
+                <!-- AI -->
+                <div class="domain-card" style="border-top: 3px solid var(--neon-purple);">
+                    <span class="domain-icon">🧠</span>
+                    <h3>Artificial Intelligence</h3>
+                    <p>Build brains. Learn PyTorch, TensorFlow, and Scikit-Learn to create predictive models and deep
+                        learning networks.</p>
+                    <div class="tag-list">
+                        <span class="tag">Neural Nets</span>
+                        <span class="tag">NLP</span>
+                        <span class="tag">Vision</span>
+                    </div>
+                </div>
+
+                <!-- Automation -->
+                <div class="domain-card" style="border-top: 3px solid var(--neon-green);">
+                    <span class="domain-icon">⚡</span>
+                    <h3>Automation & Scripting</h3>
+                    <p>Stop working. Start scripting. Automate emails, web scraping, and file management with Python
+                        scripts.</p>
+                    <div class="tag-list">
+                        <span class="tag">Selenium</span>
+                        <span class="tag">BS4</span>
+                        <span class="tag">APIs</span>
+                    </div>
+                </div>
+
+                <!-- Finance -->
+                <div class="domain-card" style="border-top: 3px solid var(--neon-blue);">
+                    <span class="domain-icon">📈</span>
+                    <h3>Quant Finance</h3>
+                    <p>Beat the market. Use Pandas and NumPy to analyze financial data and build algorithmic trading
+                        strategies.</p>
+                    <div class="tag-list">
+                        <span class="tag">Pandas</span>
+                        <span class="tag">Algo Trading</span>
+                        <span class="tag">Risk</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pipeline-section">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 60px;">
+                <h2 style="font-size: 2.5rem;">The Data Science Pipeline</h2>
+                <p class="mono" style="color: var(--text-muted);">You will master every stage of the data lifecycle.</p>
+            </div>
+
+            <div class="pipeline-flex">
+                <div class="pipeline-line"></div>
+
+                <div class="pipeline-step">
+                    <div class="step-circle" style="border-color: #fff;">1</div>
+                    <div class="step-label">Acquire</div>
+                </div>
+
+                <div class="pipeline-step">
+                    <div class="step-circle" style="border-color: var(--neon-blue);">2</div>
+                    <div class="step-label">Process</div>
+                </div>
+
+                <div class="pipeline-step">
+                    <div class="step-circle" style="border-color: var(--neon-purple);">3</div>
+                    <div class="step-label">Model</div>
+                </div>
+
+                <div class="pipeline-step">
+                    <div class="step-circle" style="border-color: var(--neon-green);">4</div>
+                    <div class="step-label">Deploy</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="library-section">
+        <div class="container">
+            <div class="section-title">
+                Loaded Libraries <span style="font-size: 1rem; color: var(--text-muted); vertical-align: middle;">(21
+                    Items)</span>
+            </div>
+
+            <div class="books-grid">
+                <!-- Data Science / ML Books -->
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/61bttGCBLUL._AC_UF10001000_QL80_.webp"
+                        alt="Python ML" class="book-cover">
+                    <span class="book-cat">Data Science</span>
+                    <div class="book-title">Python Machine Learning</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/55927899.webp" alt="Neural Networks"
+                        class="book-cover">
+                    <span class="book-cat">Deep Learning</span>
+                    <div class="book-title">Neural Networks from Scratch</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/61oppl4zOL._AC_UF10001000_QL80_.webp"
+                        alt="Practical ML" class="book-cover">
+                    <span class="book-cat">Applied AI</span>
+                    <div class="book-title">Practical Machine Learning</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/61DAQeTkdgL._AC_UF10001000_QL80_.webp"
+                        alt="ML Insights" class="book-cover">
+                    <span class="book-cat">AI Insights</span>
+                    <div class="book-title">Deeper Insights into ML</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/61aIC0Pd1JL._AC_UF10001000_QL80_.webp"
+                        alt="ML 6 Steps" class="book-cover">
+                    <span class="book-cat">ML Guide</span>
+                    <div class="book-title">Mastering ML with Python in Six Steps</div>
+                </div>
+
+                <!-- Finance -->
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/91XNTZ4JSXL._AC_UF10001000_QL80_.webp"
+                        alt="Finance" class="book-cover">
+                    <span class="book-cat" style="color: var(--neon-blue);">Quantitative</span>
+                    <div class="book-title">Python for Finance</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/61f37E9N2L._AC_UF10001000_QL80_.webp"
+                        alt="Personal Finance" class="book-cover">
+                    <span class="book-cat" style="color: var(--neon-blue);">Wealth</span>
+                    <div class="book-title">Personal Finance with Python</div>
+                </div>
+
+                <!-- Core & Security -->
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/514cSQ0O9OL._SY445_SX342_.webp"
+                        alt="Crash Course" class="book-cover">
+                    <span class="book-cat" style="color: #fff;">Foundation</span>
+                    <div class="book-title">Python Crash Course</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/51y1U5JPfyL._SX342_SY445_.webp"
+                        alt="Reference" class="book-cover">
+                    <span class="book-cat" style="color: #fff;">Reference</span>
+                    <div class="book-title">Python The Complete Reference</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/518csN6TPsL._SY445_SX342_.webp"
+                        alt="Core" class="book-cover">
+                    <span class="book-cat" style="color: #fff;">Core</span>
+                    <div class="book-title">Core Python Programming</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/511zP6-6OcL._SY445_SX342_.webp"
+                        alt="Data Science Dummies" class="book-cover">
+                    <span class="book-cat" style="color: #fff;">Data Science</span>
+                    <div class="book-title">Python for Data Science For Dummies</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/512StzAwp8L._SX342_SY445_.webp"
+                        alt="All In One" class="book-cover">
+                    <span class="book-cat" style="color: #fff;">Everything</span>
+                    <div class="book-title">Python All In One For Dummies</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/91zU8vKrkL._AC_UF10001000_QL80_.webp"
+                        alt="Black Hat" class="book-cover">
+                    <span class="book-cat" style="color: #f00;">Cybersec</span>
+                    <div class="book-title">Black Hat Python</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/61p6qdSWosL._AC_UF10001000_QL80_.webp"
+                        alt="Algos" class="book-cover">
+                    <span class="book-cat" style="color: var(--neon-purple);">Theory</span>
+                    <div class="book-title">Python Algorithms</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/61vVnACnntL._SY466_.webp"
+                        alt="Competitive" class="book-cover">
+                    <span class="book-cat" style="color: var(--neon-purple);">Competition</span>
+                    <div class="book-title">Competitive Programming in Python</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/81RApz4jpCL._AC_UF10001000_QL80_.webp"
+                        alt="Cracking Codes" class="book-cover">
+                    <span class="book-cat" style="color: var(--neon-purple);">Crypto</span>
+                    <div class="book-title">Cracking Codes with Python</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/61sxKMVt42L._AC_UF10001000_QL80_.webp"
+                        alt="Scientific" class="book-cover">
+                    <span class="book-cat" style="color: var(--neon-blue);">Science</span>
+                    <div class="book-title">Primer on Scientific Programming</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/91iw7mdJIQL._AC_UF10001000_QL80_.webp"
+                        alt="Analysis Algos" class="book-cover">
+                    <span class="book-cat" style="color: var(--neon-purple);">Theory</span>
+                    <div class="book-title">Introduction to Analysis of Algorithms</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/13838796.webp" alt="Data Structures"
+                        class="book-cover">
+                    <span class="book-cat" style="color: var(--neon-purple);">CS Fundamentals</span>
+                    <div class="book-title">Data Structures and Algorithms</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/images.webp" alt="Network"
+                        class="book-cover">
+                    <span class="book-cat" style="color: var(--neon-green);">Networking</span>
+                    <div class="book-title">Foundations of Python Network Programming</div>
+                </div>
+
+                <div class="book-item">
+                    <img src="https://www.bytesqube.com/wp-content/uploads/2024/05/978-1-4842-4900-0-717x1024.webp"
+                        alt="Cryptography" class="book-cover">
+                    <span class="book-cat" style="color: #f00;">Security</span>
+                    <div class="book-title">Practical Cryptography in Python</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats-section">
+        <div class="container">
+            <div class="section-title">Career UPGRADE_MATRIX</div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-val">₹ 70 LPA</div>
+                    <div style="color: #fff;">AI Research Scientist</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">Top Tier</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-val">₹ 50 LPA</div>
+                    <div style="color: #fff;">Quant Developer</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">High Frequency Trading
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-val">₹ 35 LPA</div>
+                    <div style="color: #fff;">Data Engineer</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">Big Data Pipelines</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-val">₹ 28 LPA</div>
+                    <div style="color: #fff;">Python Backend</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">Django / FastAPI</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 60px; text-align: center;">
+                <p class="mono" style="color: var(--neon-blue); margin-bottom: 20px;">>> DEPLOY_SKILLS_AT</p>
+                <div style="font-size: 2rem; font-weight: 700; color: #fff; opacity: 0.8; letter-spacing: 2px;">
+                    GOOGLE &nbsp;|&nbsp; META &nbsp;|&nbsp; DE SHAW &nbsp;|&nbsp; GOLDMAN SACHS
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="logs-section">
+        <div class="container">
+            <div class="section-title" style="text-align: left;">System Logs / User Success</div>
+
+            <div class="log-entry">
+                <span class="log-time">[2024-10-12 14:30:22] USER: AMIT_S (Data Scientist @ Uber)</span>
+                <p class="log-msg">"Status: HIRED. The 'Applied AI' and 'Neural Networks' books were critical. I was
+                    stuck in a support role. Used these books to build a portfolio project that got me a 60 LPA offer.
+                    Efficiency increased by 500%."</p>
+            </div>
+
+            <div class="log-entry">
+                <span class="log-time">[2024-11-05 09:15:11] USER: PRIYA_K (Quant Analyst @ DE Shaw)</span>
+                <p class="log-msg">"Status: SUCCESS. 'Python for Finance' is a goldmine. I automated my trading
+                    strategies and learned NumPy vectorization. The ROI on this bundle is infinite. Cleared DE Shaw
+                    interview easily."</p>
+            </div>
+
+            <div class="log-entry">
+                <span class="log-time">[2024-11-20 18:45:00] USER: ROHIT_D (Backend Dev @ CRED)</span>
+                <p class="log-msg">"Status: PROMOTED. Everyone writes Python, but few write efficient Python. 'Black Hat
+                    Python' and 'High Performance' guides helped me optimize our legacy code. Promoted to Senior Dev (45
+                    LPA)."</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="automation-section">
+        <div class="auto-box">
+            <div class="code-snippet">
+                > import future_wealth<br>
+                > skills = ['Machine Learning', 'Automation', 'Finance']<br>
+                > future_wealth.deploy(skills)<br>
+                > Status: SUCCESS (ROI: ∞%)
+            </div>
+            <h2 class="text-gradient" style="font-size: 3rem; margin-bottom: 20px;">Execute Program.</h2>
+            <p style="color: var(--text-muted); margin-bottom: 40px;">Get the entire repository of knowledge for the
+                price of a single lunch.</p>
+
+            <div style="font-size: 3rem; margin-bottom: 30px; font-weight: 700;">₹ 999 <span
+                    style="font-size: 1.5rem; color: #555; text-decoration: line-through;">₹ 4999</span></div>
+
+            <a href="https://www.bytesqube.com/product/python-books-bundle" class="btn-cyber"
+                style="font-size: 1.2rem;">Commit Transaction</a>
+        </div>
+    </section>
+
+    <footer style="padding: 50px; text-align: center; border-top: 1px solid #111; color: var(--text-muted);">
+        <p class="mono">Session ID: 0x92384 • BytesQube Systems</p>
+    </footer>
+
+</body>
+
+</html>

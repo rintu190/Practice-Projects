@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="The Java Architect's Library - Master Enterprise Engineering, Microservices, and Cloud-Native Systems.">
+    <title>Java Architect Masterclass - BytesQube</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=JetBrains+Mono:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF5E1E;
+            /* Blaze Orange */
+            --primary-dark: #cc4d18;
+            --accent: #00A8E8;
+            /* Cyan for contrast */
+            --bg-dark: #050507;
+            --bg-panel: #0E0E12;
+            --text-main: #FFFFFF;
+            --text-dim: #8F9098;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --gradient-main: linear-gradient(135deg, #FF5E1E 0%, #FF2E2E 100%);
+            --glow: 0 0 80px rgba(255, 94, 30, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 50% 10%, rgba(255, 94, 30, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 90% 90%, rgba(0, 168, 232, 0.05) 0%, transparent 50%);
+        }
+
+        .hero-grid {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+            animation: gridMove 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes gridMove {
+            0% {
+                transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px);
+            }
+
+            100% {
+                transform: perspective(500px) rotateX(60deg) translateY(50px) translateZ(-200px);
+            }
+        }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: rgba(255, 94, 30, 0.1);
+            border: 1px solid rgba(255, 94, 30, 0.3);
+            border-radius: 50px;
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        .hero h1 {
+            font-size: 5rem;
+            font-weight: 800;
+            line-height: 1.05;
+            margin-bottom: 25px;
+            letter-spacing: -1px;
+        }
+
+        .text-gradient {
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-dim);
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+
+        .btn-wrapper {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            padding: 16px 40px;
+            border-radius: 6px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(255, 94, 30, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(255, 94, 30, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            padding: 16px 40px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Ecosystem Section */
+        .ecosystem-section {
+            padding: 100px 0;
+            background: #08080a;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .section-header {
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .eco-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .eco-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--card-border);
+            padding: 30px;
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+
+        .eco-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .eco-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .eco-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .eco-desc {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Library Showcase - Premium Layout */
+        .library-section {
+            padding: 120px 0;
+            background: var(--bg-dark);
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 40px;
+        }
+
+        .book-container {
+            group: 'book';
+            position: relative;
+            background: var(--bg-panel);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            transition: all 0.4s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-container:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 94, 30, 0.5);
+            box-shadow: var(--glow);
+        }
+
+        .book-img-wrapper {
+            position: relative;
+            height: 380px;
+            overflow: hidden;
+            background: #111;
+        }
+
+        .book-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            opacity: 0.9;
+        }
+
+        .book-container:hover .book-img {
+            transform: scale(1.05);
+            opacity: 1;
+        }
+
+        .book-content {
+            padding: 24px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .book-tag {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .book-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            line-height: 1.4;
+            margin-bottom: 5px;
+        }
+
+        .book-author {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        /* Career Path */
+        .path-section {
+            padding: 100px 0;
+            background: linear-gradient(180deg, #08080a 0%, #111 100%);
+            border-top: 1px solid var(--card-border);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .path-step {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .path-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .path-step:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .path-content {
+            flex: 1;
+        }
+
+        .path-visual {
+            flex: 1;
+            height: 300px;
+            background: var(--bg-panel);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            font-size: 1.2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .path-visual::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(90deg, transparent 50%, rgba(255, 255, 255, 0.02) 50%),
+                linear-gradient(0deg, transparent 50%, rgba(255, 255, 255, 0.02) 50%);
+            background-size: 20px 20px;
+        }
+
+        /* Pricing */
+        .pricing-section {
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .price-card {
+            background: linear-gradient(145deg, #16161a, #0b0b0e);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 60px;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .price-card::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 24px;
+            padding: 1px;
+            background: linear-gradient(180deg, var(--primary), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        @media (max-width: 900px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .eco-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .path-step {
+                flex-direction: column !important;
+                text-align: center;
+            }
+
+            .path-visual {
+                width: 100%;
+                height: 200px;
+            }
+
+            .salary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Salary Section */
+        .salary-section {
+            padding: 100px 0;
+            background: #0b0b0e;
+        }
+
+        .salary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .salary-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .salary-amount {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: white;
+            margin: 10px 0;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Testimonials */
+        .reviews-section {
+            padding: 100px 0;
+            background: url('https://www.transparenttextures.com/patterns/black-scales.png');
+        }
+
+        .review-card {
+            background: var(--bg-panel);
+            border-left: 4px solid var(--primary);
+            padding: 30px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .company-badge {
+            display: inline-block;
+            background: #fff;
+            color: #000;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <section class="hero">
+        <div class="hero-grid"></div>
+        <div class="container" style="position: relative; z-index: 2;">
+            <div class="badge-pill">
+                <span class="mono">DEV_TO_ARCHITECT_ROADMAP_V3.0</span>
+            </div>
+            <h1>Build The Systems <br><span class="text-gradient">The World Runs On</span></h1>
+            <p>The definitive Java ecosystem collection. From core concurrency primitives to distributed microservices
+                at massive scale.</p>
+            <div class="btn-wrapper">
+                <a href="https://www.bytesqube.com/product/java-books-bundle" class="btn-primary">Unlock The Vault | ₹
+                    999</a>
+                <a href="#curriculum" class="btn-secondary">View Curriculum</a>
+            </div>
+
+            <div style="margin-top: 60px; display: flex; gap: 40px; justify-content: center; opacity: 0.6;">
+                <span class="mono">Spring Boot 3</span>
+                <span class="mono">Kafka</span>
+                <span class="mono">Docker</span>
+                <span class="mono">Kubernetes</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="ecosystem-section" id="curriculum">
+        <div class="container">
+            <div class="section-header">
+                <h2>The Enterprise Stack</h2>
+                <p style="color: var(--text-dim);">You aren't just reading books. You are mastering the four layers of
+                    modern architecture.</p>
+            </div>
+
+            <div class="eco-grid">
+                <!-- Card 1 -->
+                <div class="eco-card">
+                    <div class="eco-icon">🏗️</div>
+                    <div class="eco-title">Core Foundation</div>
+                    <div class="eco-desc">Master generics, collections, and the low-level concurrency threading models
+                        that power high-performance apps.</div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="eco-card">
+                    <div class="eco-icon">🍃</div>
+                    <div class="eco-title">Spring Ecosystem</div>
+                    <div class="eco-desc">Deep dive into Spring Boot, Security, and Data. Learn dependency injection and
+                        AOP like a pro.</div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="eco-card">
+                    <div class="eco-icon">☁️</div>
+                    <div class="eco-title">Cloud Native</div>
+                    <div class="eco-desc">Microservices patterns, Docker containerization, and orchestrating simpler
+                        systems with Kubernetes.</div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="eco-card">
+                    <div class="eco-icon">🚀</div>
+                    <div class="eco-title">High Scale</div>
+                    <div class="eco-desc">Event-driven architecture with Kafka. Tuning JVM performance for millisecond
+                        latency.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="library-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>The Architect's Bookshelf</h2>
+                <p class="mono" style="color: var(--primary);">~/library/backend_mastery</p>
+            </div>
+
+            <div class="books-grid">
+                <!-- Book 1 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/51pIWq1JmmL._AC_UF10001000_QL80_.webp"
+                            alt="SCJP" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">Certification</span>
+                            <h3 class="book-title">SCJP By Kathy Sierra</h3>
+                            <p class="book-author">Kathy Sierra</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 2 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/61Lge0qwgjL._AC_UF10001000_QL80_.webp"
+                            alt="Microservices" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">Spring Boot</span>
+                            <h3 class="book-title">Learn Microservices with Spring Boot</h3>
+                            <p class="book-author">Moises Macero</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 3 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/61Msi7jIuzL._UF10001000_QL80_.webp"
+                            alt="Enterprise Microservices" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">Architecture</span>
+                            <h3 class="book-title">Microservices for the Enterprise</h3>
+                            <p class="book-author">Kasun Indrasiri</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 4 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/61SPaV9DRhL._AC_UF10001000_QL80_.webp"
+                            alt="Kafka" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">Event Streaming</span>
+                            <h3 class="book-title">Kafka In Action</h3>
+                            <p class="book-author">Dylan Scott</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 5 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/71ho2R8EEKL._AC_UF10001000_QL80_.webp"
+                            alt="Concurrency" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">Advanced Core</span>
+                            <h3 class="book-title">Java Concurrency in Practice</h3>
+                            <p class="book-author">Brian Goetz</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 6 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/71I8eWqQN2L._AC_UF10001000_QL80_.webp"
+                            alt="Jenkins" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">DevOps</span>
+                            <h3 class="book-title">Jenkins The Definitive Guide</h3>
+                            <p class="book-author">John Ferguson Smart</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 7 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/71jxqXSJIBL._AC_UF10001000_QL80_.webp"
+                            alt="Generics" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">Core Java</span>
+                            <h3 class="book-title">Java Generics and Collections</h3>
+                            <p class="book-author">Maurice Naftalin</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 8 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/71qoANDJuL._AC_UF10001000_QL80_.webp"
+                            alt="Modern Java" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">Modernization</span>
+                            <h3 class="book-title">Modern Java In Action</h3>
+                            <p class="book-author">Raoul-Gabriel Urma</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 9 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/71rQMKhjZL._AC_UF10001000_QL80_.webp"
+                            alt="Spring Boot" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">Framework</span>
+                            <h3 class="book-title">Spring Boot In Action</h3>
+                            <p class="book-author">Craig Walls</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 10 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/71yXhHR-tNL._AC_UF10001000_QL80_.webp"
+                            alt="Spring Security" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">Security</span>
+                            <h3 class="book-title">Spring Security Essentials</h3>
+                            <p class="book-author">Nanda Nachimuthu</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 11 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/71zlUV5cBDL._AC_UF10001000_QL80_.webp"
+                            alt="Spring" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">Framework</span>
+                            <h3 class="book-title">Spring In Action</h3>
+                            <p class="book-author">Craig Walls</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 12 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/81FpubXxgvL._AC_UF10001000_QL80_.webp"
+                            alt="EC2" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">Cloud</span>
+                            <h3 class="book-title">Programming Amazon EC2</h3>
+                            <p class="book-author">Jurg Van Vliet</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 13 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/511gelQkuEL._AC_UF10001000_QL80_.webp"
+                            alt="Hibernate" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">ORM / DB</span>
+                            <h3 class="book-title">Hibernate In Action</h3>
+                            <p class="book-author">Christian Baver</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 14 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/611zwjzAS6L._UF10001000_QL80_.webp"
+                            alt="Spring 5" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">Framework</span>
+                            <h3 class="book-title">Pro Spring 5</h3>
+                            <p class="book-author">Luliana Cosmina</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 15 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/617-Wl2DEYL._AC_UF10001000_QL80_.webp"
+                            alt="Spring Boot 3" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">Framework</span>
+                            <h3 class="book-title">Pro Spring Boot 3</h3>
+                            <p class="book-author">Felipe Gutierrez</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 16 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/814YmHvcy3L._UF10001000_QL80_.webp"
+                            alt="Intro Java" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">Fundamentals</span>
+                            <h3 class="book-title">Introduction to Java Programming</h3>
+                            <p class="book-author">Y Dianiel Liang</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 17 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/914nLXL0rL._AC_UF10001000_QL80_.webp"
+                            alt="Performance" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">Optimization</span>
+                            <h3 class="book-title">Java Performance</h3>
+                            <p class="book-author">Scott Oaks</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 18 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/978-1-4302-0042-0-774x1024.webp"
+                            alt="Pro Hibernate" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">ORM / DB</span>
+                            <h3 class="book-title">Pro Hibernate 3</h3>
+                            <p class="book-author">Dave Minter</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 19 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/6139D6ARtsS._UF10001000_QL80_.webp"
+                            alt="Patterns" class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">System Design</span>
+                            <h3 class="book-title">Microservices Patterns</h3>
+                            <p class="book-author">Chris Richardson</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 20 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/Holmes-GM-2ED-HI.webp" alt="MEAN"
+                            class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">Full Stack</span>
+                            <h3 class="book-title">Getting MEAN</h3>
+                            <p class="book-author">Simon Holmes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Book 21 -->
+                <div class="book-container">
+                    <div class="book-img-wrapper">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2025/04/images-1.webp" alt="Mockito"
+                            class="book-img">
+                    </div>
+                    <div class="book-content">
+                        <div>
+                            <span class="book-tag">Testing</span>
+                            <h3 class="book-title">Mockito Programming Cookbook</h3>
+                            <p class="book-author">Generic</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="salary-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Market Domination</h2>
+                <p style="color: var(--text-dim);">Java Architects are the highest paid engineers in the industry.
+                    Period.</p>
+            </div>
+
+            <div class="salary-grid">
+                <div class="salary-card">
+                    <h3 class="mono">SDE-2 / Senior</h3>
+                    <div class="salary-amount">₹ 35 LPA</div>
+                    <p style="color: var(--text-dim);">Average Package</p>
+                    <div style="margin-top: 20px; font-size: 0.9rem; color: #fff;">Builds Features</div>
+                </div>
+
+                <div class="salary-card" style="border-color: var(--primary); background: rgba(255,94,30,0.05);">
+                    <h3 class="mono" style="color: var(--primary);">System Architect</h3>
+                    <div class="salary-amount">₹ 80 LPA</div>
+                    <p style="color: var(--text-dim);">Top Tier Package</p>
+                    <div style="margin-top: 20px; font-size: 0.9rem; color: #fff;">Designs Systems</div>
+                </div>
+
+                <div class="salary-card">
+                    <h3 class="mono">Backend Lead</h3>
+                    <div class="salary-amount">₹ 55 LPA</div>
+                    <p style="color: var(--text-dim);">High Yield</p>
+                    <div style="margin-top: 20px; font-size: 0.9rem; color: #fff;">Manages Scale</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 60px; text-align: center;">
+                <p class="mono" style="color: var(--text-dim); margin-bottom: 20px;">HIRING PARTNERS & TARGET COMPANIES
+                </p>
+                <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; opacity: 0.7;">
+                    <h3 style="color: white;">GOOGLE</h3>
+                    <h3 style="color: white;">AMAZON</h3>
+                    <h3 style="color: white;">NETFLIX</h3>
+                    <h3 style="color: white;">UBER</h3>
+                    <h3 style="color: white;">ATLASSIAN</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="reviews-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Wall of Success</h2>
+            </div>
+
+            <div class="books-grid"> <!-- Reusing grid for reviews -->
+                <div class="review-card">
+                    <p style="font-size: 1.1rem; margin-bottom: 20px; font-style: italic;">"I failed 3 Amazon interviews
+                        because I didn't understand System Design deeply. The 'Microservices Patterns' and 'Kafka' books
+                        changed everything. **Cracked SDE-3 at Amazon (65 LPA).**"</p>
+                    <div class="mono">
+                        <span style="color: var(--primary);">Rahul M.</span>
+                        <span class="company-badge">AMAZON</span>
+                    </div>
+                </div>
+
+                <div class="review-card">
+                    <p style="font-size: 1.1rem; margin-bottom: 20px; font-style: italic;">"Most courses teach you
+                        syntax. These books taught me ENGINEERING. 'Java Concurrency in Practice' is the reason I can
+                        handle high-scale systems now."</p>
+                    <div class="mono">
+                        <span style="color: var(--primary);">Sneha K.</span>
+                        <span class="company-badge">ORACLE</span>
+                    </div>
+                </div>
+
+                <div class="review-card">
+                    <p style="font-size: 1.1rem; margin-bottom: 20px; font-style: italic;">"Moved from a service-based
+                        company (5 LPA) to a product giant (42 LPA). The difference was reading 'Spring Boot in Action'
+                        and actually understanding how it works under the hood."</p>
+                    <div class="mono">
+                        <span style="color: var(--primary);">Vikram S.</span>
+                        <span class="company-badge">WALMART</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="path-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Your Career Trajectory</h2>
+            </div>
+
+            <!-- Path 1 -->
+            <div class="path-step">
+                <div class="path-content">
+                    <h3 style="font-size: 2rem; margin-bottom: 15px;">Junior Developer</h3>
+                    <p style="color: var(--text-dim); margin-bottom: 20px;">You write code that works. You understand
+                        syntax, loops, and basic OOP. But you struggle with race conditions and complex deployment.</p>
+                    <ul class="mono" style="list-style: none; color: white;">
+                        <li>> Learn Core APIs</li>
+                        <li>> Master Generics</li>
+                    </ul>
+                </div>
+                <div class="path-visual">
+                    // Level 1: Syntactic Sugar
+                </div>
+            </div>
+
+            <!-- Path 2 -->
+            <div class="path-step">
+                <div class="path-content">
+                    <h3 style="font-size: 2rem; margin-bottom: 15px;">Senior Engineer</h3>
+                    <p style="color: var(--text-dim); margin-bottom: 20px;">You design modules. You understand Spring
+                        Context, Database transactions, and how to optimize queries.</p>
+                    <ul class="mono" style="list-style: none; color: white;">
+                        <li>> Spring Security</li>
+                        <li>> Hibernate Optimization</li>
+                    </ul>
+                </div>
+                <div class="path-visual">
+                    // Level 2: Clean Architecture
+                </div>
+            </div>
+
+            <!-- Path 3 -->
+            <div class="path-step">
+                <div class="path-content">
+                    <h3 style="font-size: 2rem; margin-bottom: 15px;">Principal Architect</h3>
+                    <p style="color: var(--text-dim); margin-bottom: 20px;">You design systems. Microservices, Event
+                        Sourcing, CAP Theorem, and High Availability are your playground.</p>
+                    <ul class="mono" style="list-style: none; color: white;">
+                        <li>> Distributed Patterns</li>
+                        <li>> Kafka Streams</li>
+                    </ul>
+                </div>
+                <div class="path-visual" style="color: var(--primary); border-color: var(--primary);">
+                    // Level 3: SYSTEM_MASTERY
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing-section">
+        <div class="container">
+            <div class="price-card">
+                <h3 style="margin-bottom: 20px; font-size: 2rem;">The Complete Archive</h3>
+                <p style="color: var(--text-dim); margin-bottom: 40px;">Stop copy-pasting StackOverflow. Understand the
+                    machine.</p>
+                <div style="font-size: 4rem; font-weight: 800; color: white; margin-bottom: 10px;">₹ 999</div>
+                <div style="color: var(--text-dim); text-decoration: line-through; margin-bottom: 40px;">₹ 4999</div>
+
+                <a href="https://www.bytesqube.com/product/java-books-bundle" class="btn-primary"
+                    style="width: 100%; display: block; text-align: center;">Get Instant Access</a>
+                <p style="margin-top: 20px; font-size: 0.85rem; color: var(--text-dim);">Secure checkout via Razorpay •
+                    Lifetime Access</p>
+            </div>
+        </div>
+    </section>
+
+    <footer style="border-top: 1px solid #111; padding: 50px 0; text-align: center; color: #555;">
+        <div class="container">
+            <p>&copy; 2025 BytesQube. For Serious Engineers.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

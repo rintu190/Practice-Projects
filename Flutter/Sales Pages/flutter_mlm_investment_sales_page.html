@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Flutter MLM Investment - Complete Multi-Level Marketing Investment Platform with Binary Tree, Commission System, and Admin Panel. Ready-to-deploy solution.">
+    <title>Nexus - Complete MLM Investment Platform Solution</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6C63FF;
+            --primary-dark: #5A52D5;
+            --secondary: #4ECDC4;
+            --accent: #FFD93D;
+            --success: #6BCF7F;
+            --warning: #F7931E;
+            --danger: #FF6B6B;
+            --dark: #0F0F23;
+            --dark-light: #1A1A3E;
+            --dark-lighter: #252547;
+            --text: #E8E8E8;
+            --text-muted: #A0A0B8;
+            --gradient-1: linear-gradient(135deg, #6C63FF 0%, #8B84FF 100%);
+            --gradient-2: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+            --gradient-3: linear-gradient(135deg, #FFD93D 0%, #F7931E 100%);
+            --gradient-4: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: var(--gradient-1);
+            padding: 120px 20px 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.05" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,96C1248,75,1344,53,1392,42.7L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .hero .tagline {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 300;
+            animation: fadeInUp 0.8s ease 0.2s backwards;
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            color: rgba(255, 255, 255, 0.85);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 0.8s ease 0.4s backwards;
+        }
+
+        .compliance-notice {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            border-radius: 10px;
+            margin: 30px auto;
+            max-width: 700px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: fadeInUp 0.8s ease 0.5s backwards;
+        }
+
+        .compliance-notice p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin: 0;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease 0.6s backwards;
+        }
+
+        .btn {
+            padding: 16px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        /* Stats Section */
+        .stats {
+            background: var(--dark-light);
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            padding: 20px;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 60px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: var(--dark-light);
+            padding: 40px 30px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-1);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(108, 99, 255, 0.2);
+            border-color: var(--primary);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .feature-description {
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        /* MLM System Showcase */
+        .mlm-showcase {
+            background: var(--dark-light);
+            padding: 80px 20px;
+        }
+
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .showcase-item {
+            background: var(--dark-lighter);
+            padding: 35px 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .showcase-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .showcase-item h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .showcase-item ul {
+            list-style: none;
+            color: var(--text-muted);
+        }
+
+        .showcase-item li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .showcase-item li:before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            background: var(--dark);
+            padding: 80px 20px;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tech-item {
+            background: var(--dark-light);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .tech-item h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .tech-item ul {
+            list-style: none;
+            color: var(--text-muted);
+        }
+
+        .tech-item li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tech-item li:last-child {
+            border-bottom: none;
+        }
+
+        /* Pricing */
+        .pricing {
+            background: var(--dark-light);
+            padding: 80px 20px;
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: var(--dark-lighter);
+            padding: 50px 40px;
+            border-radius: 20px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary);
+            transform: scale(1.05);
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.1) 0%, rgba(139, 132, 255, 0.1) 100%);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -15px;
+            right: 30px;
+            background: var(--gradient-1);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--primary);
+        }
+
+        .pricing-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .pricing-price {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .pricing-period {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 40px;
+            text-align: left;
+        }
+
+        .pricing-features li {
+            padding: 12px 0;
+            color: var(--text-muted);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .pricing-features li:before {
+            content: '✓';
+            color: var(--success);
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* Security Badge */
+        .security-section {
+            background: var(--dark);
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .security-badges {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            max-width: 1000px;
+            margin: 40px auto 0;
+        }
+
+        .security-badge {
+            background: var(--dark-light);
+            padding: 30px 40px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .security-badge:hover {
+            border-color: var(--success);
+            transform: translateY(-5px);
+        }
+
+        .security-badge-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .security-badge h3 {
+            color: var(--success);
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .security-badge p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: var(--gradient-1);
+            padding: 80px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.05" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,96C1248,75,1344,53,1392,42.7L1440,32L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path></svg>') no-repeat top;
+            background-size: cover;
+        }
+
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark-light);
+            padding: 40px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer p {
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: var(--primary-dark);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero .tagline {
+                font-size: 1.2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        .highlight {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--gradient-2);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .warning-box {
+            background: rgba(255, 215, 61, 0.1);
+            border: 2px solid var(--accent);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 40px auto;
+            max-width: 900px;
+        }
+
+        .warning-box h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .warning-box p {
+            color: var(--text);
+            line-height: 1.8;
+        }
+
+        /* Currency Switcher */
+        .currency-switcher {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .currency-switcher-label {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .currency-toggle {
+            position: relative;
+            display: inline-block;
+            width: 120px;
+            height: 50px;
+            background: var(--dark-lighter);
+            border-radius: 25px;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .currency-toggle:hover {
+            border-color: var(--primary);
+        }
+
+        .currency-option {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .currency-option.usd {
+            left: 15px;
+            color: white;
+        }
+
+        .currency-option.inr {
+            right: 15px;
+            color: var(--text-muted);
+        }
+
+        .currency-toggle.inr-active .currency-option.usd {
+            color: var(--text-muted);
+        }
+
+        .currency-toggle.inr-active .currency-option.inr {
+            color: white;
+        }
+
+        .currency-slider {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 54px;
+            height: 38px;
+            background: var(--gradient-1);
+            border-radius: 19px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(108, 99, 255, 0.3);
+        }
+
+        .currency-toggle.inr-active .currency-slider {
+            transform: translateX(58px);
+        }
+
+        /* Screenshots Section */
+        .screenshots {
+            background: var(--dark);
+            padding: 80px 20px;
+        }
+
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .screenshot-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: var(--dark-lighter);
+        }
+
+        .screenshot-item:hover {
+            transform: translateY(-8px);
+        }
+
+        .screenshot-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            display: block;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .screenshot-item:hover .screenshot-image {
+            transform: scale(1.05);
+        }
+
+        .screenshot-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 50%, transparent 100%);
+            padding: 20px 15px 15px;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .screenshot-item:hover .screenshot-overlay {
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.8) 60%, transparent 100%);
+        }
+
+        .screenshot-caption {
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .screenshot-number {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--gradient-1);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .demo-badge {
+            display: inline-block;
+            background: var(--gradient-2);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>💰 Nexus</h1>
+            <p class="tagline">Complete Multi-Level Marketing Investment Platform</p>
+            <p class="subtitle">
+                Launch your own MLM investment platform with binary tree genealogy, automated commission calculation,
+                wallet system, and comprehensive admin panel. Built with Flutter & PHP.
+            </p>
+            <div class="compliance-notice">
+                <p>⚠️ <strong>Compliance Notice:</strong> Ensure your MLM business model complies with local regulations
+                    and laws.
+                    This software is a technical solution and does not provide legal or financial advice.</p>
+            </div>
+            <div class="cta-buttons">
+                <a href="#pricing" class="btn btn-primary">Get Started Now</a>
+                <a href="#features" class="btn btn-secondary">Explore Features</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">15+</div>
+                <div class="stat-label">Core Modules</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">100+</div>
+                <div class="stat-label">Features</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Wallet Types</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Auto Processing</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Features -->
+    <section class="section" id="features">
+        <h2 class="section-title">Powerful MLM Features</h2>
+        <p class="section-subtitle">
+            Everything you need to run a successful MLM investment business with automated processes and real-time
+            tracking
+        </p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🌳</div>
+                <h3 class="feature-title">Binary Tree Genealogy</h3>
+                <p class="feature-description">
+                    Complete binary tree implementation with left/right placement, visual tree representation,
+                    level tracking, and sponsor-downline relationships. Auto-balancing and spillover support.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">💵</div>
+                <h3 class="feature-title">Multi-Wallet System</h3>
+                <p class="feature-description">
+                    Three separate wallets: E-Wallet for deposits/withdrawals, Investment Wallet for active investments,
+                    and Earnings Wallet for commissions and profits. Full transaction history for each.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">Investment Management</h3>
+                <p class="feature-description">
+                    Multiple investment plans with configurable returns, durations, and minimum amounts.
+                    Track active, matured, and cancelled investments with detailed P&L statements.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎁</div>
+                <h3 class="feature-title">Commission System</h3>
+                <p class="feature-description">
+                    Automated commission calculation with multiple types: direct referral, level commissions,
+                    binary matching, and performance bonuses. Real-time commission tracking and payouts.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3 class="feature-title">OTP Authentication</h3>
+                <p class="feature-description">
+                    Secure phone-based OTP authentication with support for Twilio, MSG91, and 2Factor.
+                    Fallback to password login and session management with JWT tokens.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <h3 class="feature-title">KYC & Bank Details</h3>
+                <p class="feature-description">
+                    Complete KYC document upload and verification system. Bank account management for
+                    withdrawals with admin approval workflow and document storage.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h3 class="feature-title">Daily Profit Calculation</h3>
+                <p class="feature-description">
+                    Automated daily profit calculation based on investment plans. Cron job support for
+                    scheduled processing, profit distribution, and investment maturity handling.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">💳</div>
+                <h3 class="feature-title">Deposit & Withdrawal</h3>
+                <p class="feature-description">
+                    User-friendly deposit and withdrawal system with admin approval workflow.
+                    Transaction tracking, status updates, and automatic wallet balance updates.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h3 class="feature-title">Team & Referral System</h3>
+                <p class="feature-description">
+                    View your complete team hierarchy, track referrals, monitor team performance,
+                    and see earnings from your network. Unique referral codes for each user.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎫</div>
+                <h3 class="feature-title">Support Ticket System</h3>
+                <p class="feature-description">
+                    Built-in support ticket system for user queries and issues. Category-based tickets,
+                    priority levels, admin responses, and status tracking.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">⚙️</div>
+                <h3 class="feature-title">Admin Panel</h3>
+                <p class="feature-description">
+                    Comprehensive admin panel (Mobile & Web) for managing users, investments, approvals,
+                    commissions, and system settings. Real-time analytics and reporting.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">Dashboard & Analytics</h3>
+                <p class="feature-description">
+                    Beautiful dashboard with real-time statistics, investment overview, earnings summary,
+                    team performance, and graphical representations of your MLM business.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MLM System Showcase -->
+    <section class="mlm-showcase">
+        <div class="section">
+            <h2 class="section-title">Complete MLM System</h2>
+            <p class="section-subtitle">
+                All the essential components for a fully functional MLM investment platform
+            </p>
+
+            <div class="showcase-grid">
+                <div class="showcase-item">
+                    <h3>💼 User Features</h3>
+                    <ul>
+                        <li>OTP & Password Login</li>
+                        <li>Profile Management</li>
+                        <li>KYC Document Upload</li>
+                        <li>Bank Account Setup</li>
+                        <li>Referral Code Sharing</li>
+                        <li>Investment Dashboard</li>
+                        <li>Wallet Management</li>
+                        <li>Transaction History</li>
+                        <li>Team Genealogy View</li>
+                        <li>Earnings Reports</li>
+                        <li>Support Tickets</li>
+                    </ul>
+                </div>
+
+                <div class="showcase-item">
+                    <h3>💰 Investment System</h3>
+                    <ul>
+                        <li>Multiple Investment Plans</li>
+                        <li>Configurable ROI Rates</li>
+                        <li>Investment Duration Tracking</li>
+                        <li>Minimum Investment Limits</li>
+                        <li>Auto-Renewal Options</li>
+                        <li>Investment Calculator</li>
+                        <li>Maturity Notifications</li>
+                        <li>Investment History</li>
+                        <li>P&L Statements</li>
+                        <li>Profit Distribution</li>
+                    </ul>
+                </div>
+
+                <div class="showcase-item">
+                    <h3>🎁 Commission Types</h3>
+                    <ul>
+                        <li>Direct Referral Bonus</li>
+                        <li>Level Commissions (Multi-level)</li>
+                        <li>Binary Matching Bonus</li>
+                        <li>Performance Bonuses</li>
+                        <li>Rank Achievement Rewards</li>
+                        <li>Team Volume Bonus</li>
+                        <li>Leadership Bonuses</li>
+                        <li>Fast Start Bonuses</li>
+                        <li>Profit Sharing</li>
+                        <li>Custom Commission Rules</li>
+                    </ul>
+                </div>
+
+                <div class="showcase-item">
+                    <h3>👨‍💼 Admin Features</h3>
+                    <ul>
+                        <li>User Management</li>
+                        <li>Investment Approval</li>
+                        <li>Deposit/Withdrawal Approval</li>
+                        <li>KYC Verification</li>
+                        <li>Commission Configuration</li>
+                        <li>Investment Plan Setup</li>
+                        <li>Support Ticket Management</li>
+                        <li>Analytics Dashboard</li>
+                        <li>Revenue Reports</li>
+                        <li>System Settings</li>
+                        <li>Trigger Manual Calculations</li>
+                    </ul>
+                </div>
+
+                <div class="showcase-item">
+                    <h3>💳 Wallet Features</h3>
+                    <ul>
+                        <li>E-Wallet (Main Balance)</li>
+                        <li>Investment Wallet</li>
+                        <li>Earnings Wallet</li>
+                        <li>Wallet-to-Wallet Transfer</li>
+                        <li>Deposit Funds</li>
+                        <li>Withdraw Funds</li>
+                        <li>Transaction History</li>
+                        <li>Balance Tracking</li>
+                        <li>Auto-Credit Commissions</li>
+                        <li>Withdrawal Limits</li>
+                    </ul>
+                </div>
+
+                <div class="showcase-item">
+                    <h3>🔧 Automation</h3>
+                    <ul>
+                        <li>Daily Profit Calculation</li>
+                        <li>Auto Commission Distribution</li>
+                        <li>Investment Maturity Processing</li>
+                        <li>Scheduled Cron Jobs</li>
+                        <li>Email Notifications</li>
+                        <li>SMS Alerts</li>
+                        <li>Auto-Renewal Processing</li>
+                        <li>Binary Tree Balancing</li>
+                        <li>Rank Upgrades</li>
+                        <li>Report Generation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- App Screenshots Section -->
+    <section class="screenshots">
+        <div class="section">
+            <div class="demo-badge">📱 Live App Demo</div>
+            <h2 class="section-title">See Nexus in Action</h2>
+            <p class="section-subtitle">
+                Powerful MLM platform with beautiful, professional interfaces for users and administrators
+            </p>
+
+            <div class="screenshots-grid">
+                <!-- Image 1 -->
+                <div class="screenshot-item">
+                    <img src="Nexus_Photos/Screenshot_20251205_165430.jpg" alt="Nexus Screen 1"
+                        class="screenshot-image">
+                    <div class="screenshot-overlay">
+                        <p class="screenshot-caption">Dashboard Interface</p>
+                    </div>
+                </div>
+                <!-- Image 2 -->
+                <div class="screenshot-item">
+                    <img src="Nexus_Photos/Screenshot_20251205_165454.jpg" alt="Nexus Screen 2"
+                        class="screenshot-image">
+                    <div class="screenshot-overlay">
+                        <p class="screenshot-caption">Wallet System</p>
+                    </div>
+                </div>
+                <!-- Image 3 -->
+                <div class="screenshot-item">
+                    <img src="Nexus_Photos/Screenshot_20251205_165520.jpg" alt="Nexus Screen 3"
+                        class="screenshot-image">
+                    <div class="screenshot-overlay">
+                        <p class="screenshot-caption">Investment Portfolio</p>
+                    </div>
+                </div>
+                <!-- Image 4 -->
+                <div class="screenshot-item">
+                    <img src="Nexus_Photos/Screenshot_20251205_165524.jpg" alt="Nexus Screen 4"
+                        class="screenshot-image">
+                    <div class="screenshot-overlay">
+                        <p class="screenshot-caption">Commission Log</p>
+                    </div>
+                </div>
+                <!-- Image 5 -->
+                <div class="screenshot-item">
+                    <img src="Nexus_Photos/Screenshot_20251205_165532.jpg" alt="Nexus Screen 5"
+                        class="screenshot-image">
+                    <div class="screenshot-overlay">
+                        <p class="screenshot-caption">History View</p>
+                    </div>
+                </div>
+                <!-- Image 6 -->
+                <div class="screenshot-item">
+                    <img src="Nexus_Photos/Screenshot_20251205_165542.jpg" alt="Nexus Screen 6"
+                        class="screenshot-image">
+                    <div class="screenshot-overlay">
+                        <p class="screenshot-caption">Deposit Screen</p>
+                    </div>
+                </div>
+                <!-- Image 7 -->
+                <div class="screenshot-item">
+                    <img src="Nexus_Photos/Screenshot_20251205_165551.jpg" alt="Nexus Screen 7"
+                        class="screenshot-image">
+                    <div class="screenshot-overlay">
+                        <p class="screenshot-caption">Withdrawal Screen</p>
+                    </div>
+                </div>
+                <!-- Image 8 -->
+                <div class="screenshot-item">
+                    <img src="Nexus_Photos/Screenshot_20251205_165556.jpg" alt="Nexus Screen 8"
+                        class="screenshot-image">
+                    <div class="screenshot-overlay">
+                        <p class="screenshot-caption">KYC Verification</p>
+                    </div>
+                </div>
+                <!-- Image 9 -->
+                <div class="screenshot-item">
+                    <img src="Nexus_Photos/Screenshot_20251205_165606.jpg" alt="Nexus Screen 9"
+                        class="screenshot-image">
+                    <div class="screenshot-overlay">
+                        <p class="screenshot-caption">Bank Setup</p>
+                    </div>
+                </div>
+                <!-- Image 10 -->
+                <div class="screenshot-item">
+                    <img src="Nexus_Photos/Screenshot_20251205_165614.jpg" alt="Nexus Screen 10"
+                        class="screenshot-image">
+                    <div class="screenshot-overlay">
+                        <p class="screenshot-caption">Support Center</p>
+                    </div>
+                </div>
+                <!-- Image 11 -->
+                <div class="screenshot-item">
+                    <img src="Nexus_Photos/Screenshot_20251205_165622.jpg" alt="Nexus Screen 11"
+                        class="screenshot-image">
+                    <div class="screenshot-overlay">
+                        <p class="screenshot-caption">Team Overview</p>
+                    </div>
+                </div>
+                <!-- Image 12 -->
+                <div class="screenshot-item">
+                    <img src="Nexus_Photos/Screenshot_20251205_165631.jpg" alt="Nexus Screen 12"
+                        class="screenshot-image">
+                    <div class="screenshot-overlay">
+                        <p class="screenshot-caption">Referrals</p>
+                    </div>
+                </div>
+                <!-- Image 13 -->
+                <div class="screenshot-item">
+                    <img src="Nexus_Photos/Screenshot_20251205_165641.jpg" alt="Nexus Screen 13"
+                        class="screenshot-image">
+                    <div class="screenshot-overlay">
+                        <p class="screenshot-caption">Profile Settings</p>
+                    </div>
+                </div>
+                <!-- Image 14 -->
+                <div class="screenshot-item">
+                    <img src="Nexus_Photos/Screenshot_20251205_165715.jpg" alt="Nexus Screen 14"
+                        class="screenshot-image">
+                    <div class="screenshot-overlay">
+                        <p class="screenshot-caption">Admin Dashboard</p>
+                    </div>
+                </div>
+                <!-- Image 15 -->
+                <div class="screenshot-item">
+                    <img src="Nexus_Photos/Screenshot_20251205_165733.jpg" alt="Nexus Screen 15"
+                        class="screenshot-image">
+                    <div class="screenshot-overlay">
+                        <p class="screenshot-caption">Analytics</p>
+                    </div>
+                </div>
+                <!-- Image 16 -->
+                <div class="screenshot-item">
+                    <img src="Nexus_Photos/Screenshot_20251205_165745.jpg" alt="Nexus Screen 16"
+                        class="screenshot-image">
+                    <div class="screenshot-overlay">
+                        <p class="screenshot-caption">Control Panel</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="tech-stack">
+        <div class="section">
+            <h2 class="section-title">Built with Enterprise Technology</h2>
+            <p class="section-subtitle">
+                Production-ready architecture using proven technologies and industry best practices
+            </p>
+
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <h3>📱 Mobile App</h3>
+                    <ul>
+                        <li>Flutter 3.x</li>
+                        <li>Dart Programming</li>
+                        <li>Provider State Management</li>
+                        <li>Material Design 3</li>
+                        <li>Responsive UI</li>
+                        <li>iOS & Android Support</li>
+                        <li>Web Admin Panel</li>
+                    </ul>
+                </div>
+
+                <div class="tech-item">
+                    <h3>🔧 Backend API</h3>
+                    <ul>
+                        <li>PHP 7.4+</li>
+                        <li>RESTful Architecture</li>
+                        <li>JWT Authentication</li>
+                        <li>PDO Database Layer</li>
+                        <li>Environment Configuration</li>
+                        <li>Error Handling</li>
+                        <li>API Versioning</li>
+                    </ul>
+                </div>
+
+                <div class="tech-item">
+                    <h3>💾 Database</h3>
+                    <ul>
+                        <li>MySQL 5.7+</li>
+                        <li>Normalized Schema</li>
+                        <li>Transaction Support</li>
+                        <li>Stored Procedures</li>
+                        <li>Indexed Queries</li>
+                        <li>Foreign Key Constraints</li>
+                        <li>Backup Scripts</li>
+                    </ul>
+                </div>
+
+                <div class="tech-item">
+                    <h3>🔐 Security</h3>
+                    <ul>
+                        <li>JWT Token Auth</li>
+                        <li>Bcrypt Password Hashing</li>
+                        <li>SQL Injection Protection</li>
+                        <li>XSS Prevention</li>
+                        <li>CORS Configuration</li>
+                        <li>Rate Limiting</li>
+                        <li>Secure File Upload</li>
+                    </ul>
+                </div>
+
+                <div class="tech-item">
+                    <h3>📧 Integrations</h3>
+                    <ul>
+                        <li>Twilio SMS</li>
+                        <li>MSG91 SMS</li>
+                        <li>2Factor OTP</li>
+                        <li>Email SMTP</li>
+                        <li>Payment Gateways Ready</li>
+                        <li>Cloud Storage Support</li>
+                        <li>Push Notifications Ready</li>
+                    </ul>
+                </div>
+
+                <div class="tech-item">
+                    <h3>🚀 Deployment</h3>
+                    <ul>
+                        <li>Apache/Nginx Support</li>
+                        <li>Docker Ready</li>
+                        <li>Environment Variables</li>
+                        <li>Cron Job Setup</li>
+                        <li>SSL/HTTPS Ready</li>
+                        <li>Production Optimized</li>
+                        <li>Deployment Guides</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Section -->
+    <section class="security-section">
+        <h2 class="section-title">Enterprise-Grade Security</h2>
+        <p class="section-subtitle">
+            Your users' data and investments are protected with industry-standard security measures
+        </p>
+
+        <div class="security-badges">
+            <div class="security-badge">
+                <div class="security-badge-icon">🔒</div>
+                <h3>Encrypted Data</h3>
+                <p>All sensitive data encrypted at rest and in transit</p>
+            </div>
+
+            <div class="security-badge">
+                <div class="security-badge-icon">🛡️</div>
+                <h3>Secure Authentication</h3>
+                <p>JWT tokens with expiry and refresh mechanisms</p>
+            </div>
+
+            <div class="security-badge">
+                <div class="security-badge-icon">✅</div>
+                <h3>Input Validation</h3>
+                <p>Comprehensive validation and sanitization</p>
+            </div>
+
+            <div class="security-badge">
+                <div class="security-badge-icon">📝</div>
+                <h3>Audit Logs</h3>
+                <p>Complete transaction and activity logging</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="section">
+            <h2 class="section-title">Investment in Your Success</h2>
+            <p class="section-subtitle">
+                Choose the package that fits your business scale. All packages include complete source code and
+                documentation.
+            </p>
+
+            <!-- Currency Switcher -->
+            <div class="currency-switcher">
+                <span class="currency-switcher-label">Select Currency:</span>
+                <div class="currency-toggle" id="currencyToggle" onclick="toggleCurrency()">
+                    <div class="currency-slider"></div>
+                    <span class="currency-option usd">USD</span>
+                    <span class="currency-option inr">INR</span>
+                </div>
+            </div>
+
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <h3 class="pricing-title">Starter</h3>
+                    <div class="pricing-price" data-usd="1,999" data-inr="1,65,999">$1,999</div>
+                    <p class="pricing-period">One-time payment</p>
+                    <ul class="pricing-features">
+                        <li>Complete Flutter source code</li>
+                        <li>PHP backend API</li>
+                        <li>MySQL database schema</li>
+                        <li>Basic MLM features</li>
+                        <li>Binary tree system</li>
+                        <li>3 wallet types</li>
+                        <li>Basic documentation</li>
+                        <li>30 days email support</li>
+                        <li>Single deployment license</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-secondary">Get Started</a>
+                </div>
+
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">Best Value</div>
+                    <h3 class="pricing-title">Professional</h3>
+                    <div class="pricing-price" data-usd="3,999" data-inr="3,31,999">$3,999</div>
+                    <p class="pricing-period">One-time payment</p>
+                    <ul class="pricing-features">
+                        <li>Everything in Starter</li>
+                        <li>Advanced commission system</li>
+                        <li>Web admin panel</li>
+                        <li>Automated cron jobs</li>
+                        <li>SMS integration setup</li>
+                        <li>White-labeling rights</li>
+                        <li>Comprehensive documentation</li>
+                        <li>Video tutorials</li>
+                        <li>90 days priority support</li>
+                        <li>Unlimited deployments</li>
+                        <li>Free updates for 1 year</li>
+                        <li>Deployment assistance</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-primary">Get Started</a>
+                </div>
+
+                <div class="pricing-card">
+                    <h3 class="pricing-title">Enterprise</h3>
+                    <div class="pricing-price" data-usd="7,999" data-inr="6,63,999">$7,999</div>
+                    <p class="pricing-period">One-time payment</p>
+                    <ul class="pricing-features">
+                        <li>Everything in Professional</li>
+                        <li>Full customization service</li>
+                        <li>Payment gateway integration</li>
+                        <li>Custom commission rules</li>
+                        <li>Advanced analytics</li>
+                        <li>Multi-language support</li>
+                        <li>Dedicated developer support</li>
+                        <li>6 months priority support</li>
+                        <li>Free updates for 2 years</li>
+                        <li>Complete server setup</li>
+                        <li>Training sessions</li>
+                        <li>Reseller license</li>
+                        <li>Legal compliance guidance</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-secondary">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let currentCurrency = 'usd';
+
+        function toggleCurrency() {
+            const toggle = document.getElementById('currencyToggle');
+            const prices = document.querySelectorAll('.pricing-price');
+
+            if (currentCurrency === 'usd') {
+                currentCurrency = 'inr';
+                toggle.classList.add('inr-active');
+                prices.forEach(price => {
+                    const inrValue = price.getAttribute('data-inr');
+                    price.textContent = '₹' + inrValue;
+                });
+            } else {
+                currentCurrency = 'usd';
+                toggle.classList.remove('inr-active');
+                prices.forEach(price => {
+                    const usdValue = price.getAttribute('data-usd');
+                    price.textContent = '$' + usdValue;
+                });
+            }
+        }
+    </script>
+
+    <!-- Compliance Warning -->
+    <section class="section">
+        <div class="warning-box">
+            <h3>⚖️ Legal & Compliance Notice</h3>
+            <p>
+                <strong>Important:</strong> Multi-Level Marketing (MLM) and investment platforms are subject to various
+                regulations
+                that differ by country and jurisdiction. Before launching your platform, ensure you:
+            </p>
+            <ul style="margin-top: 15px; padding-left: 20px; color: var(--text-muted);">
+                <li>Consult with legal professionals familiar with MLM and investment regulations in your jurisdiction
+                </li>
+                <li>Obtain necessary licenses and registrations for operating an investment platform</li>
+                <li>Comply with anti-pyramid scheme laws and regulations</li>
+                <li>Implement proper disclosure and risk warning mechanisms</li>
+                <li>Follow KYC (Know Your Customer) and AML (Anti-Money Laundering) requirements</li>
+                <li>Ensure your compensation plan is compliant with local laws</li>
+            </ul>
+            <p style="margin-top: 15px;">
+                This software is provided as a technical solution only. We do not provide legal, financial, or business
+                advice.
+                The responsibility for legal compliance lies with the platform operator.
+            </p>
+        </div>
+    </section>
+
+    <!-- What You Get -->
+    <section class="section">
+        <h2 class="section-title">Complete Package Includes</h2>
+        <p class="section-subtitle">Everything you need to launch and scale your MLM investment platform</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📦</div>
+                <h3 class="feature-title">Full Source Code</h3>
+                <p class="feature-description">
+                    Complete, unencrypted source code for Flutter mobile app, web admin panel, and PHP backend.
+                    Well-documented, modular, and following best practices.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <h3 class="feature-title">Documentation</h3>
+                <p class="feature-description">
+                    Comprehensive setup guides, API documentation, database schema documentation,
+                    deployment instructions, and troubleshooting guides.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🗄️</div>
+                <h3 class="feature-title">Database & Scripts</h3>
+                <p class="feature-description">
+                    Production-ready MySQL schema, sample data, migration scripts, cron job scripts,
+                    and automated profit calculation scripts.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎓</div>
+                <h3 class="feature-title">Training Materials</h3>
+                <p class="feature-description">
+                    Video tutorials for setup, configuration, customization, and deployment.
+                    User guides for admin panel and mobile app usage.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h3 class="feature-title">Updates & Patches</h3>
+                <p class="feature-description">
+                    Regular updates with bug fixes, security patches, performance improvements,
+                    and new features based on your package tier.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3 class="feature-title">Technical Support</h3>
+                <p class="feature-description">
+                    Dedicated support team via email, chat, or phone (based on package).
+                    Help with setup, deployment, customization, and troubleshooting.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="contact">
+        <div class="cta-content">
+            <h2>Ready to Launch Your MLM Platform?</h2>
+            <p>
+                Join successful entrepreneurs who have built thriving MLM investment businesses with our
+                comprehensive, production-ready solution. Start your journey today!
+            </p>
+            <div class="cta-buttons">
+                <a href="mailto:sales@yourcompany.com?subject=Flutter MLM Investment Inquiry"
+                    class="btn btn-primary">Contact Sales</a>
+                <a href="#" class="btn btn-secondary">Schedule Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 Flutter MLM Investment. All rights reserved.</p>
+        <p>
+            <a href="#">Terms of Service</a> |
+            <a href="#">Privacy Policy</a> |
+            <a href="mailto:support@yourcompany.com">Support</a>
+        </p>
+        <p style="margin-top: 20px; font-size: 0.85rem;">
+            Disclaimer: This is a software solution. Operators are responsible for ensuring compliance with all
+            applicable laws and regulations.
+        </p>
+    </footer>
+</body>
+
+</html>

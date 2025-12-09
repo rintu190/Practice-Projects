@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="The Investment Mastery Library - Access the timeless wisdom of the world's elite investors. Verified financial knowledge for serious wealth builders.">
+    <title>Investment Mastery Library - BytesQube Elite</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #050505;
+            --bg-panel: #0a0a0a;
+            --gold-primary: #D4AF37;
+            --gold-light: #F4E5B0;
+            --gold-dark: #8A6E20;
+            --text-main: #E1E1E1;
+            --text-muted: #888888;
+            --emerald-accent: #052b18;
+            --gradient-gold: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+            --gradient-dark: linear-gradient(180deg, rgba(10, 10, 10, 0) 0%, #050505 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Typography */
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Cinzel', serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .text-gold {
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background:
+                radial-gradient(circle at center, rgba(212, 175, 55, 0.05) 0%, rgba(5, 5, 5, 1) 70%),
+                url('https://www.transparenttextures.com/patterns/cubes.png');
+            padding: 20px;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(to top, var(--bg-deep), transparent);
+        }
+
+        .hero-content {
+            z-index: 10;
+            max-width: 1000px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 60px;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 4px;
+            box-shadow: 0 0 100px rgba(0, 0, 0, 0.8);
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            line-height: 1.1;
+            margin-bottom: 30px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 40px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Gold CTA Button */
+        .btn-gold {
+            display: inline-block;
+            padding: 20px 50px;
+            background: var(--gradient-gold);
+            color: #1a1a1a;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Pillars Section - Clean Dark Cards */
+        .pillars-section {
+            padding: 100px 0;
+            background: #080808;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .separator {
+            width: 80px;
+            height: 2px;
+            background: var(--gold-primary);
+            margin: 0 auto;
+        }
+
+        .pillars-grid {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .pillar-card {
+            flex: 1;
+            min-width: 300px;
+            max-width: 400px;
+            background: #0e0e0e;
+            padding: 50px 30px;
+            border: 1px solid #1f1f1f;
+            text-align: center;
+            transition: 0.4s;
+            position: relative;
+        }
+
+        .pillar-card:hover {
+            border-color: var(--gold-dark);
+            transform: translateY(-10px);
+            background: #111;
+        }
+
+        .pillar-icon {
+            font-size: 2.5rem;
+            color: var(--gold-primary);
+            margin-bottom: 25px;
+            display: block;
+        }
+
+        /* Books Showcase - The Highlight */
+        .library-section {
+            padding: 120px 0;
+            background: linear-gradient(180deg, #050505 0%, #0a0a0a 100%);
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 50px;
+            perspective: 1000px;
+        }
+
+        .book-item {
+            position: relative;
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .book-item:hover {
+            transform: translateZ(20px) scale(1.05);
+            z-index: 10;
+        }
+
+        .book-img-container {
+            position: relative;
+            box-shadow: -15px 15px 30px rgba(0, 0, 0, 0.7);
+            border-radius: 4px;
+            /* Slight roundness often seen on quality paperbacks */
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .book-img-container::before {
+            /* Spine Effect highlighting */
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 15px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.1) 20%, transparent);
+            z-index: 2;
+        }
+
+        .book-cover-img {
+            width: 100%;
+            display: block;
+            height: auto;
+            filter: contrast(1.1) saturate(1.1);
+        }
+
+        .book-meta {
+            margin-top: 20px;
+            text-align: center;
+            opacity: 0.7;
+            transition: 0.3s;
+        }
+
+        .book-item:hover .book-meta {
+            opacity: 1;
+        }
+
+        .book-meta h3 {
+            font-family: 'Manrope', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Comparison Section Redesigned */
+        .comparison-section {
+            padding: 100px 0;
+            background: #080808;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            max-width: 900px;
+            margin: 0 auto;
+            border: 1px solid #222;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 25px;
+            border-bottom: 1px solid #222;
+            text-align: left;
+        }
+
+        .comparison-table th {
+            background: #111;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--gold-primary);
+        }
+
+        .status-bad {
+            color: #8a3c3c;
+            font-weight: 500;
+        }
+
+        .status-good {
+            color: #4b8a3c;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .status-good::before {
+            content: '✨';
+            margin-right: 10px;
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            padding: 120px 20px;
+            text-align: center;
+            background: radial-gradient(circle at center, #1a1505 0%, #000 70%);
+        }
+
+        .price-card {
+            background: rgba(20, 20, 20, 0.8);
+            border: 2px solid var(--gold-dark);
+            display: inline-block;
+            padding: 60px 80px;
+            position: relative;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .price-card::before {
+            content: 'EXCLUSIVE OFFER';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gold-primary);
+            color: #000;
+            padding: 5px 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .price-huge {
+            font-family: 'Cinzel', serif;
+            font-size: 4.5rem;
+            color: white;
+            margin: 20px 0;
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .price-strike {
+            font-size: 1.5rem;
+            text-decoration: line-through;
+            color: #555;
+            display: block;
+        }
+
+        .timer {
+            font-family: 'Manrope', monospace;
+            color: var(--gold-primary);
+            font-size: 1.2rem;
+            margin-top: 20px;
+        }
+
+        @media screen and (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-content {
+                padding: 30px 20px;
+            }
+
+            .books-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .price-card {
+                padding: 40px 20px;
+            }
+
+            .audience-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Audience Section */
+        .audience-section {
+            padding: 100px 0;
+            background: #0a0a0a;
+        }
+
+        .audience-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .audience-card {
+            background: linear-gradient(145deg, #111, #080808);
+            padding: 40px;
+            border: 1px solid #222;
+            border-radius: 4px;
+        }
+
+        .audience-card h3 {
+            color: var(--gold-primary);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Testimonials */
+        .testimonials-section {
+            padding: 120px 0;
+            background: url('https://www.transparenttextures.com/patterns/dark-matter.png');
+            background-color: #050505;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .testimonial-card {
+            background: rgba(20, 20, 20, 0.6);
+            border-left: 2px solid var(--gold-dark);
+            padding: 30px;
+            position: relative;
+        }
+
+        .quote-icon {
+            font-size: 4rem;
+            color: rgba(212, 175, 55, 0.1);
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-family: serif;
+        }
+
+        /* FAQ */
+        .faq-section {
+            padding: 80px 0;
+            background: #080808;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #222;
+            padding: 20px 0;
+        }
+
+        .faq-question {
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .faq-answer {
+            color: var(--text-muted);
+            margin-top: 15px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h4 style="color: var(--gold-primary); margin-bottom: 20px;">The BytesQube Elite Collection</h4>
+            <h1>Wealth Wisdom <br><span class="text-gold">Library</span></h1>
+            <p>A curated compilation of the 21 most influential financial texts in history. From the psychology of money
+                to technical market analysis.</p>
+            <a href="https://www.bytesqube.com/product/investment-bundle" class="btn-gold">Access The Vault | ₹ 499</a>
+        </div>
+    </header>
+
+    <section class="pillars-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>The Triad of Market Mastery</h2>
+                <div class="separator"></div>
+                <p style="color: var(--text-muted); margin-top: 20px;">Complete investor development requires balance
+                    across three disciplines.</p>
+            </div>
+
+            <div class="pillars-grid">
+                <div class="pillar-card">
+                    <span class="pillar-icon">🏛️</span>
+                    <h3>Foundational Value</h3>
+                    <p style="color: #999; margin-bottom: 20px;">Learn to value assets appropriately. Understand the
+                        intrinsic worth of businesses using the Graham-Dodd framework effectively.</p>
+                    <small style="color: var(--gold-primary);">SECURITY ANALYSIS • INTELLIGENT INVESTOR</small>
+                </div>
+
+                <div class="pillar-card">
+                    <span class="pillar-icon">🧠</span>
+                    <h3>Investor Psychology</h3>
+                    <p style="color: #999; margin-bottom: 20px;">Markets are driven by human emotion. Master your own
+                        mind to avoid the pitfalls of greed and fear that destroy wealth.</p>
+                    <small style="color: var(--gold-primary);">PSYCHOLOGY OF MONEY • RICH DAD</small>
+                </div>
+
+                <div class="pillar-card">
+                    <span class="pillar-icon">📊</span>
+                    <h3>Technical Precision</h3>
+                    <p style="color: #999; margin-bottom: 20px;">Optimize entries and exits. Use data-driven technical
+                        analysis and charts to navigate short-term market volatility.</p>
+                    <small style="color: var(--gold-primary);">ALGORITHMIC TRADING • CHART PATTERNS</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visual Library Grid -->
+    <section class="library-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>The Collection</h2>
+                <div class="separator"></div>
+            </div>
+
+            <div class="books-grid">
+                <!-- Book 1 -->
+                <div class="book-item">
+                    <div class="book-img-container">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2023/02/617pRuOGhLL._AC_UF10001000_QL80_.webp"
+                            alt="Winning Strategies" class="book-cover-img">
+                    </div>
+                </div>
+
+                <!-- Book 2 -->
+                <div class="book-item">
+                    <div class="book-img-container">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2023/02/61qvQIlGEXL.webp"
+                            alt="Security Analysis" class="book-cover-img">
+                    </div>
+                </div>
+
+                <!-- Book 3 -->
+                <div class="book-item">
+                    <div class="book-img-container">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2023/02/9780062312686-us-766x1000-1.jpg"
+                            alt="Intelligent Investor" class="book-cover-img">
+                    </div>
+                </div>
+
+                <!-- Book 4 -->
+                <div class="book-item">
+                    <div class="book-img-container">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2023/02/71pvFCvMM2L-663x1024.webp"
+                            alt="One Up Wall St" class="book-cover-img">
+                    </div>
+                </div>
+
+                <!-- Book 5 -->
+                <div class="book-item">
+                    <div class="book-img-container">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2023/02/51u8ZRDCVoL.webp" alt="Rich Dad"
+                            class="book-cover-img">
+                    </div>
+                </div>
+
+                <!-- Book 6 -->
+                <div class="book-item">
+                    <div class="book-img-container">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2023/02/71g2ednj0JL._AC_UF10001000_QL80_.webp"
+                            alt="Psychology of Money" class="book-cover-img">
+                    </div>
+                </div>
+
+                <!-- Book 7 -->
+                <div class="book-item">
+                    <div class="book-img-container">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2023/02/51IoXKhKe1L.webp"
+                            alt="Futures Trading" class="book-cover-img">
+                    </div>
+                </div>
+
+                <!-- Book 8 -->
+                <div class="book-item">
+                    <div class="book-img-container">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2023/02/91Otk6gU9zL-1-743x1024.webp"
+                            alt="Candlestick" class="book-cover-img">
+                    </div>
+                </div>
+
+                <!-- Book 9 -->
+                <div class="book-item">
+                    <div class="book-img-container">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2023/02/51h-wxNpK22222222UL.webp"
+                            alt="Values" class="book-cover-img">
+                    </div>
+                </div>
+
+                <!-- Book 10 -->
+                <div class="book-item">
+                    <div class="book-img-container">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2023/02/51dpNq7AMeL.webp"
+                            alt="Common Stocks" class="book-cover-img">
+                    </div>
+                </div>
+
+                <!-- Book 11 -->
+                <div class="book-item">
+                    <div class="book-img-container">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2023/02/51JsClHKN1L.webp"
+                            alt="Chart Patterns" class="book-cover-img">
+                    </div>
+                </div>
+
+                <!-- Book 12 -->
+                <div class="book-item">
+                    <div class="book-img-container">
+                        <img src="https://www.bytesqube.com/wp-content/uploads/2023/02/51yYiH59aL.webp" alt="Algo"
+                            class="book-cover-img">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison -->
+    <section class="comparison-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>The Education Factor</h2>
+                <div class="separator"></div>
+            </div>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th width="50%">Typical Market Participant</th>
+                        <th width="50%" style="border-left: 1px solid #333; color: var(--gold-primary);">The Educated
+                            Investor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="status-bad">Trades on 'Hot Tips' & Rumors</td>
+                        <td class="status-good" style="border-left: 1px solid #333;">Follows Proven Frameworks</td>
+                    </tr>
+                    <tr>
+                        <td class="status-bad">Buys High, Sells Low (Panic)</td>
+                        <td class="status-good" style="border-left: 1px solid #333;">Capitalizes on Market Fear</td>
+                    </tr>
+                    <tr>
+                        <td class="status-bad">Gambles Capital</td>
+                        <td class="status-good" style="border-left: 1px solid #333;">Manages & Mitigates Risk</td>
+                    </tr>
+                    <tr>
+                        <td class="status-bad">Zero Exit Strategy</td>
+                        <td class="status-good" style="border-left: 1px solid #333;">Defined Profit Targets</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Who Is This For? -->
+    <section class="audience-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Is This Collection For You?</h2>
+                <div class="separator"></div>
+            </div>
+            <div class="audience-grid">
+                <div class="audience-card">
+                    <h3>The Aspiring Intelligent Investor</h3>
+                    <p style="color: #999;">You want to stop gambling on tips and start building wealth systematically
+                        using proven value investing principles.</p>
+                </div>
+                <div class="audience-card">
+                    <h3>The Technician & Trader</h3>
+                    <p style="color: #999;">You are interested in price action, chart patterns, and algorithmic
+                        strategies to capitalize on short-term market movements.</p>
+                </div>
+                <div class="audience-card">
+                    <h3>The Financial Independence Seeker</h3>
+                    <p style="color: #999;">You want to change your relationship with money, escape the rat race, and
+                        understand the psychology of the wealthy.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>What Members Are Saying</h2>
+                <div class="separator"></div>
+            </div>
+            <div class="testimonial-grid">
+                <!-- Testimonial 1 -->
+                <div class="testimonial-card">
+                    <div class="quote-icon">“</div>
+                    <p style="color: #ccc; margin-bottom: 20px;">"I've read dozens of finance books, but having them all
+                        curated like this saved me hundreds of hours. 'Security Analysis' alone is worth the price."</p>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 40px; height: 40px; background: var(--gold-dark); border-radius: 50%;"></div>
+                        <div>
+                            <h4 style="font-size: 0.9rem; color: white; margin: 0;">Rajesh Kumar</h4>
+                            <span style="font-size: 0.8rem; color: var(--gold-primary);">Portfolio Manager</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="testimonial-card">
+                    <div class="quote-icon">“</div>
+                    <p style="color: #ccc; margin-bottom: 20px;">"The variety is perfect. I started with 'Rich Dad Poor
+                        Dad' for mindset, then moved to 'Candlestick Charting' for my trading. A complete package."</p>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 40px; height: 40px; background: var(--emerald-accent); border-radius: 50%;">
+                        </div>
+                        <div>
+                            <h4 style="font-size: 0.9rem; color: white; margin: 0;">Sarah Jenkins</h4>
+                            <span style="font-size: 0.8rem; color: var(--gold-primary);">Day Trader</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="testimonial-card">
+                    <div class="quote-icon">“</div>
+                    <p style="color: #ccc; margin-bottom: 20px;">"For the price of a coffee, I got access to the wisdom
+                        of Buffett, Graham, and Lynch. The digital format is high quality and easy to read anywhere."
+                    </p>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 40px; height: 40px; background: #333; border-radius: 50%;"></div>
+                        <div>
+                            <h4 style="font-size: 0.9rem; color: white; margin: 0;">Amit Verma</h4>
+                            <span style="font-size: 0.8rem; color: var(--gold-primary);">Entrepreneur</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section">
+        <div class="container" style="max-width: 800px;">
+            <div class="section-header">
+                <h2>Frequently Asked Questions</h2>
+                <div class="separator"></div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Are these physical books?</div>
+                <div class="faq-answer">No, this is a purely digital library (PDF/ePub format). You get instant access
+                    to download and read them on any device (Kindle, iPad, Phone, Laptop).</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Is this suitable for absolute beginners?</div>
+                <div class="faq-answer">Yes, absolutely. We have categorized the books. Beginners should start with
+                    "Rich Dad Poor Dad" and "Psychology of Money" before moving to technical topics.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Do I get lifetime access?</div>
+                <div class="faq-answer">Yes. One-time payment, lifetime access. Any future additions to this library
+                    will be available to you for free.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing-section">
+        <div class="price-card">
+            <h3 style="color: #888; letter-spacing: 2px;">LIFETIME ACCESS</h3>
+            <span class="price-strike">₹ 2999</span>
+            <div class="price-huge">₹ 499</div>
+            <p style="color: #aaa; margin-bottom: 30px;">Includes all 21 Digital Books + Future Additions <br> Instant
+                Download Access</p>
+            <a href="https://www.bytesqube.com/product/investment-bundle" class="btn-gold" style="width: 100%;">Secure
+                Your Copy</a>
+            <div class="timer">OFFER ENDS SOON</div>
+        </div>
+    </section>
+
+    <footer style="background: #000; padding: 40px; text-align: center; border-top: 1px solid #111;">
+        <p style="color: #444; font-size: 0.9rem;">&copy; 2025 BytesQube. Financial Education Series.</p>
+    </footer>
+
+</body>
+
+</html>

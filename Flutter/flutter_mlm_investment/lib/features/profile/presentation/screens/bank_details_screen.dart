@@ -134,9 +134,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isVerified = _bankData?['is_verified'] == true ||
-        _bankData?['is_verified'] == 1 ||
-        _bankData?['is_verified'] == '1';
+    final isVerified = _bankData?['is_verified'] == true;
     final hasData = _bankData != null;
     final canEdit = !isVerified && (hasData ? _isEditing : true);
 
