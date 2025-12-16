@@ -61,6 +61,16 @@ class BytesQube_Referral {
 		// Initialize Components
 		new BQ_Referral_Notifications();
 		new BQ_Referral_API();
+
+		// Auto-update DB and rules if version changed
+		add_action( 'init', array( $this, 'check_version' ) );
+	}
+
+	public function check_version() {
+		if ( get_option( 'bqr_db_version' ) != '1.2.3' ) {
+			BQ_Referral_DB::create_tables();
+			flush_rewrite_rules();
+		}
 	}
 
 	public function load_textdomain() {

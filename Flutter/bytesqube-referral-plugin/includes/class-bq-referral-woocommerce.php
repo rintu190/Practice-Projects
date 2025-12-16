@@ -16,11 +16,43 @@ class BQ_Referral_WooCommerce {
 	 * Save referrer ID to the order
 	 */
 	public function add_referrer_to_order( $order_id ) {
-		$tracker = new BQ_Referral_Tracker(); // In a real app, use singleton or dependency injection
-		$referrer_id = $tracker->get_current_referrer_id();
+		$referrer_id = 0;
+
+		// 1. Check for Coupons (High Priority)
+		if ( class_exists( 'WC_Coupon' ) ) {
+			$order = wc_get_order( $order_id );
+			$coupons = $order->get_coupon_codes();
+			
+			if ( ! empty( $coupons ) ) {
+				foreach ( $coupons as $code ) {
+					// Check if this coupon belongs to an affiliate
+					$users = get_users( array(
+						'meta_key'    => 'bqr_referral_coupon',
+						'meta_value'  => $code,
+						'number'      => 1,
+						'fields'      => 'ID'
+					) );
+					
+					if ( ! empty( $users ) ) {
+						$referrer_id = $users[0];
+						break; // Found a referrer
+					}
+				}
+			}
+		}
+
+		// 2. Fallback to Cookie (if no coupon referrer found)
+		if ( ! $referrer_id ) {
+			$tracker = new BQ_Referral_Tracker();
+			$referrer_id = $tracker->get_current_referrer_id();
+		}
 
 		if ( $referrer_id ) {
-			update_post_meta( $order_id, '_bqr_referrer_id', $referrer_id );
+			// Prevent self-referral
+			$order = wc_get_order( $order_id );
+			if ( $order->get_user_id() != $referrer_id ) {
+				update_post_meta( $order_id, '_bqr_referrer_id', $referrer_id );
+			}
 		}
 	}
 
@@ -123,14 +155,16 @@ class BQ_Referral_WooCommerce {
 	 * Can be extended for tiered rates, per-product rates, etc.
 	 */
 	private function calculate_commission( $amount, $affiliate_id, $level = 1 ) {
-		// Default Rates
-		$rate_l1 = 10;
-		$rate_l2 = 2; // % for level 2
+		// Default Rates from Settings
+		$rate_l1 = get_option( 'bqr_commission_rate', 10 );
+		$rate_l2 = get_option( 'bqr_commission_rate_l2', 2 );
 
-		// Allow overrides via filter or user meta
+		// Allow overrides via filter or user meta (Only for Level 1 typically)
 		if ( $level === 1 ) {
 			$user_rate = get_user_meta( $affiliate_id, 'bqr_commission_rate', true );
-			if ( $user_rate !== '' ) $rate_l1 = floatval( $user_rate );
+			if ( $user_rate !== '' && is_numeric($user_rate) ) {
+				$rate_l1 = floatval( $user_rate );
+			}
 			return ( $amount * $rate_l1 ) / 100;
 		} elseif ( $level === 2 ) {
 			return ( $amount * $rate_l2 ) / 100;
@@ -151,25 +185,65 @@ class BQ_Referral_MyAccount {
 		add_action( 'init', array( $this, 'add_referral_endpoint' ) );
 		add_filter( 'query_vars', array( $this, 'add_query_vars' ), 0 );
 		add_filter( 'woocommerce_account_menu_items', array( $this, 'add_link_my_account' ) );
+		
 		add_action( 'woocommerce_account_referrals_endpoint', array( $this, 'referral_content' ) );
+		add_action( 'woocommerce_account_investments_endpoint', array( $this, 'investment_content' ) );
+		add_action( 'woocommerce_account_wallet_endpoint', array( $this, 'wallet_content' ) );
+		
+		add_action( 'woocommerce_account_dashboard', array( $this, 'dashboard_banners' ) );
+	}
+
+	public function dashboard_banners() {
+		// Ensure styles are enqueued (redundant if shortcodes loaded but ensuring visibility on dashboard home)
+		wp_enqueue_style( 'bqr-style', BQR_PLUGIN_URL . 'assets/css/bqr-style.css', array(), BQR_VERSION );
+		
+		$referral_url = wc_get_account_endpoint_url( 'referrals' );
+		$invest_url   = wc_get_account_endpoint_url( 'investments' );
+		$wallet_url   = wc_get_account_endpoint_url( 'wallet' );
+		
+		?>
+		<div class="bqr-dashboard-grid">
+			<a href="<?php echo esc_url( $referral_url ); ?>" class="bqr-dashboard-banner">
+				<span class="bqr-banner-icon">🤝</span>
+				<span class="bqr-banner-title">Referral System</span>
+				<span class="bqr-banner-desc">Manage links & track commissions</span>
+			</a>
+			<a href="<?php echo esc_url( $invest_url ); ?>" class="bqr-dashboard-banner">
+				<span class="bqr-banner-icon">📈</span>
+				<span class="bqr-banner-title">My Investments</span>
+				<span class="bqr-banner-desc">View portfolio & daily returns</span>
+			</a>
+			<a href="<?php echo esc_url( $wallet_url ); ?>" class="bqr-dashboard-banner">
+				<span class="bqr-banner-icon">💼</span>
+				<span class="bqr-banner-title">My Wallet</span>
+				<span class="bqr-banner-desc">Withdraw funds & check balance</span>
+			</a>
+		</div>
+		<?php
 	}
 
 	public function add_referral_endpoint() {
 		add_rewrite_endpoint( 'referrals', EP_ROOT | EP_PAGES );
+		add_rewrite_endpoint( 'investments', EP_ROOT | EP_PAGES );
+		add_rewrite_endpoint( 'wallet', EP_ROOT | EP_PAGES );
 	}
 
 	public function add_query_vars( $vars ) {
 		$vars[] = 'referrals';
+		$vars[] = 'investments';
+		$vars[] = 'wallet';
 		return $vars;
 	}
 
 	public function add_link_my_account( $items ) {
-		// Insert 'Referrals' after 'Orders' or wherever preferred
+		// Insert 'Referrals' and 'Investments' after 'Orders'
 		$new_items = array();
 		foreach ( $items as $key => $value ) {
 			$new_items[ $key ] = $value;
-			if ( $key === 'orders' ) { // Insert after Orders
+			if ( $key === 'orders' ) {
 				$new_items['referrals'] = 'Referrals';
+				$new_items['investments'] = 'My Investments';
+				$new_items['wallet'] = 'My Wallet';
 			}
 		}
 		return $new_items;
@@ -177,6 +251,12 @@ class BQ_Referral_MyAccount {
 
 	public function referral_content() {
 		echo do_shortcode( '[bytesqube_referral_dashboard]' );
+	}
+	public function investment_content() {
+		echo do_shortcode( '[bytesqube_investment_dashboard]' );
+	}
+	public function wallet_content() {
+		echo do_shortcode( '[bytesqube_wallet_dashboard]' );
 	}
 }
 new BQ_Referral_MyAccount();
