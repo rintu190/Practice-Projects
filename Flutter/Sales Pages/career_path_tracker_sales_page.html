@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Career Path Tracker - The ultimate companion for job seekers. Track interviews, manage courses, and stay focused on your career goals with a stunning modern interface.">
+    <title>CareerPath - Master Your Professional Journey</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366F1;
+            --primary-dark: #4F46E5;
+            --secondary: #8B5CF6;
+            --accent: #10B981;
+            --dark: #0F172A;
+            --dark-light: #1E293B;
+            --text: #F8FAFC;
+            --text-muted: #94A3B8;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --gradient-1: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            --gradient-2: linear-gradient(135deg, #3B82F6 0%, #2DD4BF 100%);
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 90vh;
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent),
+                radial-gradient(circle at bottom left, rgba(139, 92, 246, 0.1), transparent);
+            padding: 120px 20px 80px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .hero-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge-new {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 24px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+            background: linear-gradient(to right, #fff, #94A3B8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.1;
+        }
+
+        .hero .subtitle {
+            font-size: 1.4rem;
+            margin-bottom: 48px;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 300;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 64px;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.1rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 35px -10px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-secondary {
+            background: var(--glass);
+            color: white;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Feature Section */
+        .section {
+            padding: 100px 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 48px;
+            border-radius: 32px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-8px);
+            border-color: var(--primary);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 32px;
+            color: var(--primary);
+        }
+
+        .feature-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        /* Category Highlight */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+            border-radius: 48px;
+            padding: 80px;
+            margin: 80px 0;
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .highlight-text {
+            flex: 1;
+        }
+
+        .highlight-text h2 {
+            font-size: 2.8rem;
+            margin-bottom: 24px;
+        }
+
+        .type-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-right: 12px;
+            margin-bottom: 12px;
+        }
+
+        .type-product {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .type-service {
+            background: rgba(6, 182, 212, 0.1);
+            color: #06B6D4;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        /* Stats Grid */
+        .stats-section {
+            background: var(--dark-light);
+            padding: 80px 24px;
+            border-radius: 64px;
+            margin-bottom: 100px;
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 48px;
+            text-align: center;
+        }
+
+        .stat-val {
+            font-size: 3.5rem;
+            font-weight: 800;
+            display: block;
+            margin-bottom: 8px;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.9rem;
+        }
+
+        /* Tech Stack */
+        .tech-pill {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 12px 24px;
+            border-radius: 16px;
+            font-weight: 600;
+            color: var(--text);
+            display: inline-block;
+            margin: 8px;
+        }
+
+        /* Pricing */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-top: 64px;
+        }
+
+        .price-card {
+            background: var(--glass);
+            padding: 48px;
+            border-radius: 40px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+        }
+
+        .price-card.featured {
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.1), transparent);
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .price-amount {
+            font-size: 4rem;
+            font-weight: 800;
+            margin: 24px 0;
+            display: block;
+        }
+
+        .price-features {
+            list-style: none;
+            margin-bottom: 40px;
+            text-align: left;
+        }
+
+        .price-features li {
+            padding: 12px 0;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .price-features li::before {
+            content: '✓';
+            color: var(--accent);
+            font-weight: 900;
+        }
+
+        /* Footer */
+        footer {
+            padding: 80px 24px;
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        /* Currency Switcher */
+        .currency-switcher {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .currency-label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .currency-label.active {
+            color: white;
+        }
+
+        .toggle-container {
+            width: 64px;
+            height: 32px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-thumb {
+            width: 24px;
+            height: 24px;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.4);
+        }
+
+        .toggle-container.active .toggle-thumb {
+            transform: translateX(32px);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .highlight-box {
+                flex-direction: column;
+                padding: 40px;
+            }
+
+            .price-card.featured {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="badge-new">Built for Top Candidates 🚀</span>
+            <h1>Level Up Your <br><span style="color: var(--primary);">Career Hunt</span></h1>
+            <p class="subtitle">
+                The all-in-one companion to track interviews, master new skills, and land your dream job at product or
+                service giants.
+            </p>
+            <div class="cta-group">
+                <a href="#buy" class="btn btn-primary">Download Bundle</a>
+                <a href="#demo" class="btn btn-secondary">Watch Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="section">
+        <div class="stats-section">
+            <div class="stats-container">
+                <div>
+                    <span class="stat-val">2.5sec</span>
+                    <span class="stat-label">Fast Loading</span>
+                </div>
+                <div>
+                    <span class="stat-val">100%</span>
+                    <span class="stat-label">Offline Ready</span>
+                </div>
+                <div>
+                    <span class="stat-val">Zero</span>
+                    <span class="stat-label">Bloatware</span>
+                </div>
+                <div>
+                    <span class="stat-val">SQL</span>
+                    <span class="stat-label">Local DB</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section" id="features">
+        <div class="section-header">
+            <h2>The Only Tool You Need</h2>
+            <p>We've combined interview tracking with personal growth management into one beautiful workflow.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📅</div>
+                <h3>Interview Hub</h3>
+                <p>Track every stage of your application—from scheduled to selected. Never miss a call again with our
+                    intuitive timeline view.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎓</div>
+                <h3>Learning Path</h3>
+                <p>Systematically master any topic. Break down courses into topics and sub-topics with a satisfying
+                    checklist experience.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Visual Stats</h3>
+                <p>Gain insights into your performance. See your distribution across company types and monitor your
+                    weekly progress via fancy charts.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Daily Focus</h3>
+                <p>Stay productive with a dedicated "Today's Focus" list. Set small, achievable goals to keep the
+                    momentum going every single day.</p>
+            </div>
+        </div>
+
+        <!-- Product Narrative Section -->
+        <div class="highlight-box"
+            style="flex-direction: column; text-align: left; align-items: flex-start; gap: 32px;">
+            <div class="badge-new" style="margin-bottom: 0;">ONE PLATFORM. TOTAL CONTROL.</div>
+            <h2 style="font-size: 3.5rem; line-height: 1.2;">Beyond a Tracker. <br>It's your <span class="text-gradient"
+                    style="background: var(--gradient-2); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Daily
+                    Success Engine.</span></h2>
+
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-top: 20px;">
+                <div>
+                    <h3 style="color: white; margin-bottom: 16px; font-size: 1.5rem;">🚀 The Problem we Solve</h3>
+                    <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.8;">
+                        Job hunting is chaotic. Between dozens of applications, technical interview rounds, and the
+                        constant need to upskill, most candidates lose track of their progress. Spreadsheets are clunky,
+                        and generic notes apps lack the structure you need to succeed.
+                        <strong>CareerPath</strong> was built to eliminate this chaos. It's designed to give you a
+                        clinical, data-driven view of your recruitment journey.
+                    </p>
+                </div>
+                <div>
+                    <h3 style="color: white; margin-bottom: 16px; font-size: 1.5rem;">💎 The Glassmorphic Advantage</h3>
+                    <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.8;">
+                        We believe that an app you use every day should be beautiful. Our state-of-the-art
+                        <strong>Glassmorphism UI</strong> isn't just for show—it reduces cognitive load and makes
+                        navigation intuitive. By visualising your "Today's Focus" alongside your "Interview Timeline",
+                        we help you stay in the 'Flow State' required for elite performance.
+                    </p>
+                </div>
+            </div>
+
+            <div style="width: 100%; height: 1px; background: var(--glass-border); margin: 20px 0;"></div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px;">
+                <div>
+                    <h3 style="color: white; margin-bottom: 16px; font-size: 1.5rem;">🏗️ Built for Scalability</h3>
+                    <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.8;">
+                        Under the hood, CareerPath uses a production-grade <strong>Local SQLite Database</strong>. This
+                        means your data is yours—completely private, lightning-fast, and available offline. Whether
+                        you're on a plane or in a basement office, your preparation never stops.
+                    </p>
+                </div>
+                <div>
+                    <h3 style="color: white; margin-bottom: 16px; font-size: 1.5rem;">🎯 Targeted Success</h3>
+                    <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.8;">
+                        Our unique <strong>Company-Type DNA</strong> feature allows you to segment your preparation.
+                        Product companies test differently than Service giants. CareerPath helps you recognize these
+                        patterns, so you can adjust your interview strategy and technical focus based on the specific
+                        DNA of your target employer.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategy Highlight -->
+        <div class="highlight-box">
+            <div class="highlight-text">
+                <h2>Tailored Strategy</h2>
+                <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 24px;">
+                    Whether you're aiming for Product-driven innovation or Service-scale excellence, CareerPath
+                    organizes your hunt by company DNA.
+                </p>
+                <div class="type-pill type-product">PRODUCT BASED</div>
+                <div class="type-pill type-service">SERVICE BASED</div>
+                <p style="margin-top: 16px; color: var(--text-muted);">Switch strategies effortlessly with categorized
+                    scheduling and success reporting.</p>
+            </div>
+            <div
+                style="flex: 1; border-radius: 24px; overflow: hidden; background: #000; height: 500px; display: flex; align-items: center; justify-content: center; border: 4px solid var(--glass-border); box-shadow: 0 30px 60px -12px rgba(0,0,0,0.5);">
+                <img src="career_tracker_preview.png" alt="Career Path Tracker App Preview"
+                    style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="section" style="background: var(--dark-light); border-radius: 80px 80px 0 0;">
+        <div class="section-header">
+            <h2>Production Grade Tech</h2>
+            <p>Built with stability and performance in mind using the latest software architecture.</p>
+        </div>
+        <div style="text-align: center;">
+            <div class="tech-pill">Flutter 3.16+</div>
+            <div class="tech-pill">SQFlite 2.0</div>
+            <div class="tech-pill">Provider State Management</div>
+            <div class="tech-pill">Glassmorphic UI Engine</div>
+            <div class="tech-pill">Staggered Animations</div>
+            <div class="tech-pill">Custom Theme Architecture</div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="section" id="buy">
+        <div class="section-header">
+            <h2>Start Your Journey</h2>
+            <p>Choose the license that fits your professional needs.</p>
+        </div>
+
+        <!-- Currency Switcher -->
+        <div class="currency-switcher">
+            <span class="currency-label usd" id="label-usd">USD</span>
+            <div class="toggle-container active" id="currency-toggle">
+                <div class="toggle-thumb"></div>
+            </div>
+            <span class="currency-label inr active" id="label-inr">INR</span>
+        </div>
+
+        <div class="pricing-grid">
+            <div class="price-card">
+                <h3>Personal</h3>
+                <span class="price-amount" data-usd="$12" data-inr="₹999">₹999</span>
+                <p style="color: var(--text-muted); margin-bottom: 32px;">Single developer license</p>
+                <ul class="price-features">
+                    <li>Full Flutter Source Code</li>
+                    <li>Local SQL Database</li>
+                    <li>Profile Hub Integration</li>
+                    <li>Free UI Updates</li>
+                </ul>
+                <a href="https://rzp.io/l/udjzvlD" class="btn btn-secondary" style="display: block;">Buy Personal</a>
+            </div>
+
+            <div class="price-card featured">
+                <span
+                    style="background: var(--primary); color: white; padding: 4px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; position: relative; top: -20px;">MOST
+                    POPULAR</span>
+                <h3>Professional</h3>
+                <span class="price-amount" data-usd="$59" data-inr="₹4,999">₹4,999</span>
+                <p style="color: var(--text-muted); margin-bottom: 32px;">Commercial usage license</p>
+                <ul class="price-features">
+                    <li>Everything in Personal</li>
+                    <li>Backend API Support</li>
+                    <li>White-label Rights</li>
+                    <li>Priority Email Support</li>
+                </ul>
+                <a href="#" class="btn btn-primary" style="display: block;">Buy Professional</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <span class="footer-logo">CareerPath</span>
+        <p>© 2025 Career Path Tracker App Solution. All rights reserved.</p>
+        <p style="font-size: 0.9rem;">Designed with ❤️ for candidates worldwide.</p>
+    </footer>
+
+    <script>
+        const toggle = document.getElementById('currency-toggle');
+        const labelUsd = document.getElementById('label-usd');
+        const labelInr = document.getElementById('label-inr');
+        const priceElements = document.querySelectorAll('.price-amount');
+
+        toggle.addEventListener('click', () => {
+            const isActive = toggle.classList.toggle('active');
+
+            if (isActive) {
+                labelUsd.classList.remove('active');
+                labelInr.classList.add('active');
+                priceElements.forEach(el => {
+                    el.textContent = el.getAttribute('data-inr');
+                });
+            } else {
+                labelUsd.classList.add('active');
+                labelInr.classList.remove('active');
+                priceElements.forEach(el => {
+                    el.textContent = el.getAttribute('data-usd');
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
