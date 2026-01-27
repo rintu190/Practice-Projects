@@ -43,8 +43,6 @@
             <entry path="null"/>
         </endorsedDirs>
     </libraryInfo>
-    <libraryInfo home="C:\Program Files\OpenLogic\jdk-21.0.5.11-hotspot" version="21.0.5"/>
-    <libraryInfo home="/usr/lib/jvm/java-21-openjdk-amd64" version="21.0.8"/>
     <libraryInfo home="/opt/spring-tools/sts-4.32.0.RELEASE/plugins/org.eclipse.justj.openjdk.hotspot.jre.full.linux.x86_64_21.0.8.v20250724-1412" version="21.0.8">
         <bootpath>
             <entry path="null"/>
@@ -57,6 +55,39 @@
         </endorsedDirs>
     </libraryInfo>
     <libraryInfo home="/home/rintu/Downloads/spring-tools-for-eclipse-4.32.0.RELEASE-e4.37.0-linux.gtk.x86_64/sts-4.32.0.RELEASE/plugins/org.eclipse.justj.openjdk.hotspot.jre.full.linux.x86_64_21.0.8.v20250724-1412/jre" version="21.0.8"/>
-    <libraryInfo home="/opt/homebrew/Cellar/openjdk/25.0.1/libexec/openjdk.jdk/Contents/Home" version="25.0.1"/>
     <libraryInfo home="C:\Program Files\OpenLogic\jdk-25" version="25"/>
+    <libraryInfo home="C:\Program Files\OpenLogic\jdk-21.0.5.11-hotspot" version="21.0.5"/>
+    <libraryInfo home="/usr/lib/jvm/java-21-openjdk-amd64" version="21.0.8"/>
+    <libraryInfo home="/opt/spring-tools/plugins/org.eclipse.justj.openjdk.hotspot.jre.full.linux.x86_64_21.0.8.v20250724-1412" version="21.0.8">
+        <bootpath>
+            <entry path="null"/>
+        </bootpath>
+        <extensionDirs>
+            <entry path="null"/>
+        </extensionDirs>
+        <endorsedDirs>
+            <entry path="null"/>
+        </endorsedDirs>
+    </libraryInfo>
+    <libraryInfo home="/usr/lib/jvm/java-8-openjdk-amd64" version="1.8.0_472">
+        <bootpath>
+            <entry path="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/resources.jar"/>
+            <entry path="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar"/>
+            <entry path="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/sunrsasign.jar"/>
+            <entry path="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/jsse.jar"/>
+            <entry path="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/jce.jar"/>
+            <entry path="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/charsets.jar"/>
+            <entry path="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/jfr.jar"/>
+            <entry path="/usr/lib/jvm/java-8-openjdk-amd64/jre/classes"/>
+        </bootpath>
+        <extensionDirs>
+            <entry path="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/ext"/>
+            <entry path="/usr/java/packages/lib/ext"/>
+        </extensionDirs>
+        <endorsedDirs>
+            <entry path="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/endorsed"/>
+        </endorsedDirs>
+    </libraryInfo>
+    <libraryInfo home="/opt/homebrew/Cellar/openjdk/25.0.1/libexec/openjdk.jdk/Contents/Home" version="25.0.1"/>
+    <libraryInfo home="/opt/spring-tools/plugins/org.eclipse.justj.openjdk.hotspot.jre.full.linux.x86_64_21.0.8.v20250724-1412/jre" version="21.0.8"/>
 </libraryInfos>
