@@ -17,7 +17,14 @@ class BQ_Referral_Tracker {
 	/**
 	 * Handle User Registration - Bind new user to referrer
 	 */
+	/**
+	 * Handle User Registration - Bind new user to referrer
+	 */
 	public function handle_user_registration( $user_id ) {
+		// Generate and assign unique referral code
+		$code = $this->generate_unique_referral_code();
+		update_user_meta( $user_id, 'bqr_referral_code', $code );
+
 		$referrer_id = $this->get_current_referrer_id();
 		if ( $referrer_id ) {
 			// Save the referrer ID in the new user's meta
@@ -38,6 +45,40 @@ class BQ_Referral_Tracker {
 				array( '%d', '%s', '%s', '%f', '%s', '%s' )
 			);
 		}
+	}
+
+	/**
+	 * Generate a unique 4-6 character alphanumeric referral code
+	 */
+	public function generate_unique_referral_code() {
+		global $wpdb;
+		$length = 6;
+		$chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$max_attempts = 10;
+		
+		for ( $i = 0; $i < $max_attempts; $i++ ) {
+			$code = '';
+			for ( $j = 0; $j < $length; $j++ ) {
+				$code .= $chars[ rand( 0, strlen( $chars ) - 1 ) ];
+			}
+			
+			// Check uniqueness
+			// 1. Check meta
+			$exists_meta = $wpdb->get_var( $wpdb->prepare( 
+				"SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = 'bqr_referral_code' AND meta_value = %s", 
+				$code 
+			) );
+			
+			// 2. Check usernames (avoid conflict if someone has this username)
+			$exists_user = username_exists( $code );
+			
+			if ( ! $exists_meta && ! $exists_user ) {
+				return $code;
+			}
+		}
+		
+		// Fallback: If collision persists (highly unlikely), append timestamp
+		return 'REF' . rand(100, 999);
 	}
 
 	/**
@@ -128,20 +169,21 @@ class BQ_Referral_Tracker {
 			if ( $user ) return $user;
 		}
 
-		// Check by username
-		$user = get_user_by( 'login', $code );
-		if ( $user ) return $user;
-
-		// Check meta (if we implement custom codes later)
+		// Check meta (the new standard)
 		$users = get_users( array(
 			'meta_key'   => 'bqr_referral_code',
 			'meta_value' => $code,
 			'number'     => 1,
+			'fields'     => 'all_with_meta'
 		) );
 
 		if ( ! empty( $users ) ) {
 			return $users[0];
 		}
+
+		// Fallback: Check by username (backward compatibility)
+		$user = get_user_by( 'login', $code );
+		if ( $user ) return $user;
 
 		return false;
 	}
@@ -165,8 +207,12 @@ class BQ_Referral_Tracker {
 		
 		// Use username or custom code
 		$code = get_user_meta( $user_id, 'bqr_referral_code', true );
+		
+		// Lazy-generate code if missing
 		if ( ! $code ) {
-			$code = $user->user_login;
+			$tracker = new self();
+			$code = $tracker->generate_unique_referral_code();
+			update_user_meta( $user_id, 'bqr_referral_code', $code );
 		}
 
 		return home_url( '/?ref=' . $code );
