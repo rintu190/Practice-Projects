@@ -11,7 +11,7 @@ $db = $database->getConnection();
 $data = json_decode(file_get_contents("php://input"));
 
 if (!empty($data->email) && !empty($data->password)) {
-    $query = "SELECT id, name, email, password_hash, role FROM users WHERE email = ? LIMIT 1";
+    $query = "SELECT id, name, email, password_hash, role, image_url, phone FROM users WHERE email = ? LIMIT 1";
     $stmt = $db->prepare($query);
     $stmt->execute([$data->email]);
 
@@ -26,7 +26,9 @@ if (!empty($data->email) && !empty($data->password)) {
                     "id" => $row['id'],
                     "name" => $row['name'],
                     "email" => $row['email'],
-                    "role" => $row['role']
+                    "role" => $row['role'],
+                    "imageUrl" => $row['image_url'],
+                    "phone" => $row['phone']
                 )
             ));
         } else {

@@ -3,6 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
 import '../cart/cart_service.dart';
+import '../../core/data/api_repository.dart';
+import '../../core/models/order_model.dart';
+import '../auth/auth_service.dart';
 import 'order_confirmation_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -20,6 +23,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final _cityController = TextEditingController();
   final _pinController = TextEditingController();
   String _paymentMethod = 'COD';
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -210,14 +214,65 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () {
+        onPressed: _isSubmitting ? null : () async {
           if (_formKey.currentState!.validate()) {
-            final total = cart.totalPrice;
-            final count = cart.itemCount;
-            cart.clearCart();
-            Navigator.pushReplacement(context, MaterialPageRoute(
-              builder: (_) => OrderConfirmationScreen(totalAmount: total, itemCount: count),
-            ));
+            setState(() => _isSubmitting = true);
+            try {
+              final auth = context.read<AuthService>();
+              final customerId = auth.userId ?? 'guest';
+              final customerName = _nameController.text.trim();
+              final customerEmail = auth.userEmail ?? _phoneController.text.trim(); // fallback if email is null
+              final customerAddress = '${_addressController.text}, ${_cityController.text} - ${_pinController.text}';
+
+              // Group items by sellerId
+              final itemsBySeller = <String, List<OrderItem>>{};
+              for (var cartItem in cart.items) {
+                final sId = cartItem.saree.sellerId;
+                if (!itemsBySeller.containsKey(sId)) {
+                  itemsBySeller[sId] = [];
+                }
+                itemsBySeller[sId]!.add(
+                  OrderItem(saree: cartItem.saree, quantity: cartItem.quantity, price: cartItem.saree.price),
+                );
+              }
+
+              // Create an order for each seller
+              for (var entry in itemsBySeller.entries) {
+                final sId = entry.key;
+                final sItems = entry.value;
+                final subTotal = sItems.fold(0.0, (sum, i) => sum + (i.price * i.quantity));
+
+                final order = Order(
+                  id: '',
+                  customerName: customerName,
+                  customerEmail: customerEmail,
+                  customerAddress: customerAddress,
+                  items: sItems,
+                  totalAmount: subTotal,
+                  orderDate: DateTime.now(),
+                  sellerId: sId,
+                );
+
+                await ApiRepository.createOrder(order, customerId: customerId);
+              }
+
+              final total = cart.totalPrice;
+              final count = cart.itemCount;
+              cart.clearCart();
+
+              if (!mounted) return;
+              Navigator.pushReplacement(context, MaterialPageRoute(
+                builder: (_) => OrderConfirmationScreen(totalAmount: total, itemCount: count),
+              ));
+            } catch (e) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to place order: $e'), backgroundColor: Colors.red),
+                );
+              }
+            } finally {
+              if (mounted) setState(() => _isSubmitting = false);
+            }
           }
         },
         style: ElevatedButton.styleFrom(
@@ -227,14 +282,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           elevation: 6,
           shadowColor: AppColors.primary.withValues(alpha: 0.4),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.lock_outline, color: Colors.white, size: 20),
-            const SizedBox(width: 10),
-            Text('Place Order  •  ₹${cart.totalPrice.toStringAsFixed(0)}', style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
-          ],
-        ),
+        child: _isSubmitting
+            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.lock_outline, color: Colors.white, size: 20),
+                  const SizedBox(width: 10),
+                  Text('Place Order  •  ₹${cart.totalPrice.toStringAsFixed(0)}', style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                ],
+              ),
       ),
     );
   }

@@ -15,13 +15,38 @@ if (!$id) {
     exit;
 }
 
+// Fetch seller profile
 $query = "SELECT * FROM sellers WHERE id = ? LIMIT 1";
-
 $stmt = $db->prepare($query);
 $stmt->execute([$id]);
 
 if($stmt->rowCount() > 0){
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    // Calculate Dynamic Stats
+    // 1. Total Orders
+    $queryTotal = "SELECT COUNT(*) as total FROM orders WHERE seller_id = ?";
+    $stmtTotal = $db->prepare($queryTotal);
+    $stmtTotal->execute([$id]);
+    $totalOrders = $stmtTotal->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+
+    // 2. Pending Orders
+    $queryPending = "SELECT COUNT(*) as pending FROM orders WHERE seller_id = ? AND status = 'pending'";
+    $stmtPending = $db->prepare($queryPending);
+    $stmtPending->execute([$id]);
+    $pendingOrders = $stmtPending->fetch(PDO::FETCH_ASSOC)['pending'] ?? 0;
+
+    // 3. Total Earnings (excluding cancelled)
+    $queryEarnings = "SELECT SUM(total_amount) as earnings FROM orders WHERE seller_id = ? AND status != 'cancelled'";
+    $stmtEarnings = $db->prepare($queryEarnings);
+    $stmtEarnings->execute([$id]);
+    $totalEarnings = (float)($stmtEarnings->fetch(PDO::FETCH_ASSOC)['earnings'] ?? 0.0);
+
+    // 4. Products Count
+    $queryProducts = "SELECT COUNT(*) as count FROM sarees WHERE seller_id = ?";
+    $stmtProducts = $db->prepare($queryProducts);
+    $stmtProducts->execute([$id]);
+    $totalProducts = $stmtProducts->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
     
     $seller_item = array(
         "id" => $row['id'],
@@ -34,9 +59,10 @@ if($stmt->rowCount() > 0){
         "contactEmail" => $row['contact_email'],
         "mobileNumber" => $row['mobile_number'],
         "specialization" => $row['specialization'],
-        "totalOrders" => (int)$row['total_orders'],
-        "pendingOrders" => (int)$row['pending_orders'],
-        "totalEarning" => (float)$row['total_earning']
+        "totalOrders" => $totalOrders,
+        "pendingOrders" => $pendingOrders,
+        "totalEarning" => $totalEarnings,
+        "productCount" => $totalProducts // Adding product count for convenience
     );
     
     http_response_code(200);

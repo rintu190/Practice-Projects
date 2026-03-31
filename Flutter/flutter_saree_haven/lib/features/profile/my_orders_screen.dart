@@ -1,8 +1,11 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
-import '../../core/data/mock_repository.dart';
+import '../../core/data/api_repository.dart';
+import '../../core/models/order_model.dart';
+import '../../core/widgets/saree_image.dart';
+import '../auth/auth_service.dart';
 
 class MyOrdersScreen extends StatefulWidget {
   const MyOrdersScreen({super.key});
@@ -13,95 +16,92 @@ class MyOrdersScreen extends StatefulWidget {
 
 class _MyOrdersScreenState extends State<MyOrdersScreen> {
   String _searchQuery = '';
-  final List<Map<String, dynamic>> _allOrders = [
-    {
-      'orderId': 'ORD-837492',
-      'date': 'Oct 12, 2023',
-      'status': 'Delivered',
-      'total': '12500',
-      'items': [MockRepository.sarees[0], MockRepository.sarees[1]],
-    },
-    {
-      'orderId': 'ORD-109384',
-      'date': 'Oct 24, 2023',
-      'status': 'Processing',
-      'total': '4500',
-      'items': [MockRepository.sarees[3]],
-    },
-    {
-      'orderId': 'ORD-991234',
-      'date': 'Nov 02, 2023',
-      'status': 'Shipped',
-      'total': '8900',
-      'items': [MockRepository.sarees[4]],
-    },
-    {
-      'orderId': 'ORD-552143',
-      'date': 'Nov 15, 2023',
-      'status': 'Cancelled',
-      'total': '6200',
-      'items': [MockRepository.sarees[2]],
+  late Future<List<Order>> _ordersFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOrders();
+  }
+
+  void _loadOrders() {
+    final userId = context.read<AuthService>().userId;
+    if (userId != null) {
+      _ordersFuture = ApiRepository.getOrdersByCustomer(userId);
+    } else {
+      // Not logged in — return empty list gracefully
+      _ordersFuture = Future.value([]);
     }
-  ];
+  }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 5,
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) => [
-            SliverAppBar(
-              floating: true,
-              pinned: true,
-              snap: true,
-              expandedHeight: 180,
-              backgroundColor: Colors.white,
-              elevation: 0,
-              iconTheme: const IconThemeData(color: AppColors.textPrimary),
-              title: Text(
-                'My Orders',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+    return FutureBuilder<List<Order>>(
+      future: _ordersFuture,
+      builder: (context, snap) {
+        final allOrders = snap.data ?? [];
+        return DefaultTabController(
+          length: 5,
+          child: Scaffold(
+            backgroundColor: AppColors.background,
+            body: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                SliverAppBar(
+                  floating: true,
+                  pinned: true,
+                  snap: true,
+                  expandedHeight: 180,
+                  backgroundColor: Colors.white,
+                  elevation: 0,
+                  iconTheme: const IconThemeData(color: AppColors.textPrimary),
+                  title: Text(
+                    'My Orders',
+                    style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                  ),
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 100, 24, 20),
+                      child: _buildSearchBar(),
+                    ),
+                  ),
+                  bottom: TabBar(
+                    isScrollable: true,
+                    indicatorColor: AppColors.primary,
+                    indicatorWeight: 3,
+                    labelColor: AppColors.primary,
+                    unselectedLabelColor: AppColors.textSecondary,
+                    labelStyle:
+                        GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 13),
+                    unselectedLabelStyle:
+                        GoogleFonts.poppins(fontWeight: FontWeight.w500, fontSize: 13),
+                    tabs: const [
+                      Tab(text: 'All'),
+                      Tab(text: 'Processing'),
+                      Tab(text: 'Shipped'),
+                      Tab(text: 'Delivered'),
+                      Tab(text: 'Cancelled'),
+                    ],
+                  ),
                 ),
-              ),
-              flexibleSpace: FlexibleSpaceBar(
-                background: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 100, 24, 20),
-                  child: _buildSearchBar(),
-                ),
-              ),
-              bottom: TabBar(
-                isScrollable: true,
-                indicatorColor: AppColors.primary,
-                indicatorWeight: 3,
-                labelColor: AppColors.primary,
-                unselectedLabelColor: AppColors.textSecondary,
-                labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 13),
-                unselectedLabelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w500, fontSize: 13),
-                tabs: const [
-                  Tab(text: 'All'),
-                  Tab(text: 'Processing'),
-                  Tab(text: 'Shipped'),
-                  Tab(text: 'Delivered'),
-                  Tab(text: 'Cancelled'),
-                ],
-              ),
+              ],
+              body: snap.connectionState == ConnectionState.waiting
+                  ? const Center(child: CircularProgressIndicator())
+                  : snap.hasError
+                      ? _buildErrorState()
+                      : TabBarView(
+                          children: [
+                            _buildOrderList('All', allOrders),
+                            _buildOrderList('processing', allOrders),
+                            _buildOrderList('shipped', allOrders),
+                            _buildOrderList('delivered', allOrders),
+                            _buildOrderList('cancelled', allOrders),
+                          ],
+                        ),
             ),
-          ],
-          body: TabBarView(
-            children: [
-              _buildOrderList('All'),
-              _buildOrderList('Processing'),
-              _buildOrderList('Shipped'),
-              _buildOrderList('Delivered'),
-              _buildOrderList('Cancelled'),
-            ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -125,24 +125,48 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
     );
   }
 
-  Widget _buildOrderList(String status) {
-    var filteredOrders = _allOrders.where((order) {
-      final matchesStatus = status == 'All' || order['status'] == status;
-      final matchesSearch = order['orderId'].toString().toLowerCase().contains(_searchQuery.toLowerCase());
+  Widget _buildOrderList(String statusFilter, List<Order> allOrders) {
+    final filtered = allOrders.where((order) {
+      final matchesStatus =
+          statusFilter == 'All' || order.status.name == statusFilter;
+      final matchesSearch =
+          order.id.toLowerCase().contains(_searchQuery.toLowerCase());
       return matchesStatus && matchesSearch;
     }).toList();
 
-    if (filteredOrders.isEmpty) {
-      return _buildEmptyState(status);
+    if (filtered.isEmpty) {
+      return _buildEmptyState(statusFilter);
     }
 
     return ListView.separated(
       padding: const EdgeInsets.all(24),
-      itemCount: filteredOrders.length,
+      itemCount: filtered.length,
       separatorBuilder: (_, __) => const SizedBox(height: 20),
       itemBuilder: (context, index) {
-        return _OrderCard(order: filteredOrders[index]);
+        return _OrderCard(order: filtered[index]);
       },
+    );
+  }
+
+  Widget _buildErrorState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.wifi_off, size: 48, color: AppColors.textSecondary),
+          const SizedBox(height: 12),
+          Text('Could not load orders.',
+              style: GoogleFonts.poppins(color: AppColors.textSecondary)),
+          const SizedBox(height: 12),
+          ElevatedButton.icon(
+            onPressed: () => setState(_loadOrders),
+            icon: const Icon(Icons.refresh),
+            label: const Text('Retry'),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+          ),
+        ],
+      ),
     );
   }
 
@@ -167,18 +191,15 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
           Text(
             _searchQuery.isEmpty ? 'No $status Orders' : 'No results for "$_searchQuery"',
             style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+                fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
           ),
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 48),
             child: Text(
-                _searchQuery.isEmpty 
-                    ? 'You haven\'t placed any orders in this category yet.' 
-                    : 'Check the Order ID and try again.',
+              _searchQuery.isEmpty
+                  ? 'You haven\'t placed any orders in this category yet.'
+                  : 'Check the Order ID and try again.',
               textAlign: TextAlign.center,
               style: GoogleFonts.poppins(color: AppColors.textSecondary),
             ),
@@ -202,15 +223,27 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
 }
 
 class _OrderCard extends StatelessWidget {
-  final Map<String, dynamic> order;
+  final Order order;
 
   const _OrderCard({required this.order});
 
+  Color _getStatusColor(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.pending:
+        return AppColors.orangeAccent;
+      case OrderStatus.processing:
+        return const Color(0xFF3498DB);
+      case OrderStatus.shipped:
+        return AppColors.primary;
+      case OrderStatus.delivered:
+        return const Color(0xFF2ECC71);
+      case OrderStatus.cancelled:
+        return Colors.red;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final items = order['items'] as List;
-    final status = order['status'] as String;
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -238,7 +271,7 @@ class _OrderCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'ORDER #${order['orderId']}',
+                        'ORDER #${order.id}',
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
@@ -248,19 +281,17 @@ class _OrderCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Placed on ${order['date']}',
+                        'Placed on ${_formatDate(order.orderDate)}',
                         style: GoogleFonts.poppins(
-                          color: AppColors.textSecondary,
-                          fontSize: 11,
-                        ),
+                            color: AppColors.textSecondary, fontSize: 11),
                       ),
                     ],
                   ),
-                  _buildStatusBadge(status),
+                  _buildStatusBadge(order.status),
                 ],
               ),
             ),
-            
+
             // Order Content
             Padding(
               padding: const EdgeInsets.all(20),
@@ -268,7 +299,7 @@ class _OrderCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      _buildItemPreview(items),
+                      _buildItemPreview(order.items),
                       const Spacer(),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -276,12 +307,10 @@ class _OrderCard extends StatelessWidget {
                           Text(
                             'Grand Total',
                             style: GoogleFonts.poppins(
-                              color: AppColors.textSecondary,
-                              fontSize: 11,
-                            ),
+                                color: AppColors.textSecondary, fontSize: 11),
                           ),
                           Text(
-                            '₹${order['total']}',
+                            '₹${order.totalAmount.toStringAsFixed(0)}',
                             style: GoogleFonts.poppins(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
@@ -300,16 +329,16 @@ class _OrderCard extends StatelessWidget {
                           onPressed: () {},
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 15),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
                             side: BorderSide(color: Colors.grey.shade200),
                           ),
                           child: Text(
                             'Reorder',
                             style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: AppColors.textPrimary,
-                            ),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: AppColors.textPrimary),
                           ),
                         ),
                       ),
@@ -321,15 +350,14 @@ class _OrderCard extends StatelessWidget {
                             backgroundColor: AppColors.primary,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 15),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
                             elevation: 0,
                           ),
                           child: Text(
                             'View Details',
                             style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
+                                fontWeight: FontWeight.bold, fontSize: 14),
                           ),
                         ),
                       ),
@@ -344,25 +372,16 @@ class _OrderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBadge(String status) {
-    Color color;
-    switch (status) {
-      case 'Delivered':
-        color = AppColors.statusDelivered;
-        break;
-      case 'Processing':
-        color = AppColors.statusProcessing;
-        break;
-      case 'Shipped':
-        color = AppColors.statusShipped;
-        break;
-      case 'Cancelled':
-        color = AppColors.statusCancelled;
-        break;
-      default:
-        color = AppColors.textSecondary;
-    }
+  String _formatDate(DateTime date) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+    return '${months[date.month - 1]} ${date.day}, ${date.year}';
+  }
 
+  Widget _buildStatusBadge(OrderStatus status) {
+    final color = _getStatusColor(status);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -379,22 +398,19 @@ class _OrderCard extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            status,
+            order.statusDisplay,
             style: GoogleFonts.poppins(
-              color: color,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
+                color: color, fontSize: 12, fontWeight: FontWeight.bold),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildItemPreview(List items) {
+  Widget _buildItemPreview(List<OrderItem> items) {
     return Row(
       children: [
-        ...items.take(2).map((saree) => Padding(
+        ...items.take(2).map((item) => Padding(
               padding: const EdgeInsets.only(right: 8),
               child: Container(
                 width: 54,
@@ -402,10 +418,12 @@ class _OrderCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.grey.shade100),
-                  image: DecorationImage(
-                    image: AssetImage(saree.imageUrls.first),
-                    fit: BoxFit.cover,
-                  ),
+                  color: AppColors.background,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: _buildImage(
+                      item.saree.imageUrls.isNotEmpty ? item.saree.imageUrls.first : ''),
                 ),
               ),
             )),
@@ -422,14 +440,21 @@ class _OrderCard extends StatelessWidget {
               child: Text(
                 '+${items.length - 2}',
                 style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textSecondary,
-                  fontSize: 12,
-                ),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textSecondary,
+                    fontSize: 12),
               ),
             ),
           ),
       ],
+    );
+  }
+
+  Widget _buildImage(String url) {
+    return SareeImage(
+        imageUrl: url, 
+        fit: BoxFit.cover,
+        errorWidget: const Icon(Icons.checkroom, size: 24, color: AppColors.textSecondary),
     );
   }
 }

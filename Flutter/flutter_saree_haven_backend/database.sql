@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS saree_haven_db;
+CREATE DATABASE IF NOT EXISTS saree_haven_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE saree_haven_db;
 
 -- Users Table
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash VARCHAR(255) NOT NULL,
     role ENUM('customer', 'seller', 'admin') DEFAULT 'customer',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Artisans Table
 CREATE TABLE IF NOT EXISTS artisans (
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS artisans (
     bio TEXT,
     rating FLOAT DEFAULT 0.0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Sellers Table
 CREATE TABLE IF NOT EXISTS sellers (
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS sellers (
     pending_orders INT DEFAULT 0,
     total_earning DECIMAL(12, 2) DEFAULT 0.00,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Sarees Table
 CREATE TABLE IF NOT EXISTS sarees (
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS sarees (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (artisan_id) REFERENCES artisans(id) ON DELETE SET NULL,
     FOREIGN KEY (seller_id) REFERENCES sellers(id) ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Orders Table
 CREATE TABLE IF NOT EXISTS orders (
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS orders (
     seller_id VARCHAR(50),
     FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (seller_id) REFERENCES sellers(id) ON DELETE RESTRICT
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Order Items Table
 CREATE TABLE IF NOT EXISTS order_items (
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS order_items (
     price DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Insert Mock Data
 INSERT IGNORE INTO artisans (id, name, location, image_url, bio, rating) VALUES 
@@ -103,3 +103,36 @@ INSERT IGNORE INTO sarees (id, name, description, price, category, type, image_u
 ('s2', 'Pink Chanderi Silk', 'Lightweight pink Chanderi saree.', 4500, 'Daily Wear', 'Chanderi', '["assets/Saree/pinksaree.jpeg"]', 'a2', 'seller3', FALSE, FALSE),
 ('s3', 'Gold Kanjivaram', 'Classic gold Kanjivaram saree.', 18000, 'Bridal Saree', 'Kanjivaram', '["assets/Saree/Sonarupa-1.jpeg"]', 'a3', 'seller2', TRUE, TRUE),
 ('s4', 'Red Bandhani', 'Vibrant red Bandhani saree.', 3200, 'Party Wear', 'Bandhani', '["assets/Saree/16611P_1Main.jpeg"]', 'a1', 'seller4', TRUE, FALSE);
+
+-- Shipping Addresses Table
+CREATE TABLE IF NOT EXISTS shipping_addresses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(50) NOT NULL,
+    label VARCHAR(50) NOT NULL,
+    details TEXT NOT NULL,
+    is_default BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Payment Methods Table
+CREATE TABLE IF NOT EXISTS payment_methods (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(50) NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    last_four VARCHAR(4) NOT NULL,
+    expiry VARCHAR(10) NOT NULL,
+    card_holder VARCHAR(100) NOT NULL,
+    is_default BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Wishlists Table
+CREATE TABLE IF NOT EXISTS wishlists (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(50) NOT NULL,
+    saree_id VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY (user_id, saree_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

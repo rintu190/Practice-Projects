@@ -1,9 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
-import '../../core/data/mock_repository.dart';
+import '../../core/data/api_repository.dart';
 import '../../core/models/saree_model.dart';
+import '../auth/auth_service.dart';
 import '../product_details/product_details_screen.dart';
+import '../../core/widgets/saree_image.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:typed_data';
+
+/// Categories and types remain static — they are configuration, not DB-driven.
+const List<String> _kCategories = [
+  'Bridal Saree',
+  'Cotton Saree',
+  'Silk Saree',
+  'Party Wear',
+  'Daily Wear',
+];
+
+const List<String> _kTypes = [
+  'Banarasi',
+  'Kanjivaram',
+  'Chanderi',
+  'Tussar',
+  'Bandhani',
+  'Sambalpuri',
+];
 
 class ManageSareesScreen extends StatefulWidget {
   final bool showAddForm;
@@ -18,19 +41,32 @@ class _ManageSareesScreenState extends State<ManageSareesScreen> {
   final _nameController = TextEditingController();
   final _descController = TextEditingController();
   final _priceController = TextEditingController();
-  final _imageUrlController = TextEditingController();
-  String _selectedCategory = MockRepository.categories.first;
-  String _selectedType = MockRepository.types.first;
+  
+  Uint8List? _selectedImageBytes;
+  String? _selectedImageName;
+
+  String _selectedCategory = _kCategories.first;
+  String _selectedType = _kTypes.first;
   late bool _showForm;
+  bool _isSubmitting = false;
 
-  final String _currentSellerId = 'seller1';
-
-  List<Saree> get _myListings => MockRepository.getSareesBySeller(_currentSellerId);
+  late Future<List<Saree>> _sareesFuture;
+  late String _currentSellerId;
+  
+  bool _isEditing = false;
+  String? _editingSareeId;
+  String? _existingImageUrl; // To show existing image while editing
 
   @override
   void initState() {
     super.initState();
     _showForm = widget.showAddForm;
+    _currentSellerId = context.read<AuthService>().sellerId ?? '';
+    _loadSarees();
+  }
+
+  void _loadSarees() {
+    _sareesFuture = ApiRepository.getSarees(sellerId: _currentSellerId);
   }
 
   @override
@@ -38,54 +74,121 @@ class _ManageSareesScreenState extends State<ManageSareesScreen> {
     _nameController.dispose();
     _descController.dispose();
     _priceController.dispose();
-    _imageUrlController.dispose();
     super.dispose();
   }
 
-  void _submitSaree() {
-    if (_formKey.currentState!.validate()) {
-      final newSaree = Saree(
-        id: 's${DateTime.now().millisecondsSinceEpoch}',
-        name: _nameController.text.trim(),
-        description: _descController.text.trim(),
-        price: double.parse(_priceController.text.trim()),
-        category: _selectedCategory,
-        type: _selectedType,
-        imageUrls: [
-          _imageUrlController.text.trim().isNotEmpty
-              ? _imageUrlController.text.trim()
-              : 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=800'
-        ],
-        artisan: MockRepository.artisans[0],
-        sellerId: _currentSellerId,
-      );
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      setState(() {
+        _selectedImageBytes = bytes;
+        _selectedImageName = pickedFile.name;
+      });
+    }
+  }
 
-      MockRepository.sarees.add(newSaree);
+  void _startEdit(Saree saree) {
+    setState(() {
+      _isEditing = true;
+      _editingSareeId = saree.id;
+      _showForm = true;
+      _nameController.text = saree.name;
+      _descController.text = saree.description;
+      _priceController.text = saree.price.toString();
+      _selectedCategory = _kCategories.contains(saree.category) ? saree.category : _kCategories.first;
+      _selectedType = _kTypes.contains(saree.type) ? saree.type : _kTypes.first;
+      _existingImageUrl = saree.imageUrls.isNotEmpty ? saree.imageUrls.first : null;
+      _selectedImageBytes = null;
+      _selectedImageName = null;
+    });
+  }
+
+  void _cancelEdit() {
+    setState(() {
+      _isEditing = false;
+      _editingSareeId = null;
+      _showForm = false;
+      _existingImageUrl = null;
+      _nameController.clear();
+      _descController.clear();
+      _priceController.clear();
+      _selectedImageBytes = null;
+      _selectedImageName = null;
+    });
+  }
+
+  Future<void> _submitSaree() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _isSubmitting = true);
+
+    try {
+      if (_isEditing) {
+        await ApiRepository.updateSaree(
+          id: _editingSareeId!,
+          name: _nameController.text.trim(),
+          description: _descController.text.trim(),
+          price: double.parse(_priceController.text.trim()),
+          category: _selectedCategory,
+          type: _selectedType,
+          sellerId: _currentSellerId,
+          imageBytes: _selectedImageBytes,
+          imageFileName: _selectedImageName,
+        );
+      } else {
+        await ApiRepository.createSaree(
+          name: _nameController.text.trim(),
+          description: _descController.text.trim(),
+          price: double.parse(_priceController.text.trim()),
+          category: _selectedCategory,
+          type: _selectedType,
+          sellerId: _currentSellerId,
+          imageBytes: _selectedImageBytes,
+          imageFileName: _selectedImageName,
+          imageUrls: _selectedImageBytes == null ? ['https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=800'] : [],
+        );
+      }
 
       _nameController.clear();
       _descController.clear();
       _priceController.clear();
-      _imageUrlController.clear();
+      _selectedImageBytes = null;
+      _selectedImageName = null;
+      _existingImageUrl = null;
 
       setState(() {
         _showForm = false;
+        _isEditing = false;
+        _editingSareeId = null;
+        _loadSarees(); // refresh listings
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.check_circle, color: Colors.white),
-              const SizedBox(width: 12),
-              Expanded(child: Text('${newSaree.name} added successfully!')),
-            ],
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(child: Text(_isEditing ? 'Saree updated successfully!' : 'Saree listed successfully!')),
+              ],
+            ),
+            backgroundColor: const Color(0xFF2ECC71),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            margin: const EdgeInsets.all(16),
           ),
-          backgroundColor: const Color(0xFF2ECC71),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          margin: const EdgeInsets.all(16),
-        ),
-      );
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to ${_isEditing ? 'update' : 'upload'}: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
@@ -94,81 +197,128 @@ class _ManageSareesScreenState extends State<ManageSareesScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(
-          'Manage Sarees',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
-        ),
+        title: Text(_isEditing ? 'Edit Saree' : 'Manage Sarees',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
-      ),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
-              child: _showForm ? _buildUploadForm() : _buildAddButton(),
+        actions: [
+          if (_isEditing)
+            TextButton(
+              onPressed: _cancelEdit,
+              child: Text('Cancel', style: GoogleFonts.poppins(color: Colors.red)),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
-              child: Text(
-                'Your Listings (${_myListings.length})',
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+        ],
+      ),
+      body: FutureBuilder<List<Saree>>(
+        future: _sareesFuture,
+        builder: (context, snap) {
+          final listings = snap.data ?? [];
+
+          return CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+                  child: _showForm ? _buildUploadForm() : _buildAddButton(),
                 ),
               ),
-            ),
-          ),
-          _myListings.isEmpty
-              ? SliverToBoxAdapter(
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
+                  child: Row(
+                    children: [
+                      Text(
+                        snap.connectionState == ConnectionState.waiting
+                            ? 'Your Listings'
+                            : 'Your Listings (${listings.length})',
+                        style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary),
+                      ),
+                      if (snap.connectionState == ConnectionState.waiting) ...[
+                        const SizedBox(width: 12),
+                        const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2)),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+              if (snap.hasError)
+                SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.all(48),
+                    padding: const EdgeInsets.all(32),
                     child: Center(
                       child: Column(
                         children: [
-                          Icon(Icons.storefront_outlined,
-                              size: 64, color: AppColors.textSecondary.withValues(alpha: 0.4)),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No listings yet.\nAdd your first saree!',
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.poppins(color: AppColors.textSecondary, fontSize: 15),
+                          const Icon(Icons.wifi_off, size: 48, color: AppColors.textSecondary),
+                          const SizedBox(height: 12),
+                          Text('Could not load listings.',
+                              style: GoogleFonts.poppins(color: AppColors.textSecondary)),
+                          const SizedBox(height: 12),
+                          ElevatedButton.icon(
+                            onPressed: () => setState(_loadSarees),
+                            icon: const Icon(Icons.refresh),
+                            label: const Text('Retry'),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                foregroundColor: Colors.white),
                           ),
                         ],
                       ),
                     ),
                   ),
                 )
-              : SliverPadding(
+              else if (listings.isEmpty && snap.connectionState != ConnectionState.waiting)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(48),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          Icon(Icons.storefront_outlined,
+                              size: 64,
+                              color: AppColors.textSecondary.withValues(alpha: 0.4)),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No listings yet.\nAdd your first saree!',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                                color: AppColors.textSecondary, fontSize: 15),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              else
+                SliverPadding(
                   padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
-                        final saree = _myListings[index];
+                        final saree = listings[index];
                         return _ListingCard(
                           saree: saree,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProductDetailsScreen(saree: saree),
-                              ),
-                            );
-                          },
+                          onEdit: () => _startEdit(saree),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProductDetailsScreen(saree: saree)),
+                          ),
                         );
                       },
-                      childCount: _myListings.length,
+                      childCount: listings.length,
                     ),
                   ),
                 ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }
@@ -205,11 +355,7 @@ class _ManageSareesScreenState extends State<ManageSareesScreen> {
             const SizedBox(width: 16),
             Text(
               'Upload New Saree',
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -239,16 +385,11 @@ class _ManageSareesScreenState extends State<ManageSareesScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Add New Saree',
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
+                Text(_isEditing ? 'Edit Saree Details' : 'Add New Saree',
+                    style: GoogleFonts.poppins(
+                        fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                 IconButton(
-                  onPressed: () => setState(() => _showForm = false),
+                  onPressed: _isEditing ? _cancelEdit : () => setState(() => _showForm = false),
                   icon: const Icon(Icons.close, color: AppColors.textSecondary),
                 ),
               ],
@@ -260,38 +401,43 @@ class _ManageSareesScreenState extends State<ManageSareesScreen> {
             const SizedBox(height: 12),
             _buildTextField(_priceController, 'Price (₹)', Icons.currency_rupee, keyboardType: TextInputType.number),
             const SizedBox(height: 12),
-            _buildTextField(_imageUrlController, 'Image URL (optional)', Icons.image_outlined, isRequired: false),
+            _buildImagePicker(),
             const SizedBox(height: 16),
             _buildDropdown(
-              'Category', 
-              Icons.category_outlined, 
-              _selectedCategory, 
-              MockRepository.categories, 
+              'Category',
+              Icons.category_outlined,
+              _selectedCategory,
+              _kCategories,
               (val) => setState(() => _selectedCategory = val!),
             ),
             const SizedBox(height: 12),
             _buildDropdown(
-              'Saree Type', 
-              Icons.grid_view_outlined, 
-              _selectedType, 
-              MockRepository.types, 
+              'Saree Type',
+              Icons.grid_view_outlined,
+              _selectedType,
+              _kTypes,
               (val) => setState(() => _selectedType = val!),
             ),
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _submitSaree,
+                onPressed: _isSubmitting ? null : _submitSaree,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 4,
                 ),
-                child: Text(
-                  'Publish Saree',
-                  style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
-                ),
+                child: _isSubmitting
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      )
+                    : Text(_isEditing ? 'Update Saree' : 'Publish Saree',
+                        style: GoogleFonts.poppins(
+                            color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16)),
               ),
             ),
           ],
@@ -320,9 +466,7 @@ class _ManageSareesScreenState extends State<ManageSareesScreen> {
         filled: true,
         fillColor: AppColors.background,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide.none,
-        ),
+            borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
@@ -337,19 +481,51 @@ class _ManageSareesScreenState extends State<ManageSareesScreen> {
           : null,
     );
   }
+
+  Widget _buildImagePicker() {
+    return GestureDetector(
+      onTap: _pickImage,
+      child: Container(
+        width: double.infinity,
+        height: 150,
+        decoration: BoxDecoration(
+          color: AppColors.background,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.3), width: 1.5, style: BorderStyle.solid),
+        ),
+        child: _selectedImageBytes != null
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: Image.memory(_selectedImageBytes!, fit: BoxFit.cover, width: double.infinity),
+              )
+            : (_existingImageUrl != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: SareeImage(imageUrl: _existingImageUrl!, fit: BoxFit.cover, width: double.infinity),
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.add_a_photo_outlined, color: AppColors.primary, size: 40),
+                      const SizedBox(height: 8),
+                      Text('Tap to select Saree Photo', style: GoogleFonts.poppins(color: AppColors.textSecondary, fontSize: 14)),
+                    ],
+                  )),
+      ),
+    );
+  }
+
   Widget _buildDropdown(
-    String hint, 
-    IconData icon, 
-    String value, 
-    List<String> items, 
-    ValueChanged<String?> onChanged
+    String hint,
+    IconData icon,
+    String value,
+    List<String> items,
+    ValueChanged<String?> onChanged,
   ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.circular(14),
-      ),
+      decoration:
+          BoxDecoration(color: AppColors.background, borderRadius: BorderRadius.circular(14)),
       child: DropdownButtonFormField<String>(
         value: value,
         decoration: InputDecoration(
@@ -358,7 +534,9 @@ class _ManageSareesScreenState extends State<ManageSareesScreen> {
           hintText: hint,
         ),
         items: items.map((item) {
-          return DropdownMenuItem(value: item, child: Text(item, style: GoogleFonts.poppins(fontSize: 14)));
+          return DropdownMenuItem(
+              value: item,
+              child: Text(item, style: GoogleFonts.poppins(fontSize: 14)));
         }).toList(),
         onChanged: onChanged,
       ),
@@ -369,11 +547,13 @@ class _ManageSareesScreenState extends State<ManageSareesScreen> {
 class _ListingCard extends StatelessWidget {
   final Saree saree;
   final VoidCallback onTap;
+  final VoidCallback onEdit;
 
-  const _ListingCard({required this.saree, required this.onTap});
+  const _ListingCard({required this.saree, required this.onTap, required this.onEdit});
 
   @override
   Widget build(BuildContext context) {
+    final imageUrl = saree.imageUrls.isNotEmpty ? saree.imageUrls.first : '';
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -384,34 +564,29 @@ class _ListingCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
+                color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
           ],
         ),
         child: Row(
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: (saree.imageUrls.first.startsWith('http'))
-                  ? Image.network(saree.imageUrls.first, width: 70, height: 70, fit: BoxFit.cover)
-                  : Image.asset(saree.imageUrls.first, width: 70, height: 70, fit: BoxFit.cover),
+              child: SareeImage(
+                imageUrl: imageUrl,
+                width: 70,
+                height: 70,
+                fit: BoxFit.cover,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    saree.name,
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  Text(saree.name,
+                      style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 4),
                   Row(
                     children: [
@@ -421,28 +596,25 @@ class _ListingCard extends StatelessWidget {
                           color: AppColors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(
-                          saree.category,
-                          style: GoogleFonts.poppins(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.primary,
-                          ),
-                        ),
+                        child: Text(saree.category,
+                            style: GoogleFonts.poppins(
+                                fontSize: 10, fontWeight: FontWeight.w500, color: AppColors.primary)),
                       ),
                       const Spacer(),
-                      Text(
-                        '₹${saree.price.toStringAsFixed(0)}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
-                        ),
-                      ),
+                      Text('₹${saree.price.toStringAsFixed(0)}',
+                          style: GoogleFonts.poppins(
+                              fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primary)),
                     ],
                   ),
                 ],
               ),
+            ),
+            const SizedBox(width: 12),
+            IconButton(
+              onPressed: onEdit,
+              icon: const Icon(Icons.edit_outlined, color: AppColors.primary, size: 20),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
             ),
             const SizedBox(width: 8),
             const Icon(Icons.chevron_right, color: AppColors.textSecondary),

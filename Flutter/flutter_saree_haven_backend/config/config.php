@@ -3,15 +3,18 @@
  * Application Configuration
  */
 
+// Load environment variables
+require_once __DIR__ . '/env_loader.php';
+
 // Database Configuration
-define('DB_HOST', '127.0.0.1');
-define('DB_USER', 'root');
-define('DB_PASS', 'Open@120');
-define('DB_NAME', 'saree_haven_db');
-define('DB_CHARSET', 'utf8mb4');
+define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASS') ?: '');
+define('DB_NAME', getenv('DB_NAME') ?: 'saree_haven_db');
+define('DB_CHARSET', getenv('DB_CHARSET') ?: 'utf8mb4');
 
 // API Configuration
-define('APP_URL', 'http://localhost/flutter_saree_haven_backend');
+define('APP_URL', getenv('APP_URL') ?: 'http://localhost/flutter_saree_haven_backend');
 define('API_VERSION', 'v1');
 
 // Error Reporting

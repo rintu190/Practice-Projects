@@ -2,11 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/app_colors.dart';
-import '../../core/data/mock_repository.dart';
+import '../../core/data/api_repository.dart';
 import '../../core/models/saree_model.dart';
 import '../../core/models/seller_model.dart';
 import '../product_details/product_details_screen.dart';
-import '../connect/connect_screen.dart';
+import '../../core/widgets/saree_image.dart';
 
 class SellerProfileScreen extends StatelessWidget {
   final Seller seller;
@@ -15,88 +15,69 @@ class SellerProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sellerSarees = MockRepository.getSareesBySeller(seller.id);
-
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          // Seller Banner
-          SliverToBoxAdapter(
-            child: _buildSellerBanner(context),
-          ),
-          // Stats
-          SliverToBoxAdapter(
-            child: _buildStats(sellerSarees.length),
-          ),
-          // About
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'About',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+      body: FutureBuilder<List<Saree>>(
+        future: ApiRepository.getSarees(sellerId: seller.id),
+        builder: (context, snap) {
+          final sellerSarees = snap.data ?? [];
+          return CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(child: _buildSellerBanner(context)),
+              SliverToBoxAdapter(child: _buildStats(sellerSarees.length)),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('About',
+                          style: GoogleFonts.poppins(
+                              fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                      const SizedBox(height: 8),
+                      Text(seller.bio,
+                          style: GoogleFonts.poppins(
+                              fontSize: 14, color: AppColors.textSecondary, height: 1.6)),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    seller.bio,
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                      height: 1.6,
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
-          // Products header
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Sarees by ${seller.storeName}',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Sarees by ${seller.storeName}',
+                          style: GoogleFonts.poppins(
+                              fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                      Text(
+                        snap.connectionState == ConnectionState.waiting
+                            ? '...' : '${sellerSarees.length} items',
+                        style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textSecondary)),
+                    ],
                   ),
-                  Text(
-                    '${sellerSarees.length} items',
-                    style: GoogleFonts.poppins(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
-          // Product Grid
-          sellerSarees.isEmpty
-              ? SliverToBoxAdapter(
+              if (snap.connectionState == ConnectionState.waiting)
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 40),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                )
+              else if (sellerSarees.isEmpty)
+                SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.all(48),
                     child: Center(
-                      child: Text(
-                        'No sarees listed yet.',
-                        style: GoogleFonts.poppins(color: AppColors.textSecondary),
-                      ),
+                      child: Text('No sarees listed yet.',
+                          style: GoogleFonts.poppins(color: AppColors.textSecondary)),
                     ),
                   ),
                 )
-              : SliverPadding(
+              else
+                SliverPadding(
                   padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
                   sliver: SliverGrid(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -110,21 +91,20 @@ class SellerProfileScreen extends StatelessWidget {
                         final saree = sellerSarees[index];
                         return _SellerSareeCard(
                           saree: saree,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProductDetailsScreen(saree: saree),
-                              ),
-                            );
-                          },
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProductDetailsScreen(saree: saree)),
+                          ),
                         );
                       },
                       childCount: sellerSarees.length,
                     ),
                   ),
                 ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }
@@ -239,12 +219,11 @@ class SellerProfileScreen extends StatelessWidget {
                         const SizedBox(height: 12),
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ConnectScreen(
-                                  artisan: MockRepository.artisans[0],
-                                ),
+                            // Contact Seller — using a placeholder artisan (seller messaging future feature)
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Direct messaging coming soon!'),
+                                behavior: SnackBarBehavior.floating,
                               ),
                             );
                           },
@@ -392,7 +371,12 @@ class _SellerSareeCard extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
-                    child: Image.asset(saree.imageUrls.first, width: double.infinity, height: double.infinity, fit: BoxFit.cover),
+                    child: SareeImage(
+                      imageUrl: saree.imageUrls.isNotEmpty ? saree.imageUrls.first : '', 
+                      width: double.infinity, 
+                      height: double.infinity, 
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   if (!saree.inStock)
                     Container(

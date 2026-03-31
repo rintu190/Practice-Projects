@@ -1,12 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
+import '../../core/data/api_repository.dart';
 import '../../core/data/mock_repository.dart';
 import '../../core/models/saree_model.dart';
 import '../../core/models/seller_model.dart';
+import '../../core/widgets/saree_image.dart';
+import '../auth/auth_service.dart';
 import '../cart/cart_screen.dart';
 import '../cart/cart_service.dart';
 import '../product_details/product_details_screen.dart';
@@ -26,15 +30,60 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
-  List<Saree> get _filteredSarees {
-    List<Saree> sarees = MockRepository.getSareesByCategory(_selectedCategory);
-    if (_searchQuery.isNotEmpty) {
-      sarees = sarees.where((s) =>
-        s.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-        s.description.toLowerCase().contains(_searchQuery.toLowerCase())
-      ).toList();
-    }
-    return sarees;
+  late Future<List<Saree>> _sareesFuture;
+  late Future<List<Seller>> _sellersFuture;
+  int _currentCarouselIndex = 0;
+
+  final List<Map<String, dynamic>> _offers = [
+    {
+      'title': 'Handwoven\nBridal Collection',
+      'subtitle': 'Up to 30% off on select pieces',
+      'tag': '✨ New Collection',
+      'colors': [AppColors.primary, Color(0xFF4A1420), Color(0xFF3B0D16)],
+    },
+    {
+      'title': 'Classic\nGold Banarasi',
+      'subtitle': 'The heritage of Banars',
+      'tag': 'Premium Heritage',
+      'colors': [Color(0xFFA6844D), Color(0xFF8C6F40), Color(0xFF6E5833)],
+    },
+    {
+      'title': 'Grand\nSilk Festival',
+      'subtitle': 'Exquisite silk for every occasion',
+      'tag': 'Limited Edition',
+      'colors': [AppColors.accent, Color(0xFF671C2E), Color(0xFF4A1420)],
+    },
+  ];
+
+  static const List<String> _categories = [
+    'All',
+    'Bridal Saree',
+    'Cotton Saree',
+    'Silk Saree',
+    'Party Wear',
+    'Daily Wear',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  void _loadData() {
+    _sareesFuture = ApiRepository.getSarees(
+      category: _selectedCategory == 'All' ? null : _selectedCategory,
+    );
+    _sellersFuture = ApiRepository.getSellers();
+  }
+
+  void _onCategoryChanged(String category) {
+    setState(() {
+      _selectedCategory = category;
+      _sareesFuture = ApiRepository.getSarees(
+        category: category == 'All' ? null : category,
+      );
+    });
   }
 
   @override
@@ -45,26 +94,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final categories = ['All', ...MockRepository.categories];
-
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // Header Section
-            SliverToBoxAdapter(
-              child: _buildHeader(context),
-            ),
-            // Search Bar
-            SliverToBoxAdapter(
-              child: _buildSearchBar(),
-            ),
-            // Featured Banner
-            SliverToBoxAdapter(
-              child: _buildFeaturedBanner(context),
-            ),
-            // Category Section Title
+            SliverToBoxAdapter(child: _buildHeader(context)),
+            SliverToBoxAdapter(child: _buildSearchBar()),
+            SliverToBoxAdapter(child: _buildFeaturedCarousel()),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(24, 28, 24, 16),
@@ -78,63 +115,115 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            // Category Chips
+            SliverToBoxAdapter(child: _buildCategoryChips()),
+            SliverToBoxAdapter(child: _buildTopSellers(context)),
+            // Products header
             SliverToBoxAdapter(
-              child: _buildCategoryChips(categories),
-            ),
-            // Top Sellers
-            SliverToBoxAdapter(
-              child: _buildTopSellers(context),
-            ),
-            // Products Title
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 28, 24, 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      _selectedCategory == 'All' ? 'All Sarees' : _selectedCategory,
-                      style: GoogleFonts.poppins(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    Text(
-                      '${_filteredSarees.length} items',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            // Product Grid
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              sliver: SliverMasonryGrid.count(
-                crossAxisCount: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childCount: _filteredSarees.length,
-                itemBuilder: (context, index) {
-                  final saree = _filteredSarees[index];
-                  return _ProductCard(
-                    saree: saree,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ProductDetailsScreen(saree: saree),
+              child: FutureBuilder<List<Saree>>(
+                future: _sareesFuture,
+                builder: (context, snap) {
+                  final count = snap.data?.length ?? 0;
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 28, 24, 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _selectedCategory == 'All' ? 'All Sarees' : _selectedCategory,
+                          style: GoogleFonts.poppins(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                         ),
-                      );
-                    },
+                        Text(
+                          '$count items',
+                          style: GoogleFonts.poppins(fontSize: 14, color: AppColors.textSecondary),
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),
+            ),
+            // Products grid
+            FutureBuilder<List<Saree>>(
+              future: _sareesFuture,
+              builder: (context, snap) {
+                if (snap.connectionState == ConnectionState.waiting) {
+                  return const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 40),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                  );
+                }
+                if (snap.hasError) {
+                  return SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        children: [
+                          const Icon(Icons.wifi_off, size: 48, color: AppColors.textSecondary),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Could not load sarees.\nCheck your connection.',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(color: AppColors.textSecondary),
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton.icon(
+                            onPressed: () => setState(_loadData),
+                            icon: const Icon(Icons.refresh),
+                            label: const Text('Retry'),
+                            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                final sarees = (snap.data ?? []).where((s) {
+                  if (_searchQuery.isEmpty) return true;
+                  final q = _searchQuery.toLowerCase();
+                  return s.name.toLowerCase().contains(q) ||
+                      s.description.toLowerCase().contains(q);
+                }).toList();
+
+                if (sarees.isEmpty) {
+                  return SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(48),
+                      child: Center(
+                        child: Text('No sarees found.',
+                            style: GoogleFonts.poppins(color: AppColors.textSecondary)),
+                      ),
+                    ),
+                  );
+                }
+
+                return SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  sliver: SliverMasonryGrid.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childCount: sarees.length,
+                    itemBuilder: (context, index) {
+                      final saree = sarees[index];
+                      return _ProductCard(
+                        saree: saree,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProductDetailsScreen(saree: saree),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
           ],
@@ -162,10 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Text(
                 'Discover handcrafted elegance',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
+                style: GoogleFonts.poppins(fontSize: 14, color: AppColors.textSecondary),
               ),
             ],
           ),
@@ -188,35 +274,34 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: const Icon(Icons.notifications_outlined, color: AppColors.primary, size: 22),
               ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                  );
-                },
-                child: Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: ClipOval(
-                    child: CachedNetworkImage(
-                      imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200',
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(color: AppColors.background),
+          Consumer<AuthService>(
+            builder: (context, auth, _) => GestureDetector(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              ),
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
                     ),
-                  ),
+                  ],
+                ),
+                child: ClipOval(
+                  child: (auth.userImageUrl != null && auth.userImageUrl!.isNotEmpty)
+                      ? SareeImage(imageUrl: auth.userImageUrl!, fit: BoxFit.cover)
+                      : const Icon(Icons.person, color: AppColors.primary, size: 26),
                 ),
               ),
+            ),
+          ),
             ],
           ),
         ],
@@ -263,131 +348,152 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildFeaturedBanner(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-      child: Container(
-        height: 180,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.primary,
-              Color(0xFF4A1420),
-              Color(0xFF3B0D16),
-            ],
+  Widget _buildFeaturedCarousel() {
+    return Column(
+      children: [
+        CarouselSlider.builder(
+          itemCount: _offers.length,
+          itemBuilder: (context, index, realIndex) {
+            final offer = _offers[index];
+            return _buildCarouselItem(offer);
+          },
+          options: CarouselOptions(
+            height: 200,
+            viewportFraction: 0.9,
+            enlargeCenterPage: true,
+            autoPlay: true,
+            autoPlayInterval: const Duration(seconds: 5),
+            onPageChanged: (index, reason) {
+              setState(() => _currentCarouselIndex = index);
+            },
           ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.3),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
         ),
-        child: Stack(
-          children: [
-            // Decorative circles
-            Positioned(
-              top: -30,
-              right: -20,
-              child: Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.1),
-                ),
+        const SizedBox(height: 12),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: _offers.asMap().entries.map((entry) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              width: _currentCarouselIndex == entry.key ? 24 : 8,
+              height: 8,
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                color: _currentCarouselIndex == entry.key
+                    ? AppColors.primary
+                    : AppColors.primary.withValues(alpha: 0.2),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCarouselItem(Map<String, dynamic> offer) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: offer['colors'],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: (offer['colors'] as List<Color>).first.withValues(alpha: 0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            top: -30,
+            right: -20,
+            child: Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.08),
               ),
             ),
-            Positioned(
-              bottom: -40,
-              left: -20,
-              child: Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.08),
-                ),
+          ),
+          Positioned(
+            bottom: -40,
+            left: -20,
+            child: Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.05),
               ),
             ),
-            Positioned(
-              top: 20,
-              right: 20,
-              child: Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.accent.withValues(alpha: 0.3),
-                ),
-              ),
-            ),
-            // Content
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppColors.accent,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      '✨ New Collection',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
-                    ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.accent.withValues(alpha: 0.8),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Handwoven\nBridal Collection',
+                  child: Text(
+                    offer['tag'],
                     style: GoogleFonts.poppins(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
                       color: Colors.white,
-                      height: 1.2,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Up to 30% off on select pieces',
-                    style: GoogleFonts.poppins(
-                      fontSize: 13,
-                      color: Colors.white.withValues(alpha: 0.85),
-                    ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  offer['title'],
+                  style: GoogleFonts.poppins(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    height: 1.2,
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  offer['subtitle'],
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    color: Colors.white.withValues(alpha: 0.85),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildCategoryChips(List<String> categories) {
+  Widget _buildCategoryChips() {
     return SizedBox(
       height: 48,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 24),
-        itemCount: categories.length,
+        itemCount: _categories.length,
         separatorBuilder: (_, __) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
-          final category = categories[index];
+          final category = _categories[index];
           final isSelected = category == _selectedCategory;
           return GestureDetector(
-            onTap: () => setState(() => _selectedCategory = category),
+            onTap: () => _onCategoryChanged(category),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -434,24 +540,16 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 'Top Saree Houses',
                 style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                    fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
               ),
               TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SellersListScreen()),
-                  );
-                },
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SellersListScreen()),
+                ),
                 child: Text(
                   'See All',
-                  style: GoogleFonts.poppins(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: GoogleFonts.poppins(color: AppColors.primary, fontWeight: FontWeight.w600),
                 ),
               ),
             ],
@@ -459,20 +557,27 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         SizedBox(
           height: 110,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            itemCount: MockRepository.sellers.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 16),
-            itemBuilder: (context, index) {
-              final seller = MockRepository.sellers[index];
-              return _SellerChip(
-                seller: seller,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SellerProfileScreen(seller: seller),
+          child: FutureBuilder<List<Seller>>(
+            future: _sellersFuture,
+            builder: (context, snap) {
+              if (snap.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final sellers = snap.data ?? [];
+              return ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                itemCount: sellers.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 16),
+                itemBuilder: (context, index) {
+                  final seller = sellers[index];
+                  return _SellerChip(
+                    seller: seller,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SellerProfileScreen(seller: seller),
+                      ),
                     ),
                   );
                 },
@@ -518,6 +623,8 @@ class _SellerChip extends StatelessWidget {
                   imageUrl: seller.imageUrl,
                   fit: BoxFit.cover,
                   placeholder: (_, __) => Container(color: AppColors.background),
+                  errorWidget: (_, __, ___) =>
+                      const Icon(Icons.store, color: AppColors.primary),
                 ),
               ),
             ),
@@ -548,7 +655,6 @@ class _ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final seller = MockRepository.getSellerById(saree.sellerId);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -566,24 +672,15 @@ class _ProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image
             Stack(
               children: [
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                   child: AspectRatio(
                     aspectRatio: 0.85,
-                    child: Image.asset(
-                      saree.imageUrls.first,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        color: AppColors.background,
-                        child: const Icon(Icons.broken_image),
-                      ),
-                    ),
+                    child: _buildSareeImage(saree.imageUrls.isNotEmpty ? saree.imageUrls.first : ''),
                   ),
                 ),
-                // Favorite button
                 Positioned(
                   top: 10,
                   right: 10,
@@ -596,7 +693,6 @@ class _ProductCard extends StatelessWidget {
                     child: const Icon(Icons.favorite_border, size: 18, color: AppColors.textSecondary),
                   ),
                 ),
-                // Category badge
                 Positioned(
                   top: 10,
                   left: 10,
@@ -618,7 +714,6 @@ class _ProductCard extends StatelessWidget {
                 ),
               ],
             ),
-            // Info
             Padding(
               padding: const EdgeInsets.all(12),
               child: Column(
@@ -634,14 +729,6 @@ class _ProductCard extends StatelessWidget {
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 2),
-                  if (seller != null)
-                    Text(
-                      seller.storeName,
-                      style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textSecondary),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
                   const SizedBox(height: 6),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -670,6 +757,13 @@ class _ProductCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSareeImage(String url) {
+    return SareeImage(
+        imageUrl: url, 
+        fit: BoxFit.cover,
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
+import '../../core/data/api_repository.dart';
 import '../auth/auth_service.dart';
 import 'my_orders_screen.dart';
 import 'wishlist_screen.dart';
@@ -10,7 +11,10 @@ import 'shipping_addresses_screen.dart';
 import 'payment_methods_screen.dart';
 import 'settings_screen.dart';
 import 'help_support_screen.dart';
+import 'privacy_policy_screen.dart';
+import 'terms_of_service_screen.dart';
 import '../seller/edit_shop_profile_screen.dart';
+import '../../core/widgets/saree_image.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -92,11 +96,13 @@ class ProfileScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            child: const ClipOval(
-                              child: Image(
-                                image: CachedNetworkImageProvider('https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200'),
-                                fit: BoxFit.cover,
-                              ),
+                            child: ClipOval(
+                              child: (auth.userImageUrl != null && auth.userImageUrl!.isNotEmpty)
+                                  ? SareeImage(imageUrl: auth.userImageUrl!, fit: BoxFit.cover)
+                                  : Container(
+                                      color: Colors.white,
+                                      child: const Icon(Icons.person, size: 50, color: AppColors.primary),
+                                    ),
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -135,13 +141,23 @@ class ProfileScreen extends StatelessWidget {
                       // Stats Area
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _StatCard(label: 'Orders', value: '12', icon: Icons.shopping_bag_outlined),
-                            _StatCard(label: 'Wishlist', value: '24', icon: Icons.favorite_border),
-                            _StatCard(label: 'Wallet', value: '₹1450', icon: Icons.account_balance_wallet_outlined),
-                          ],
+                        child: FutureBuilder<Map<String, dynamic>>(
+                          future: auth.userId != null ? ApiRepository.getUserStats(auth.userId!) : null,
+                          builder: (context, snap) {
+                            final stats = snap.data;
+                            final orders = stats?['ordersCount']?.toString() ?? '...';
+                            final wishlist = stats?['wishlistCount']?.toString() ?? '...';
+                            final wallet = stats?['walletBalance']?.toString() ?? '...';
+                            
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _StatCard(label: 'Orders', value: orders, icon: Icons.shopping_bag_outlined),
+                                _StatCard(label: 'Wishlist', value: wishlist, icon: Icons.favorite_border),
+                                _StatCard(label: 'Wallet', value: '₹$wallet', icon: Icons.account_balance_wallet_outlined),
+                              ],
+                            );
+                          },
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -156,8 +172,12 @@ class ProfileScreen extends StatelessWidget {
                       }),
 
                       const SizedBox(height: 16),
-                      _buildSectionHeader('ACCOUNT SETTINGS'),
-                      _buildActionItem(Icons.location_on_outlined, 'Shipping Addresses', () {
+                       _buildSectionHeader('ACCOUNT SETTINGS'),
+                       if (auth.role == UserRole.seller)
+                         _buildActionItem(Icons.storefront_outlined, 'Edit Shop Profile', () {
+                           Navigator.push(context, MaterialPageRoute(builder: (context) => const EditShopProfileScreen()));
+                         }),
+                       _buildActionItem(Icons.location_on_outlined, 'Shipping Addresses', () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) => const ShippingAddressesScreen()));
                       }),
                       _buildActionItem(Icons.payment, 'Payment Methods', () {
@@ -168,11 +188,16 @@ class ProfileScreen extends StatelessWidget {
                       }),
 
                       const SizedBox(height: 16),
-                      _buildSectionHeader('SUPPORT'),
-                      _buildActionItem(Icons.help_outline, 'Help & Support', () {
+                      _buildSectionHeader('SUPPORT & LEGAL'),
+                      _buildActionItem(Icons.help_outline, 'Help Center', () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) => const HelpSupportScreen()));
                       }),
-                      _buildActionItem(Icons.info_outline, 'Terms & Policies', () {}),
+                      _buildActionItem(Icons.privacy_tip_outlined, 'Privacy Policy', () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const PrivacyPolicyScreen()));
+                      }),
+                      _buildActionItem(Icons.description_outlined, 'Terms of Service', () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const TermsOfServiceScreen()));
+                      }),
 
                       const SizedBox(height: 32),
                       Padding(

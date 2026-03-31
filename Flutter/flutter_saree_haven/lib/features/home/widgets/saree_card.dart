@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../core/models/saree_model.dart';
 import '../../../core/app_colors.dart';
+import '../../../core/widgets/saree_image.dart';
 
 class SareeCard extends StatelessWidget {
   final Saree saree;
@@ -38,7 +39,7 @@ class SareeCard extends StatelessWidget {
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
                   child: AspectRatio(
                     aspectRatio: 0.85,
-                    child: Image.asset(saree.imageUrls.isNotEmpty ? saree.imageUrls.first : '', fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image)),
+                    child: SareeImage(imageUrl: saree.imageUrls.isNotEmpty ? saree.imageUrls.first : '', fit: BoxFit.cover),
                   ),
                 ),
                 Positioned(

@@ -1,15 +1,29 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import "../../core/widgets/saree_image.dart";
 import '../../core/app_colors.dart';
-import '../../core/data/mock_repository.dart';
+import '../../core/data/api_repository.dart';
 import '../../core/models/saree_model.dart';
 import '../cart/cart_screen.dart';
 import '../collections/collections_screen.dart';
 import '../product_details/product_details_screen.dart';
 
-class TrendingScreen extends StatelessWidget {
+class TrendingScreen extends StatefulWidget {
   const TrendingScreen({super.key});
+
+  @override
+  State<TrendingScreen> createState() => _TrendingScreenState();
+}
+
+class _TrendingScreenState extends State<TrendingScreen> {
+  late Future<List<Saree>> _sareesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _sareesFuture = ApiRepository.getSarees();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,12 +133,21 @@ class TrendingScreen extends StatelessWidget {
 
                 // Trending List (Card)
                 Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 100), // Bottom padding for nav bar
-                    itemCount: MockRepository.sarees.length, 
-                    itemBuilder: (context, index) {
-                      final saree = MockRepository.sarees[index];
-                      return _TrendingCard(saree: saree);
+                  child: FutureBuilder<List<Saree>>(
+                    future: ApiRepository.getSarees(),
+                    builder: (context, snap) {
+                      if (snap.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      final sarees = snap.data ?? [];
+                      return ListView.builder(
+                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 100),
+                        itemCount: sarees.length,
+                        itemBuilder: (context, index) {
+                          final saree = sarees[index];
+                          return _TrendingCard(saree: saree);
+                        },
+                      );
                     },
                   ),
                 ),
@@ -242,7 +265,10 @@ class _TrendingCard extends StatelessWidget {
                child: Stack(
                  fit: StackFit.expand,
                  children: [
-                   Image.asset(saree.imageUrls.first, fit: BoxFit.cover),
+                   SareeImage(
+                     imageUrl: saree.imageUrls.isNotEmpty ? saree.imageUrls.first : '', 
+                     fit: BoxFit.cover,
+                   ),
                    // Gradient Overlay
                    Container(
                      decoration: BoxDecoration(

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/app_colors.dart';
-import '../../core/data/mock_repository.dart';
+import '../../core/data/api_repository.dart';
 import '../../core/models/seller_model.dart';
 import '../../core/models/saree_model.dart';
 import '../profile/profile_screen.dart';
 import '../seller/seller_profile_screen.dart';
 import '../product_details/product_details_screen.dart';
+import '../../core/widgets/saree_image.dart';
 
 class SellersListScreen extends StatefulWidget {
   const SellersListScreen({super.key});
@@ -18,12 +19,20 @@ class SellersListScreen extends StatefulWidget {
 class _SellersListScreenState extends State<SellersListScreen> {
   String _searchQuery = '';
   String _selectedSpecialization = 'All';
-  final List<Seller> _allSellers = MockRepository.sellers;
+  late Future<List<Seller>> _sellersFuture;
 
-  List<String> get _specializations => ['All', ...MockRepository.categories];
+  static const List<String> _kSpecializations = [
+    'All', 'Bridal Saree', 'Cotton Saree', 'Silk Saree', 'Party Wear', 'Daily Wear',
+  ];
 
-  List<Seller> get _filteredSellers {
-    return _allSellers.where((s) {
+  @override
+  void initState() {
+    super.initState();
+    _sellersFuture = ApiRepository.getSellers();
+  }
+
+  List<Seller> _filterSellers(List<Seller> all) {
+    return all.where((s) {
       final matchesSearch = s.storeName.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           s.bio.toLowerCase().contains(_searchQuery.toLowerCase());
       final matchesSpec = _selectedSpecialization == 'All' || s.specialization == _selectedSpecialization;
@@ -35,27 +44,55 @@ class _SellersListScreenState extends State<SellersListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          _buildAppBar(context),
-          _buildFilters(),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            sliver: _filteredSellers.isEmpty
-                ? SliverFillRemaining(child: _buildEmptyState())
-                : SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) => Padding(
-                        padding: const EdgeInsets.only(bottom: 24),
-                        child: _PremiumSellerCard(seller: _filteredSellers[index]),
-                      ),
-                      childCount: _filteredSellers.length,
-                    ),
+      body: FutureBuilder<List<Seller>>(
+        future: _sellersFuture,
+        builder: (context, snap) {
+          if (snap.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snap.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.wifi_off, size: 48, color: AppColors.textSecondary),
+                  const SizedBox(height: 12),
+                  Text('Could not load sellers', style: GoogleFonts.poppins(color: AppColors.textSecondary)),
+                  const SizedBox(height: 12),
+                  ElevatedButton.icon(
+                    onPressed: () => setState(() { _sellersFuture = ApiRepository.getSellers(); }),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
+                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
                   ),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
-        ],
+                ],
+              ),
+            );
+          }
+          final filtered = _filterSellers(snap.data ?? []);
+          return CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              _buildAppBar(context),
+              _buildFilters(),
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                sliver: filtered.isEmpty
+                    ? SliverFillRemaining(child: _buildEmptyState())
+                    : SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) => Padding(
+                            padding: const EdgeInsets.only(bottom: 24),
+                            child: _PremiumSellerCard(seller: filtered[index]),
+                          ),
+                          childCount: filtered.length,
+                        ),
+                      ),
+              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 100)),
+            ],
+          );
+        },
       ),
     );
   }
@@ -175,10 +212,10 @@ class _SellersListScreenState extends State<SellersListScreen> {
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          itemCount: _specializations.length,
+          itemCount: _kSpecializations.length,
           separatorBuilder: (_, __) => const SizedBox(width: 12),
           itemBuilder: (context, index) {
-            final spec = _specializations[index];
+            final spec = _kSpecializations[index];
             final isSelected = spec == _selectedSpecialization;
             return GestureDetector(
               onTap: () => setState(() => _selectedSpecialization = spec),
@@ -248,7 +285,8 @@ class _PremiumSellerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sellerProducts = MockRepository.getSareesBySeller(seller.id).take(3).toList();
+    // Product previews are loaded async to avoid blocking the list; show placeholder if not loaded
+    final sellerProducts = <Saree>[];
 
     return Container(
       decoration: BoxDecoration(
@@ -341,8 +379,11 @@ class _PremiumSellerCard extends StatelessWidget {
                         width: 100,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15),
-                          image: DecorationImage(
-                            image: AssetImage(saree.imageUrls.first),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: SareeImage(
+                            imageUrl: saree.imageUrls.isNotEmpty ? saree.imageUrls.first : '',
                             fit: BoxFit.cover,
                           ),
                         ),

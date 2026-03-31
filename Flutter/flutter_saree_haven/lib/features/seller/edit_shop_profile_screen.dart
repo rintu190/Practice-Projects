@@ -1,7 +1,10 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
+import '../../core/widgets/saree_image.dart';
 import '../auth/auth_service.dart';
 
 class EditShopProfileScreen extends StatefulWidget {
@@ -17,6 +20,9 @@ class _EditShopProfileScreenState extends State<EditShopProfileScreen> {
   late TextEditingController _aboutController;
   late TextEditingController _contactController;
   late TextEditingController _locationController;
+  Uint8List? _selectedImageBytes;
+  String? _selectedImageName;
+  String? _existingImageUrl;
   bool _isLoading = false;
 
   @override
@@ -27,6 +33,19 @@ class _EditShopProfileScreenState extends State<EditShopProfileScreen> {
     _aboutController = TextEditingController(text: auth.shopAbout);
     _contactController = TextEditingController(text: auth.shopContact);
     _locationController = TextEditingController(text: auth.shopLocation);
+    _existingImageUrl = auth.sellerProfile?.imageUrl;
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      setState(() {
+        _selectedImageBytes = bytes;
+        _selectedImageName = pickedFile.name;
+      });
+    }
   }
 
   @override
@@ -47,6 +66,8 @@ class _EditShopProfileScreenState extends State<EditShopProfileScreen> {
               about: _aboutController.text,
               contact: _contactController.text,
               location: _locationController.text,
+              imageBytes: _selectedImageBytes,
+              imageName: _selectedImageName,
             );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -89,6 +110,56 @@ class _EditShopProfileScreenState extends State<EditShopProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              _buildSectionTitle('Saree House Photo'),
+              const SizedBox(height: 16),
+              Center(
+                child: GestureDetector(
+                  onTap: _pickImage,
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          border: Border.all(color: AppColors.primary.withValues(alpha: 0.2), width: 3),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 15,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: ClipOval(
+                          child: _selectedImageBytes != null
+                              ? Image.memory(_selectedImageBytes!, fit: BoxFit.cover)
+                              : (_existingImageUrl != null && _existingImageUrl!.isNotEmpty)
+                                  ? SareeImage(imageUrl: _existingImageUrl!, fit: BoxFit.cover)
+                                  : Container(
+                                      color: AppColors.primary.withValues(alpha: 0.05),
+                                      child: const Icon(Icons.storefront_outlined, size: 48, color: AppColors.primary),
+                                    ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: const BoxDecoration(
+                            color: AppColors.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
               _buildSectionTitle('Basic Information'),
               const SizedBox(height: 16),
               _buildTextField(

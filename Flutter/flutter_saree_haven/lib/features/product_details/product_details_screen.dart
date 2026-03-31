@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
-import '../../core/data/mock_repository.dart';
+import '../../core/data/api_repository.dart';
+import '../../core/models/seller_model.dart';
 import '../../core/models/saree_model.dart';
 import '../cart/cart_service.dart';
+import '../auth/auth_service.dart';
 import '../seller/seller_profile_screen.dart';
+import '../../core/widgets/saree_image.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   final Saree saree;
@@ -20,11 +23,49 @@ class ProductDetailsScreen extends StatefulWidget {
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   String selectedSize = 'M';
   final List<String> sizes = ['S', 'M', 'L', 'XL'];
+  bool _isInWishlist = false;
+  bool _isWishlistLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkWishlist();
+  }
+
+  Future<void> _checkWishlist() async {
+    final auth = context.read<AuthService>();
+    if (!auth.isAuthenticated || auth.userId == null) return;
+    
+    try {
+      final status = await ApiRepository.checkIfInWishlist(auth.userId!, widget.saree.id);
+      if (mounted) setState(() => _isInWishlist = status);
+    } catch (_) {}
+  }
+
+  Future<void> _toggleWishlist() async {
+    final auth = context.read<AuthService>();
+    if (!auth.isAuthenticated || auth.userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please login to use wishlist')));
+      return;
+    }
+
+    setState(() => _isWishlistLoading = true);
+    try {
+      if (_isInWishlist) {
+        await ApiRepository.removeFromWishlist(auth.userId!, widget.saree.id);
+      } else {
+        await ApiRepository.addToWishlist(auth.userId!, widget.saree.id);
+      }
+      if (mounted) setState(() => _isInWishlist = !_isInWishlist);
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+    } finally {
+      if (mounted) setState(() => _isWishlistLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final seller = MockRepository.getSellerById(widget.saree.sellerId);
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -51,13 +92,22 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     'Details',
                     style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: AppColors.background,
-                      borderRadius: BorderRadius.circular(12),
+                  GestureDetector(
+                    onTap: _isWishlistLoading ? null : _toggleWishlist,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.background,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: _isWishlistLoading 
+                        ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                        : Icon(
+                            _isInWishlist ? Icons.favorite : Icons.favorite_border, 
+                            size: 18, 
+                            color: _isInWishlist ? Colors.redAccent : null,
+                          ),
                     ),
-                    child: const Icon(Icons.favorite_border, size: 18),
                   ),
                 ],
               ),
@@ -88,7 +138,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         child: ClipOval(
                           child: Padding(
                             padding: const EdgeInsets.all(16),
-                            child: Image.asset(widget.saree.imageUrls.first, fit: BoxFit.cover),
+                            child: SareeImage(
+                              imageUrl: widget.saree.imageUrls.isNotEmpty ? widget.saree.imageUrls.first : '',
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                       ),
@@ -157,11 +210,32 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
+                    
+                    // Product Highlights
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildSpecItem(Icons.texture, 'Fabric', widget.saree.category.contains('Silk') ? 'Pure Silk' : 'Handloom'),
+                          _buildSpecItem(Icons.straighten, 'Length', '5.5 Meters'),
+                          _buildSpecItem(Icons.square_foot, 'Blouse', '0.8 Meters'),
+                          _buildSpecItem(Icons.brush, 'Pattern', 'Woven'),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 28),
 
                     // Seller Link
-                    if (seller != null)
-                      Padding(
+                    FutureBuilder<Seller>(
+                      future: ApiRepository.getSellerProfile(widget.saree.sellerId),
+                      builder: (context, snap) {
+                        if (snap.connectionState == ConnectionState.waiting) return const SizedBox.shrink();
+                        if (snap.hasError || !snap.hasData) return const SizedBox.shrink();
+                        final seller = snap.data!;
+                        return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: GestureDetector(
                           onTap: () {
@@ -219,7 +293,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             ),
                           ),
                         ),
-                      ),
+                      );
+                    },
+                    ),
 
                     const SizedBox(height: 20),
 
@@ -230,7 +306,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Size',
+                            'Select Blouse Size',
                             style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                           const SizedBox(height: 10),
@@ -298,6 +374,25 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               fontSize: 14,
                               color: Colors.grey.shade600,
                               height: 1.6,
+                            ),
+                          ),
+                          const SizedBox(height: 28),
+
+                          // Policies & Service
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColors.background.withValues(alpha: 0.5),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Column(
+                              children: [
+                                _buildPolicyRow(Icons.local_shipping_outlined, 'Free shipping on orders above ₹10,000'),
+                                const Divider(height: 20),
+                                _buildPolicyRow(Icons.history, '7-day easy return policy'),
+                                const Divider(height: 20),
+                                _buildPolicyRow(Icons.verified_user_outlined, '100% Authentic Handcrafted Quality'),
+                              ],
                             ),
                           ),
                         ],
@@ -368,6 +463,39 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSpecItem(IconData icon, String label, String value) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppColors.background,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: AppColors.primary, size: 20),
+        ),
+        const SizedBox(height: 8),
+        Text(label, style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textSecondary)),
+        Text(value, style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+      ],
+    );
+  }
+
+  Widget _buildPolicyRow(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: AppColors.textSecondary),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            text,
+            style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textPrimary),
+          ),
+        ),
+      ],
     );
   }
 }

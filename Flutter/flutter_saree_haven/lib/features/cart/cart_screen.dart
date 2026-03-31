@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
 import '../checkout/checkout_screen.dart';
+import '../../core/widgets/saree_image.dart';
 import 'cart_service.dart';
 
 class CartScreen extends StatelessWidget {
@@ -142,7 +143,11 @@ class CartScreen extends StatelessWidget {
                                   // Image
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(14),
-                                    child: Image.asset(item.saree.imageUrls.first, width: 80, height: 80, fit: BoxFit.cover),
+                                    child: SareeImage(
+                                      imageUrl: item.saree.imageUrls.isNotEmpty ? item.saree.imageUrls.first : '',
+                                      width: 80,
+                                      height: 80,
+                                    ),
                                   ),
                                   const SizedBox(width: 14),
                                   // Info

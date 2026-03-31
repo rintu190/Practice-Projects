@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Saree Bazaar - Premium Multi-Vendor Saree Marketplace Solution. Ready-to-deploy mobile apps for buyers and sellers with PHP/MySQL backend.">
+    <title>Saree Bazaar - Multi-Vendor Saree Marketplace Solution</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1A0F11; /* Deepest Midnight Maroon */
+            --primary-dark: #0F090A;
+            --secondary: #C5A059; /* Burnished Champagne Gold */
+            --accent: #FAF9F6; /* Bone White */
+            --dark: #0A0708; /* Near-black background */
+            --dark-light: #161112; 
+            --text: #E8E8E8;
+            --text-muted: #8E8486;
+            --success: #6B8E23; /* Olive Green */
+            --gradient-1: linear-gradient(135deg, #1A0F11 0%, #3D2B2E 100%);
+            --gradient-2: linear-gradient(135deg, #C5A059 0%, #E2C58F 100%);
+            --gradient-3: linear-gradient(135deg, #2D1A1E 0%, #5C3D42 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: var(--gradient-1);
+            padding: 140px 20px 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.05" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,96C1248,75,1344,53,1392,42.7L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.8rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .hero .tagline {
+            font-size: 1.6rem;
+            margin-bottom: 30px;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 300;
+            animation: fadeInUp 0.8s ease 0.2s backwards;
+        }
+
+        .hero .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            color: rgba(255, 255, 255, 0.85);
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 0.8s ease 0.4s backwards;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease 0.6s backwards;
+        }
+
+        .btn {
+            padding: 16px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        /* Stats Section */
+        .stats {
+            background: var(--dark-light);
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            padding: 20px;
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Showcase Section */
+        .showcase {
+            padding: 100px 20px;
+            background: var(--dark);
+        }
+
+        .showcase-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .showcase-header h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .showcase-header p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+        }
+
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .screenshot-item {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            background: var(--dark-light);
+            transition: all 0.3s ease;
+        }
+
+        .screenshot-item:hover {
+            transform: translateY(-10px);
+        }
+
+        .screenshot-item img {
+            width: 100%;
+            display: block;
+        }
+
+        .screenshot-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.95));
+            padding: 25px;
+        }
+
+        .screenshot-caption {
+            font-size: 1.1rem;
+            color: var(--secondary);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .screenshot-description {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Features Section */
+        .section {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 80px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 35px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: var(--dark-light);
+            padding: 50px 40px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(197, 160, 89, 0.15);
+            border-color: var(--secondary);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 25px;
+            display: inline-block;
+        }
+
+        .feature-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .feature-description {
+            color: var(--text-muted);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        /* How it Works Step Section */
+        .how-it-works {
+            background: var(--dark-light);
+            padding: 100px 20px;
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .step-item {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-num {
+            width: 70px;
+            height: 70px;
+            background: var(--gradient-2);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0 auto 30px;
+            box-shadow: 0 10px 20px rgba(197, 160, 89, 0.3);
+        }
+
+        .step-item h3 {
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .step-item p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* Technical Deep Dive */
+        .tech-deep-dive {
+            padding: 100px 20px;
+        }
+
+        .tech-box {
+            background: linear-gradient(135deg, rgba(22, 17, 18, 0.9) 0%, rgba(26, 15, 17, 0.9) 100%);
+            padding: 60px;
+            border-radius: 30px;
+            border: 1px solid var(--secondary);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tech-cols {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .tech-col h4 {
+            color: var(--secondary);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tech-col ul {
+            list-style: none;
+        }
+
+        .tech-col li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+        }
+
+        .tech-col li::before {
+            content: '▫️';
+            margin-right: 10px;
+            font-size: 0.8rem;
+        }
+
+        /* Pricing */
+        .pricing {
+            background: var(--dark-light);
+            padding: 100px 20px;
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+            gap: 35px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: var(--dark);
+            padding: 60px 45px;
+            border-radius: 30px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--secondary);
+            transform: scale(1.05);
+            background: linear-gradient(135deg, rgba(26, 15, 17, 0.1) 0%, rgba(197, 160, 89, 0.1) 100%);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -15px;
+            right: 40px;
+            background: var(--gradient-2);
+            color: var(--primary);
+            padding: 8px 25px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--secondary);
+        }
+
+        .pricing-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .pricing-price {
+            font-size: 4rem;
+            font-weight: 800;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .pricing-period {
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 45px;
+            text-align: left;
+            flex-grow: 1;
+        }
+
+        .pricing-features li {
+            padding: 15px 0;
+            color: var(--text-muted);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+        }
+
+        .pricing-features li:before {
+            content: '✓';
+            color: var(--secondary);
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: var(--gradient-1);
+            padding: 120px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.05" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,96C1248,75,1344,53,1392,42.7L1440,32L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path></svg>') no-repeat top;
+            background-size: cover;
+        }
+
+        .cta-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-section h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            color: white;
+        }
+
+        .cta-section p {
+            font-size: 1.3rem;
+            margin-bottom: 50px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark-light);
+            padding: 60px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer p {
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .footer a {
+            color: var(--secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: var(--accent);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.8rem; }
+            .hero .tagline { font-size: 1.3rem; }
+            .section-title { font-size: 2.2rem; }
+            .pricing-card.featured { transform: scale(1); }
+            .cta-buttons { flex-direction: column; }
+            .btn { width: 100%; max-width: 350px; }
+            .tech-box { padding: 40px 25px; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>🎨 Saree Bazaar</h1>
+            <p class="tagline">Premium Multi-Vendor Saree Marketplace Solution</p>
+            <p class="subtitle">
+                Launch your high-end traditional fashion platform with a production-ready ecosystem. 
+                Full-featured apps for Buyers and Sellers connected via a secure PHP REST backend.
+            </p>
+            <div class="cta-buttons">
+                <a href="#pricing" class="btn btn-primary">Select Architecture</a>
+                <a href="#features" class="btn btn-secondary">Platform Features</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">2</div>
+                <div class="stat-label">Mobile Apps (Android & iOS)</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">45+</div>
+                <div class="stat-label">Commerce Modules</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Production Ready</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Priority Support</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Showcase Section -->
+    <section class="showcase">
+        <div class="showcase-header">
+            <h2>The Experience Architecture</h2>
+            <p>Masterfully crafted interfaces for the luxury saree enthusiast.</p>
+        </div>
+        <div class="screenshots-grid">
+            <div class="screenshot-item">
+                <img src="assets/home_mockup.png" alt="Home Screen">
+                <div class="screenshot-overlay">
+                    <p class="screenshot-caption">Elegant Discovery</p>
+                    <p class="screenshot-description">High-impact offer carousels and seamless categorization.</p>
+                </div>
+            </div>
+            <div class="screenshot-item">
+                <img src="assets/details_mockup.png" alt="Product Details Screen">
+                <div class="screenshot-overlay">
+                    <p class="screenshot-caption">Artisanal Details</p>
+                    <p class="screenshot-description">Technical specs, blouse sizing, and weaver stories.</p>
+                </div>
+            </div>
+            <div class="screenshot-item">
+                <img src="assets/seller_mockup.png" alt="Seller Dashboard">
+                <div class="screenshot-overlay">
+                    <p class="screenshot-caption">Seller Strategy</p>
+                    <p class="screenshot-description">Real-time sales analytics and stock intelligence.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section" id="features">
+        <h2 class="section-title">A Sophisticated Marketplace Ecosystem</h2>
+        <p class="section-subtitle">
+            Scale your traditional business with tools specifically engineered for the intricate world of handcrafted apparel.
+        </p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">💎</div>
+                <h3 class="feature-title">Artisan Profiles</h3>
+                <p class="feature-description">
+                    Dedicated digital identities for weavers and boutiques. Showcase craftsman biographies, 
+                    weaving location history, and specialized fabrication styles.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🧵</div>
+                <h3 class="feature-title">Thread-Level Specs</h3>
+                <p class="feature-description">
+                    Purpose-built metadata fields for Fabric origin, Weave pattern, Zari quality, and 
+                    detailed Blouse piece dimensions (Unstitched/Stitched).
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <h3 class="feature-title">Enterprise Security</h3>
+                <p class="feature-description">
+                    Hardened PHP API with JWT authentication protocols, SQL injection shields, and 
+                    secure session management for reliable high-ticket transactions.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">Seller Intelligence</h3>
+                <p class="feature-description">
+                    Advanced Seller Dashboard with inventory health monitors, real-time sales performance, 
+                    and direct multi-vendor order tracking systems.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📦</div>
+                <h3 class="feature-title">Media Optimizer</h3>
+                <p class="feature-description">
+                    Automated server-side image processing that maintains high-resolution detail of fine 
+                    embroidery while minimizing mobile data load times.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🛒</div>
+                <h3 class="feature-title">Unified Checkout</h3>
+                <p class="feature-description">
+                    Intelligent basket logic allowing buyers to purchase from multiple artisans in a 
+                    single transaction with individual seller commission tracking.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works Step Section -->
+    <section class="how-it-works">
+        <div class="section-title">The Path to Digital Heritage</div>
+        <div class="steps-container">
+            <div class="step-item">
+                <div class="step-num">1</div>
+                <h3>Backend Setup</h3>
+                <p>Deploy the production-ready PHP/MySQL API and establish your marketplace security protocols.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-num">2</div>
+                <h3>Configure Apps</h3>
+                <p>Customize the Buyer and Seller apps with your unique brand identity, colors, and niche categories.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-num">3</div>
+                <h3>Onboard Artisans</h3>
+                <p>Invite weavers and boutiques to list their handcrafted masterpieces through the dedicated seller Studio.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-num">4</div>
+                <h3>Global Launch</h3>
+                <p>Unlock live sales with real-time order tracking, secure payments, and performance-driven analytics.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Deep Dive -->
+    <section class="tech-deep-dive">
+        <div class="tech-box">
+            <h2 class="section-title" style="text-align: left;">Architecture Deep Dive</h2>
+            <div class="tech-cols">
+                <div class="tech-col">
+                    <h4>Flutter Ecosystem</h4>
+                    <ul>
+                        <li>Cross-Platform Logic</li>
+                        <li>Provider State Management</li>
+                        <li>Custom Slider Animations</li>
+                        <li>JSON Model Serialization</li>
+                    </ul>
+                </div>
+                <div class="tech-col">
+                    <h4>Backend API (PHP)</h4>
+                    <ul>
+                        <li>RESTful Architecture</li>
+                        <li>JWT Secure Layer</li>
+                        <li>SQL Injection Shield</li>
+                        <li>Multi-Role Permissions</li>
+                    </ul>
+                </div>
+                <div class="tech-col">
+                    <h4>Operations</h4>
+                    <ul>
+                        <li>Server-Side Compression</li>
+                        <li>.htaccess Firewall</li>
+                        <li>Automated Backup Engine</li>
+                        <li>Inventory Analytics</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+        <div class="section">
+            <h2 class="section-title">Licensing & Service</h2>
+            <p class="section-subtitle">Invest in the ultimate marketplace infrastructure for your traditional brand.</p>
+            
+            <div class="pricing-cards">
+                <!-- Starter -->
+                <div class="pricing-card">
+                    <h3 class="pricing-title">Starter</h3>
+                    <div class="pricing-price">₹5,000</div>
+                    <div class="pricing-period">Build License</div>
+                    <ul class="pricing-features">
+                        <li>Basic Backend Setup</li>
+                        <li>Mobile App Integration</li>
+                        <li>Standard App Build (APK)</li>
+                        <li>1 Month Basic Support</li>
+                        <li>Standard Security Audit</li>
+                    </ul>
+                    <a href="#" class="btn btn-secondary">Acquire Starter</a>
+                </div>
+
+                <!-- Professional -->
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">Optimized</div>
+                    <h3 class="pricing-title">Professional</h3>
+                    <div class="pricing-price">₹10,000</div>
+                    <div class="pricing-period">Service Bundle</div>
+                    <ul class="pricing-features">
+                        <li><strong>Everything in Starter</strong></li>
+                        <li>API Hardening & Firewall</li>
+                        <li>Dual Platform Integration</li>
+                        <li>3 Months VIP Support</li>
+                        <li>Database Optimization</li>
+                        <li>Cloud Deployment Guide</li>
+                    </ul>
+                    <a href="#" class="btn btn-primary">Go Professional</a>
+                </div>
+
+                <!-- Enterprise -->
+                <div class="pricing-card">
+                    <h3 class="pricing-title">Enterprise</h3>
+                    <div class="pricing-price">₹25,000</div>
+                    <div class="pricing-period">Complete Master</div>
+                    <ul class="pricing-features">
+                        <li><strong>FULL SOURCE CODE LICENSE</strong></li>
+                        <li>Custom Branding & Assets</li>
+                        <li>iOS Publication Support</li>
+                        <li>1 Year Sovereign Support</li>
+                        <li>Custom Feature Engineering</li>
+                        <li>Database Migration Engine</li>
+                    </ul>
+                    <a href="#" class="btn btn-secondary">Join Enterprise</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Secure Your Digital Heritage Today</h2>
+            <p>Don't just sell sarees. Build a sophisticated digital ecosystem with the world's most advanced traditional commerce platform.</p>
+            <a href="#" class="btn btn-primary">Request Live Demonstration</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2026 Saree Bazaar Multi-Vendor Architecture. All Rights Reserved.</p>
+        <p>
+            <a href="#">License Policy</a> | 
+            <a href="#">Support Hub</a> | 
+            <a href="#">Platform Security</a>
+        </p>
+    </footer>
+</body>
+
+</html>

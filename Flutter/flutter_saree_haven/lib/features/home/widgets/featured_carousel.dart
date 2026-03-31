@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../core/app_colors.dart';
 import '../../../core/models/saree_model.dart';
+import '../../../core/widgets/saree_image.dart';
 
 class FeaturedCarousel extends StatelessWidget {
   final List<Saree> sarees;
@@ -34,7 +35,10 @@ class FeaturedCarousel extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.asset(saree.imageUrls.first, fit: BoxFit.cover),
+                SareeImage(
+                  imageUrl: saree.imageUrls.isNotEmpty ? saree.imageUrls.first : '',
+                  fit: BoxFit.cover,
+                ),
                 Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(

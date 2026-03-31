@@ -1,4 +1,6 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
@@ -17,6 +19,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _storeNameController = TextEditingController();
+  Uint8List? _selectedImageBytes;
+  String? _selectedImageName;
   UserRole _selectedRole = UserRole.customer;
   bool _isLoading = false;
   bool _obscurePassword = true;
@@ -27,7 +32,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _phoneController.dispose();
     _passwordController.dispose();
+    _storeNameController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      setState(() {
+        _selectedImageBytes = bytes;
+        _selectedImageName = pickedFile.name;
+      });
+    }
   }
 
   Future<void> _handleRegister() async {
@@ -40,6 +58,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               _phoneController.text,
               _passwordController.text,
               _selectedRole,
+              storeName: _selectedRole == UserRole.seller ? _storeNameController.text : null,
+              imageBytes: _selectedRole == UserRole.seller ? _selectedImageBytes : null,
+              imageName: _selectedRole == UserRole.seller ? _selectedImageName : null,
             );
         if (mounted) {
           Navigator.pop(context); // Go back to login or handle auto-login
@@ -181,6 +202,55 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ],
                   ),
+                  
+                  if (_selectedRole == UserRole.seller) ...[
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      controller: _storeNameController,
+                      label: 'Saree House / Store Name',
+                      hint: 'Prathamesh Saree House',
+                      icon: Icons.house_outlined,
+                      validator: (v) => (_selectedRole == UserRole.seller && v!.isEmpty) ? 'Enter store name' : null,
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Saree House Photo',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    GestureDetector(
+                      onTap: _pickImage,
+                      child: Container(
+                        width: double.infinity,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.grey.shade200, width: 2),
+                        ),
+                        child: _selectedImageBytes != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Image.memory(_selectedImageBytes!, fit: BoxFit.cover),
+                              )
+                            : Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.add_a_photo_outlined, color: AppColors.primary.withValues(alpha: 0.6), size: 40),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Upload Store Photo',
+                                    style: GoogleFonts.poppins(color: Colors.grey, fontSize: 13),
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ),
+                  ],
                   
                   const SizedBox(height: 40),
                   

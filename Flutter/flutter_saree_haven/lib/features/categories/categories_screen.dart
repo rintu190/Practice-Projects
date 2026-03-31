@@ -2,9 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/app_colors.dart';
-import '../../core/data/mock_repository.dart';
+import '../../core/data/api_repository.dart';
 import '../../core/models/saree_model.dart';
 import '../product_details/product_details_screen.dart';
+import '../../core/widgets/saree_image.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
@@ -19,8 +20,24 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   RangeValues _priceRange = const RangeValues(0, 25000);
   String _sortBy = 'Default';
 
-  List<Saree> get _filteredSarees {
-    List<Saree> sarees = MockRepository.sarees;
+  late Future<List<Saree>> _sareesFuture;
+
+  static const List<String> categories = [
+    'Bridal Saree', 'Cotton Saree', 'Silk Saree', 'Party Wear', 'Daily Wear'
+  ];
+
+  static const List<String> types = [
+    'Banarasi', 'Kanjivaram', 'Chanderi', 'Tussar', 'Bandhani', 'Sambalpuri'
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _sareesFuture = ApiRepository.getSarees();
+  }
+
+  List<Saree> _getFilteredSarees(List<Saree> allSarees) {
+    List<Saree> sarees = List.from(allSarees);
 
     if (_selectedCategory != null) {
       sarees = sarees.where((s) => s.category == _selectedCategory).toList();
@@ -41,8 +58,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       case 'Price: High to Low':
         sarees.sort((a, b) => b.price.compareTo(a.price));
         break;
+      // Note: Artisan rating may not be available on base saree model, so fallback to simple sort
       case 'Rating':
-        sarees.sort((a, b) => b.artisan.rating.compareTo(a.artisan.rating));
+      default:
         break;
     }
     return sarees;
@@ -53,8 +71,17 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
+        child: FutureBuilder<List<Saree>>(
+          future: _sareesFuture,
+          builder: (context, snap) {
+            if (snap.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final allSarees = snap.data ?? [];
+            final filteredSarees = _getFilteredSarees(allSarees);
+
+            return CustomScrollView(
+              slivers: [
             // Header
             SliverToBoxAdapter(
               child: Padding(
@@ -108,10 +135,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 24),
-                    itemCount: MockRepository.categories.length,
+                    itemCount: categories.length,
                     separatorBuilder: (_, __) => const SizedBox(width: 12),
                     itemBuilder: (context, index) {
-                      final category = MockRepository.categories[index];
+                      final category = categories[index];
                       return _CategoryCard(
                         label: category,
                         color: _getThemeColor(index),
@@ -145,10 +172,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 24),
-                    itemCount: MockRepository.types.length,
+                    itemCount: types.length,
                     separatorBuilder: (_, __) => const SizedBox(width: 12),
                     itemBuilder: (context, index) {
-                      final type = MockRepository.types[index];
+                      final type = types[index];
                       return _CategoryCard(
                         label: type,
                         color: _getThemeColor(index + 5),
@@ -190,7 +217,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                         _buildChip(_selectedType!, () => setState(() => _selectedType = null), isType: true),
                       const Spacer(),
                       Text(
-                        '${_filteredSarees.length} items',
+                        '${filteredSarees.length} items',
                         style: GoogleFonts.poppins(
                           color: AppColors.textSecondary,
                           fontSize: 13,
@@ -251,7 +278,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
             // Product Grid
-            _filteredSarees.isEmpty
+            filteredSarees.isEmpty
                 ? SliverFillRemaining(
                     hasScrollBody: false,
                     child: Center(
@@ -279,7 +306,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       ),
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
-                          final saree = _filteredSarees[index];
+                          final saree = filteredSarees[index];
                           return _SareeGridCard(
                             saree: saree,
                             onTap: () {
@@ -292,12 +319,13 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                             },
                           );
                         },
-                        childCount: _filteredSarees.length,
+                        childCount: filteredSarees.length,
                       ),
                     ),
                   ),
           ],
-        ),
+        );
+      }),
       ),
     );
   }
@@ -526,10 +554,14 @@ class _SareeGridCard extends StatelessWidget {
             Expanded(
               flex: 3,
               child: Stack(
+                fit: StackFit.expand,
                 children: [
                   ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                    child: Image.asset(saree.imageUrls.first, width: double.infinity, height: double.infinity, fit: BoxFit.cover),
+                    child: SareeImage(
+                      imageUrl: saree.imageUrls.isNotEmpty ? saree.imageUrls.first : '',
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   Positioned(
                     top: 8,

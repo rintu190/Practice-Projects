@@ -2,10 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/app_colors.dart';
-import '../../core/data/mock_repository.dart';
+import '../../core/data/api_repository.dart';
 import '../../core/models/saree_model.dart';
 import '../cart/cart_screen.dart';
 import '../product_details/product_details_screen.dart';
+import '../../core/widgets/saree_image.dart';
 
 class CollectionsScreen extends StatefulWidget {
   const CollectionsScreen({super.key});
@@ -15,8 +16,22 @@ class CollectionsScreen extends StatefulWidget {
 }
 
 class _CollectionsScreenState extends State<CollectionsScreen> {
-  String selectedCategory = 'Men';
-  final categories = ['Men', 'Kids', 'Pets', 'Baby'];
+  String selectedCategory = 'All';
+  final categories = ['All', 'Bridal Saree', 'Cotton Saree', 'Silk Saree', 'Party Wear', 'Daily Wear'];
+  late Future<List<Saree>> _sareesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _sareesFuture = ApiRepository.getSarees();
+  }
+
+  void _onCategoryTap(String cat) {
+    setState(() {
+      selectedCategory = cat;
+      _sareesFuture = ApiRepository.getSarees(category: cat == 'All' ? null : cat);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,11 +122,7 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
                       final category = categories[index];
                       final isSelected = category == selectedCategory;
                       return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedCategory = category;
-                          });
-                        },
+                        onTap: () => _onCategoryTap(category),
                         child: Container(
                           margin: const EdgeInsets.only(right: 16), // Tighter spacing
                           child: Column(
@@ -188,18 +199,27 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
 
                 // Product Grid
                 Expanded(
-                  child: GridView.builder(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 100),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12, // Tighter spacing
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.7, // Slightly taller cards
-                    ),
-                    itemCount: MockRepository.sarees.length,
-                    itemBuilder: (context, index) {
-                      final saree = MockRepository.sarees[index];
-                      return _ProductCard(saree: saree);
+                  child: FutureBuilder<List<Saree>>(
+                    future: _sareesFuture,
+                    builder: (context, snap) {
+                      if (snap.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      final sarees = snap.data ?? [];
+                      return GridView.builder(
+                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 100),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 0.7,
+                        ),
+                        itemCount: sarees.length,
+                        itemBuilder: (context, index) {
+                          final saree = sarees[index];
+                          return _ProductCard(saree: saree);
+                        },
+                      );
                     },
                   ),
                 ),
@@ -331,7 +351,12 @@ class _ProductCard extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                    child: Image.asset(saree.imageUrls.first, width: double.infinity, height: double.infinity, fit: BoxFit.cover),
+                    child: SareeImage(
+                      imageUrl: saree.imageUrls.isNotEmpty ? saree.imageUrls.first : '',
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   Positioned(
                     top: 6,
