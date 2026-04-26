@@ -30,7 +30,7 @@ class ApiRepository {
       {String? phone, String? storeName, List<int>? imageBytes, String? imageName}) async {
     
     final request = http.MultipartRequest('POST', Uri.parse(ApiConfig.register));
-    request.headers.addAll({'Accept': 'application/json'});
+    request.headers.addAll(ApiConfig.headers);
     
     request.fields['name'] = name;
     request.fields['email'] = email;
@@ -68,7 +68,7 @@ class ApiRepository {
     String? imageName,
   }) async {
     final request = http.MultipartRequest('POST', Uri.parse(ApiConfig.userUpdate));
-    request.headers.addAll({'Accept': 'application/json'});
+    request.headers.addAll(ApiConfig.headers);
     
     request.fields['id'] = id;
     if (name != null) request.fields['name'] = name;
@@ -117,7 +117,7 @@ class ApiRepository {
   }
 
   static Future<Map<String, dynamic>> getUserStats(String userId) async {
-    final response = await http.get(Uri.parse('${ApiConfig.getUserStats}?user_id=$userId'));
+    final response = await http.get(Uri.parse('${ApiConfig.getUserStats}?user_id=$userId'), headers: ApiConfig.headers);
     final body = json.decode(response.body);
     if (response.statusCode == 200 && (body['status'] == 'success' || body['success'] == true)) {
       return body['data'];
@@ -278,7 +278,7 @@ class ApiRepository {
     String? imageName,
   }) async {
     final request = http.MultipartRequest('POST', Uri.parse(ApiConfig.sellerUpdate));
-    request.headers.addAll({'Accept': 'application/json'});
+    request.headers.addAll(ApiConfig.headers);
     
     request.fields['id'] = id;
     if (storeName != null) request.fields['storeName'] = storeName;
@@ -351,7 +351,7 @@ class ApiRepository {
     String? imageFileName,
   }) async {
     final request = http.MultipartRequest('POST', Uri.parse(ApiConfig.sareesCreate));
-    request.headers.addAll({'Accept': 'application/json'});
+    request.headers.addAll(ApiConfig.headers);
 
     request.fields['name'] = name;
     request.fields['description'] = description;
@@ -399,7 +399,7 @@ class ApiRepository {
     String? imageFileName,
   }) async {
     final request = http.MultipartRequest('POST', Uri.parse(ApiConfig.sareesUpdate));
-    request.headers.addAll({'Accept': 'application/json'});
+    request.headers.addAll(ApiConfig.headers);
 
     request.fields['id'] = id;
     request.fields['name'] = name;

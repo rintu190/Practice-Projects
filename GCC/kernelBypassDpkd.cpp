@@ -1,10 +1,12 @@
-extern "C" {
-#include <rte_eal.h>
-#include <rte_ethdev.h>
-#include <rte_mbuf.h>
-}
+// DPDK headers - install libdpdk-dev to enable
+// extern "C" {
+// #include <rte_eal.h>
+// #include <rte_ethdev.h>
+// #include <rte_mbuf.h>
+// }
 #include <cstdio>
 #include <cstdlib>
+#include <cstdint>
 
 static const uint16_t RX_RING_SIZE = 1024;
 static const uint16_t TX_RING_SIZE = 1024;

@@ -24,11 +24,22 @@ ini_set('display_errors', 1);
 // CORS Headers
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, x-api-key');
 header('Content-Type: application/json');
 
 // Handle preflight requests
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
+    exit();
+}
+
+// API Key verification
+$headers = array_change_key_case(apache_request_headers(), CASE_LOWER);
+$apiKey = isset($headers['x-api-key']) ? $headers['x-api-key'] : (isset($_SERVER['HTTP_X_API_KEY']) ? $_SERVER['HTTP_X_API_KEY'] : '');
+$expectedApiKey = getenv('API_KEY') ?: 'saree_haven_secret_123';
+
+if ($apiKey !== $expectedApiKey) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Unauthorized']);
     exit();
 }

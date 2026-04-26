@@ -1,7 +1,9 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/foundation.dart';
 
 class ApiConfig {
-  static String get baseUrl => dotenv.get('API_BASE_URL', fallback: 'http://10.0.2.2:8000/api');
+  // Use 10.0.2.2 for Android Emulator, localhost for Web/iOS Simulator.
+  // Using port 8000 allows easy testing with "php -S 0.0.0.0:8000" in the backend folder.
+  static const String baseUrl = kIsWeb ? 'http://127.0.0.1:8000/api' : 'http://10.0.2.2:8000/api';
   static String get serverRootUrl => baseUrl.replaceAll('/api', '');
 
   // Auth
@@ -55,5 +57,6 @@ class ApiConfig {
   static Map<String, String> get headers => {
     'Content-Type': 'application/json; charset=UTF-8',
     'Accept': 'application/json',
+    'x-api-key': 'saree_haven_secret_123',
   };
 }

@@ -7,11 +7,8 @@ import 'features/navigation/main_navigation.dart';
 import 'features/auth/auth_service.dart';
 import 'features/auth/login_screen.dart';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
   runApp(
     MultiProvider(
       providers: [
