@@ -1,0 +1,43 @@
+=============================================================================
+COMPILATION INSTRUCTIONS
+=============================================================================
+
+C++17 Files (Standard Library Components):
+  cd /home/rintu/Developer/Practice-Projects/GCC/takeYouForward/src/STL
+  g++ -std=c++17 -pthread utilities/STLAllocators.cpp -o STLAllocators
+  g++ -std=c++17 -pthread utilities/STLMemory.cpp -o STLMemory
+  g++ -std=c++17 -pthread utilities/STLExceptions.cpp -o STLExceptions
+  g++ -std=c++17 -pthread utilities/STLFileIO.cpp -o STLFileIO
+  g++ -std=c++17 -pthread utilities/STLRegex.cpp -o STLRegex
+  g++ -std=c++17 -pthread utilities/STLNumeric.cpp -o STLNumeric
+  g++ -std=c++17 -pthread utilities/STLConcurrency.cpp -o STLConcurrency
+  g++ -std=c++17 -pthread utilities/STLUtilities.cpp -o STLUtilities
+  g++ -std=c++17 -pthread utilities/STLStrings.cpp -o STLStrings
+  g++ -std=c++17 algorithms/STLAlgorithms.cpp -o STLAlgorithms
+  g++ -std=c++17 iterators/STLIterators.cpp -o STLIterators
+  g++ -std=c++17 streams/STLStreams.cpp -o STLStreams
+
+C++20 Files (Modern Features):
+  g++ -std=c++20 utilities/STLRanges.cpp -o STLRanges
+  g++ -std=c++20 concepts/STLConcepts.cpp -o STLConcepts
+
+=============================================================================
+FEATURES COVERED
+=============================================================================
+
+Containers: 7 types (vector, deque, list, set, map, stack, queue)
+Algorithms: 40+ (find, sort, transform, accumulate, etc.)
+Iterators: All 5 types + adapters
+Functions: Functors, lambdas, std::function, std::bind
+Strings: Creation, manipulation, conversion, string_view
+Utilities: Pair, Tuple, structured bindings
+Memory: unique_ptr, shared_ptr, weak_ptr, custom deleters
+Exceptions: Standard and custom exceptions, hierarchy
+File I/O: Text/binary files, formatted I/O, stringstream
+Numeric: Complex numbers, random generation, timing
+Regex: Pattern matching, validation, extraction
+Concurrency: Threads, mutex, condition_variable, atomic
+Streams: Formatting, locales, iomanip
+Allocators: Custom allocators, pool, aligned, stateful
+Ranges: Views, piping, lazy evaluation
+Concepts: Built-in, custom, type constraints

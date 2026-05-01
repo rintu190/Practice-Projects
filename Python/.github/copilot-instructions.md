@@ -10,6 +10,8 @@
 # Key entry points (use these to understand behavior quickly)
 - `main.py` — minimal top-level script (entry example). See it for project-level invocation style.
 - `test-tui.py` and `tui/dashboard.py` — Textual-based TUI examples; launching these requires the `textual` package.
+- `tui/standalone_multi_agent.py` — Production-ready multi-agent system (Architect, Developer, Tester, Reviewer, DevOps agents working collaboratively). Run with `python3 tui/standalone_multi_agent.py`.
+- `tui/task_manager.py` — Task management system for tracking work items with priorities.
 - `ML from Scratch/model.py`, `train.py` — small neural/net prototypes that import `ML from Scratch/lib/*` prototyped wrappers (files named `*Proto.py`).
 - `PY from Scratch/` — contains many tutorial scripts and a small package `math_package/` showing how packages are structured here.
 
@@ -17,6 +19,7 @@
 - Many modules are single-file scripts; keep changes minimal and file-local by default.
 - Teaching/prototype code lives in `ML from Scratch/lib/` where helper wrappers are named with `Proto` suffix (e.g., `numpyProto.py`, `pandasProto.py`). When editing ML examples, look for these wrappers first — they model dependency behavior.
 - Small packages include `__init__.py` (example: `PY from Scratch/3. Advanced/math_package/`). Use `python -m` for package-level execution where appropriate.
+- **Multi-Agent System (tui/ folder)**: `standalone_multi_agent.py` contains a production-ready framework with 5 agent types (Architect, Developer, Tester, Reviewer, DevOps). The system is fully integrated with `dashboard.py` (TUI) and can be used standalone or programmatically. See `tui/MULTI_AGENT_GUIDE.md` for complete documentation and `tui/integration_examples.py` for integration patterns.
 
 # How to run / developer workflows (discovered patterns)
 - There is no top-level `requirements.txt`. Before running files, check imports at the top of the target file. Typical commands:
@@ -34,6 +37,7 @@
 - To add a new TUI view, follow `tui/dashboard.py` structure: `App`, `Screen` classes, `compose()` and `on_button_pressed()` handlers.
 - To extend the toy ML models, check `ML from Scratch/lib/numpyProto.py` (proto wrappers) before replacing with a direct `numpy` call.
 - To add a reusable utility, prefer placing it in an existing package (e.g., `PY from Scratch/3. Advanced/math_package/`) and update `__init__.py`.
+- **To work with multi-agent system**: Use `tui/standalone_multi_agent.py` for the core framework. Available agents are: `ArchitectAgent` (design), `DeveloperAgent` (implementation), `TesterAgent` (QA), `ReviewerAgent` (code review), `DevOpsAgent` (deployment). See `tui/integration_examples.py` for CLI, Flask, FastAPI, Django, and async integration patterns. The agents are accessible via the `LocalAgentTeam` in `tui/dashboard.py` or standalone via `MultiAgentTeam` class.
 
 # What not to do
 - Do not assume this is a production monolith: avoid broad refactors across directories unless the user requests them.
