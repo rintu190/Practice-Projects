@@ -1,9 +1,9 @@
 // DPDK headers - install libdpdk-dev to enable
-// extern "C" {
-// #include <rte_eal.h>
-// #include <rte_ethdev.h>
-// #include <rte_mbuf.h>
-// }
+extern "C" {
+#include <rte_eal.h>
+#include <rte_ethdev.h>
+#include <rte_mbuf.h>
+}
 #include <cstdio>
 #include <cstdlib>
 #include <cstdint>
