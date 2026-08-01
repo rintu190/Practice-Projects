@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="Run All (Composite)" type="CompoundRunConfiguration" factoryName="Compound">
+      <option name="runConfigurationList">
+        <list>
+          <option><ref>config-server</ref></option>
+          <option><ref>api-gateway</ref></option>
+          <option><ref>auth-service</ref></option>
+          <option><ref>user-service</ref></option>
+          <option><ref>product-service</ref></option>
+          <option><ref>inventory-service</ref></option>
+          <option><ref>cart-service</ref></option>
+          <option><ref>order-service</ref></option>
+          <option><ref>payment-service</ref></option>
+          <option><ref>notification-service</ref></option>
+          <option><ref>shipping-service</ref></option>
+          <option><ref>review-service</ref></option>
+          <option><ref>search-service</ref></option>
+          <option><ref>analytics-service</ref></option>
+        </list>
+      </option>
+      <method v="2" />
+    </configuration>
+  </component>
+</project>
+

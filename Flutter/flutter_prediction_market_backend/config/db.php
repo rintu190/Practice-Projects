@@ -1,10 +1,18 @@
 <?php
-$host = "localhost";
+$host = "127.0.0.1";
 $user = "root";
-$pass = "Open@120";
+$pass = "root123";
 $dbname = "poly_market";
 
-$conn = new mysqli($host, $user, $pass, $dbname);
+$conn = @new mysqli($host, $user, $pass, $dbname);
+if ($conn->connect_error) {
+    // Try alternate password or localhost socket
+    $pass = "Open@120";
+    $conn = @new mysqli($host, $user, $pass, $dbname);
+    if ($conn->connect_error) {
+        $conn = new mysqli("localhost", $user, $pass, $dbname);
+    }
+}
 
 if ($conn->connect_error) {
     die(json_encode(["status" => "error", "message" => "Connection failed: " . $conn->connect_error]));

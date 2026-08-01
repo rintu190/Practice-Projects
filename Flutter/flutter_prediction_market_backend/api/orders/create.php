@@ -57,6 +57,15 @@ try {
     $insert_order->bind_param("iisidd", $user_id, $market_id, $outcome, $shares, $price_per_share, $total_amount);
     $insert_order->execute();
     
+    // Upsert user_positions table
+    if (strtoupper($outcome) === 'YES') {
+        $pos_stmt = $conn->prepare("INSERT INTO user_positions (user_id, market_id, yes_shares, total_invested) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE yes_shares = yes_shares + VALUES(yes_shares), total_invested = total_invested + VALUES(total_invested)");
+    } else {
+        $pos_stmt = $conn->prepare("INSERT INTO user_positions (user_id, market_id, no_shares, total_invested) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE no_shares = no_shares + VALUES(no_shares), total_invested = total_invested + VALUES(total_invested)");
+    }
+    $pos_stmt->bind_param("iiid", $user_id, $market_id, $shares, $total_amount);
+    $pos_stmt->execute();
+    
     $conn->commit();
     echo json_encode([
         "status" => "success", 

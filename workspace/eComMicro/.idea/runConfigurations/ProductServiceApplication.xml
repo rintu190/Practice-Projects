@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ProductServiceApplication" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.example.productservice.ProductServiceApplication" />
+    <module name="product-service" />
+    <method v="2">
+      <option name="MakeProject" enabled="true" />
+    </method>
+  </configuration>
+</component>
+

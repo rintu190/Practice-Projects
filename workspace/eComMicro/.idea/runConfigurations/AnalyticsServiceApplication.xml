@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="AnalyticsServiceApplication" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.example.analytics.AnalyticsApplication" />
+    <module name="analytics-service" />
+    <method v="2">
+      <option name="MakeProject" enabled="true" />
+    </method>
+  </configuration>
+</component>
+

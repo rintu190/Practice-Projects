@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: cart-service
+
+server:
+  port: 8087
+
+  # Redis connection (change host/port as needed or configure via env vars)
+redis:
+  host: ${REDIS_HOST:localhost}
+  port: ${REDIS_PORT:6379}
+
+cache:
+  names: products,cart,inventory
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    preferIpAddress: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+

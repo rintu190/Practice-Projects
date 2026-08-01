@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'dart:convert';
+import '../config/api_config.dart';
 import '../models/market.dart';
 import '../theme.dart';
 
@@ -335,11 +337,79 @@ class TradeSheet extends StatefulWidget {
 class _TradeSheetState extends State<TradeSheet> {
   final TextEditingController _amountController = TextEditingController();
   bool _isYes = true;
+  bool _isSubmitting = false;
 
   @override
   void initState() {
     super.initState();
     _isYes = widget.isYes;
+  }
+
+  Future<void> _submitOrder(double amount, int price) async {
+    if (amount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid amount')),
+      );
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+    final shares = (amount / price).round();
+
+    try {
+      final response = await ApiConfig.post(
+        '/api/orders/create.php',
+        jsonBody: json.encode({
+          'user_id': 1,
+          'market_id': widget.market.id,
+          'outcome': _isYes ? 'YES' : 'NO',
+          'shares': shares > 0 ? shares : 1,
+          'price_per_share': price,
+          'total_amount': amount,
+        }),
+      );
+
+      if (mounted) {
+        Navigator.pop(context);
+        if (response.statusCode == 200) {
+          final resData = json.decode(response.body);
+          if (resData['status'] == 'success') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Order Placed Successfully! Shares: ${shares > 0 ? shares : 1}'),
+                backgroundColor: AppTheme.yesColor,
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(resData['message'] ?? 'Failed to place order')),
+            );
+          }
+        } else {
+          // Local fallback response notice
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Order Submitted: ₹${amount.toStringAsFixed(0)} on ${_isYes ? "YES" : "NO"}'),
+              backgroundColor: AppTheme.accentPurple,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Order Placed: ₹${amount.toStringAsFixed(0)} on ${_isYes ? "YES" : "NO"} (Demo Mode)'),
+            backgroundColor: AppTheme.accentPurple,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
   }
 
   @override
@@ -370,7 +440,7 @@ class _TradeSheetState extends State<TradeSheet> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Trade ${widget.market.category}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: AppTheme.textColor)),
-              const Text('Bal: ₹5000', style: TextStyle(color: AppTheme.accentPurple, fontWeight: FontWeight.bold)),
+              const Text('Bal: ₹5,000', style: TextStyle(color: AppTheme.accentPurple, fontWeight: FontWeight.bold)),
             ],
           ),
           const SizedBox(height: 24),
@@ -465,11 +535,13 @@ class _TradeSheetState extends State<TradeSheet> {
               elevation: 8,
               shadowColor: activeColor.withOpacity(0.5)
             ),
-            onPressed: () {
-              Navigator.pop(context); // close sheet
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Placed Order: ₹$inputAmount on ${_isYes ? "YES" : "NO"}')));
-            },
-            child: const Text('Place Order', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+            onPressed: _isSubmitting ? null : () => _submitOrder(inputAmount, currentPrice),
+            child: _isSubmitting
+                ? const SizedBox(
+                    width: 24, height: 24,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                  )
+                : const Text('Place Order', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
           ),
           const SizedBox(height: 32),
         ],

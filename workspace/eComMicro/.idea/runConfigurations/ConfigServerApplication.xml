@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ConfigServerApplication" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.example.configserver.ConfigServerApplication" />
+    <module name="config-server" />
+    <method v="2">
+      <option name="MakeProject" enabled="true" />
+    </method>
+  </configuration>
+</component>
+

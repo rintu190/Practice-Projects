@@ -1,0 +1,20 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="All Services" type="CompoundRunConfigurationType">
+    <toRun name="AnalyticsServiceApplication" type="Application" />
+    <toRun name="ApiGatewayApplication" type="Application" />
+    <toRun name="AuthServiceApplication" type="Application" />
+    <toRun name="CartServiceApplication" type="Application" />
+    <toRun name="ConfigServerApplication" type="Application" />
+    <toRun name="EurekaServerApplication" type="Application" />
+    <toRun name="InventoryServiceApplication" type="Application" />
+    <toRun name="NotificationServiceApplication" type="Application" />
+    <toRun name="OrderServiceApplication" type="Application" />
+    <toRun name="PaymentServiceApplication" type="Application" />
+    <toRun name="ProductServiceApplication" type="Application" />
+    <toRun name="ReviewServiceApplication" type="Application" />
+    <toRun name="SearchServiceApplication" type="Application" />
+    <toRun name="ShippingServiceApplication" type="Application" />
+    <toRun name="UserServiceApplication" type="Application" />
+    <method v="2" />
+  </configuration>
+</component>

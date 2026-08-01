@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Build with Maven
+        run: mvn -B -V -DskipTests package
+      - name: Run tests
+        run: mvn test -q
+      - name: Build Docker images
+        run: |
+          echo "Skipping heavy docker build in CI skeleton. Add your build steps here."
+

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>eComMicro</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <java.version>17</java.version>
+        <spring.boot.version>3.1.9</spring.boot.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+    </properties>
+
+    <modules>
+        <module>common</module>
+        <module>infrastructure/eureka-server</module>
+        <module>infrastructure/config-server</module>
+        <module>infrastructure/api-gateway</module>
+        <module>microservices/auth-service</module>
+        <module>microservices/user-service</module>
+        <module>microservices/product-service</module>
+        <module>microservices/inventory-service</module>
+        <module>microservices/cart-service</module>
+        <module>microservices/order-service</module>
+        <module>microservices/payment-service</module>
+        <module>microservices/notification-service</module>
+        <module>microservices/shipping-service</module>
+        <module>microservices/review-service</module>
+        <module>microservices/search-service</module>
+        <module>microservices/analytics-service</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

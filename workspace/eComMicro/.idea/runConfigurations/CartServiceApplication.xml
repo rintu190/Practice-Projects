@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="CartServiceApplication" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.example.cartservice.CartServiceApplication" />
+    <module name="cart-service" />
+    <method v="2">
+      <option name="MakeProject" enabled="true" />
+    </method>
+  </configuration>
+</component>
+

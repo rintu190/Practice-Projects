@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="EurekaServerApplication" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.example.eurekaserver.EurekaServerApplication" />
+    <module name="eureka-server" />
+    <method v="2">
+      <option name="MakeProject" enabled="true" />
+    </method>
+  </configuration>
+</component>

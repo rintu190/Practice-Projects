@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="UserServiceApplication" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.example.userservice.UserServiceApplication" />
+    <module name="user-service" />
+    <method v="2">
+      <option name="MakeProject" enabled="true" />
+    </method>
+  </configuration>
+</component>
+

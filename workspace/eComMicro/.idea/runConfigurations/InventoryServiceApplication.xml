@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="InventoryServiceApplication" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.example.inventoryservice.InventoryServiceApplication" />
+    <module name="inventory-service" />
+    <method v="2">
+      <option name="MakeProject" enabled="true" />
+    </method>
+  </configuration>
+</component>
+

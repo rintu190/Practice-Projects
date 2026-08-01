@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="config-server" type="MavenRunConfiguration" factoryName="Maven">
+      <option name="workingDirectory" value="$PROJECT_DIR$/config-server" />
+      <option name="runnerParameters" value="spring-boot:run" />
+      <option name="pomFilePath" value="$PROJECT_DIR$/config-server/pom.xml" />
+      <method v="2" />
+    </configuration>
+  </component>
+</project>
+
